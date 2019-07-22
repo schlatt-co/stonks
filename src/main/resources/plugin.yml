@@ -1,0 +1,6 @@
+name: Stonks
+version: 1.0
+main: nl.tychovi.stonks.Stonks
+authors:
+  - TychoVI
+  - Tsarcasm
