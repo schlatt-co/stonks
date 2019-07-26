@@ -4,3 +4,10 @@ main: nl.tychovi.stonks.Stonks
 authors:
   - TychoVI
   - Tsarcasm
+depend:
+  - Vault
+commands:
+  company:
+    description: Main command that houses rest.
+    usage: /company
+    aliases: [stonks, comp]
