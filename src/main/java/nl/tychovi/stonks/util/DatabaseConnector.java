@@ -1,12 +1,15 @@
 package nl.tychovi.stonks.util;
 
 import com.mysql.jdbc.Connection;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DatabaseConnector {
 
@@ -47,12 +50,8 @@ public class DatabaseConnector {
             return;
         }
 
-        noReturnStmt("CREATE TABLE IF NOT EXISTS `stonks`.`company` (" +
-                "  `id` INT NOT NULL AUTO_INCREMENT," +
-                "  `name` VARCHAR(64) NOT NULL," +
-                "  `creator_uuid` VARCHAR(32) NOT NULL," +
-                "  PRIMARY KEY (`id`)," +
-                "  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE);");
+        noReturnStmt("CREATE TABLE IF NOT EXISTS `company` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`name`))");
+
     }
 
     public Connection getConnection() {
@@ -66,6 +65,36 @@ public class DatabaseConnector {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public Boolean createCompany(String name, String creator_uuid) {
+        try {
+            String sql = "INSERT INTO company(name, creator_uuid) VALUES (?, ?);";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setString(2, creator_uuid);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public ArrayList<String> listCompanies() {
+        try {
+            ArrayList<String> names = new ArrayList<String>();
+            String sql = "SELECT name FROM company";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+            while(results.next()) {
+                names.add(results.getString("name"));
+            }
+            return names;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

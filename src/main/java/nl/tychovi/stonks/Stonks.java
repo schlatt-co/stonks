@@ -19,7 +19,7 @@ public class Stonks extends JavaPlugin {
 
         DatabaseConnector connector = new DatabaseConnector(this);
 
-        this.getCommand("company").setExecutor(new CommandCompany());
+        this.getCommand("company").setExecutor(new CommandCompany(connector));
     }
 
     @Override
