@@ -1,5 +1,6 @@
 package nl.tychovi.stonks.model;
 
+import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class HoldingsAccount extends Account {
     }
 
     @Override
-    public void pay(String playerUUID, double amount) {
+    public void payIn(String playerUUID, double amount) {
         //Pay a fraction of the amount into each holding proportional to its share
         for (Holding h : holdings) {
             //Multiply the amount by the fractional share
@@ -41,9 +42,21 @@ public class HoldingsAccount extends Account {
     }
 
     @Override
-    public boolean withdraw(String playerUUID, double amount) {
+    public boolean payOut(String playerUUID, double amount) {
         //It is not possible to withdraw from a holdings account
         return false;
+    }
+
+    //Withdraws an amount from a player's holding
+    public boolean withdraw(String player, double amount) {
+        var h = getPlayerHolding(player);
+        if (h.isPresent()) {
+            //Try and withdraw that amount
+            return h.get().withdraw(amount);
+        } else {
+            //There is no holding for this player
+            return false;
+        }
     }
 
     @Override
@@ -55,8 +68,28 @@ public class HoldingsAccount extends Account {
         return total;
     }
 
-    public boolean AddHolding(String player, double share) {
-        Holding h;
-        return false;
+    //Returns true if holding added
+    // Else returns false
+    public boolean addHolding(String player, double share) {
+        //Don't allow duplicate holdings
+        if (getPlayerHolding(player).isPresent()) return false;
+        if (share > 0) {
+            holdings.add(new Holding(player, share));
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+    public boolean removeHolding(String player) {
+        var h = getPlayerHolding(player);
+        if (h.isPresent()) {
+            holdings.remove(h.get());
+            //todo: pay the player the money in the holding
+            h.get().withdraw(h.get().getBalance());
+            return true;
+        } else {
+            return false;
+        }
     }
 }
