@@ -1,5 +1,6 @@
 package nl.tychovi.stonks.command;
 
+import net.milkbowl.vault.chat.Chat;
 import nl.tychovi.stonks.util.DatabaseConnector;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,6 +35,7 @@ public class CommandCompany implements CommandExecutor {
             return listCompanies(sender);
         }
 
+        sender.sendMessage(ChatColor.RED + "Not like that PLACEHOLDER");
         return true;
     }
 
