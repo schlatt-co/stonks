@@ -11,13 +11,13 @@ public class CompanyAccount extends Account {
     }
 
     @Override
-    public void payIn(String playerUUID, double amount) {
+    public void pay(String playerUUID, double amount) {
         //todo: create a transaction history for this
         balance += amount;
     }
 
     @Override
-    public boolean payOut(String playerUUID, double amount) {
+    public boolean withdraw(String playerUUID, double amount) {
         //todo: create a transaction history for this
         if (balance < amount) return false;
         balance -= amount;
