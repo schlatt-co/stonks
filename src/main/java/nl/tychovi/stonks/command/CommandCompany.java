@@ -41,7 +41,7 @@ public class CommandCompany implements CommandExecutor {
                     return false;
                 }
             case "list":
-                return true;//   return listCompanies(sender);
+                return listCompanies(sender);
             case "addaccount":
                 if (args[1] != null) {
                     String newName = "";

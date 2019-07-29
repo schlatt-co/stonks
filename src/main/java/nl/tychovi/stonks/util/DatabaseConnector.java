@@ -64,7 +64,7 @@ public class DatabaseConnector {
                         " `name` VARCHAR(64) NOT NULL ," +
                         " `creator_uuid` VARCHAR(36) NOT NULL ," +
                         " `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , " +
-                        " PRIMARY KEY (`id`), UNIQUE (`name`))");
+                        " PRIMARY KEY (`id`), UNIQUE (`name`))", false);
         //Account table
         noReturnStmt(
                 "CREATE TABLE IF NOT EXISTS `account` (" +
@@ -77,7 +77,7 @@ public class DatabaseConnector {
                         " KEY `fk_company_id` (`fk_company_id`)," +
                         " CONSTRAINT `account_ibfk_1` FOREIGN KEY (`fk_company_id`) REFERENCES `company` " +
                         "(`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
-                        ")");
+                        ")", false);
         //Company account table
         noReturnStmt(
                 "CREATE TABLE `company_account` (" +
@@ -88,7 +88,7 @@ public class DatabaseConnector {
                         " KEY `fk_account_id` (`fk_account_id`)," +
                         " CONSTRAINT `company_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` " +
                         "(`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
-                        ")");
+                        ")", false);
         //Holdings account table
         noReturnStmt(
                 "CREATE TABLE `holdings_account` (" +
@@ -98,7 +98,7 @@ public class DatabaseConnector {
                         "  KEY `fk_account_id` (`fk_account_id`)," +
                         "  CONSTRAINT `holdings_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` " +
                         "(`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
-                        ")");
+                        ")", false);
         //Holdings table
         noReturnStmt(
                 "CREATE TABLE `holding` (" +
@@ -111,7 +111,7 @@ public class DatabaseConnector {
                         " KEY `fk_holdings_account_id` (`fk_holdings_account_id`)," +
                         " CONSTRAINT `holding_ibfk_1` FOREIGN KEY (`fk_holdings_account_id`) REFERENCES `holdings_account` " +
                         "(`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
-                        ")");
+                        ")", false);
     }
 
 
@@ -119,13 +119,13 @@ public class DatabaseConnector {
         return connection;
     }
 
-    public void noReturnStmt(String sql) {
+    public void noReturnStmt(String sql, boolean shouldThrow) {
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             // I use executeUpdate() to update the databases table.
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+           if (shouldThrow) e.printStackTrace();
         }
     }
 
@@ -353,6 +353,7 @@ public class DatabaseConnector {
     }
 
     public List<Account> getAccountsForCompany(Company c) {
+        //todo replace with an inner join
         try {
             //Get all the account bases
             List<Account> accounts = new ArrayList<>();
@@ -363,9 +364,9 @@ public class DatabaseConnector {
                 stmt.setInt(1, c.id());
                 baseResults = stmt.executeQuery();
             }
-            int baseId = baseResults.getInt("id");
             //For each account base class, find a subclass
             while (baseResults.next()) {
+                int baseId = baseResults.getInt("id");
                 //First try and find a company account
                 ResultSet companyAccountResults;
                 {
@@ -377,7 +378,7 @@ public class DatabaseConnector {
                 if (companyAccountResults.next()) {
                     accounts.add(new CompanyAccount(
                             companyAccountResults.getInt("id"),
-                            companyAccountResults.getString("name"),
+                            baseResults.getString("name"),
                             companyAccountResults.getDouble("balance")
                     ));
                 } else {
@@ -392,7 +393,7 @@ public class DatabaseConnector {
                     if (holdingsAccountResults.next()) {
                         HoldingsAccount holdingsAccount = new HoldingsAccount(
                                 companyAccountResults.getInt("id"),
-                                companyAccountResults.getString("name")
+                                baseResults.getString("name")
                         );
 
                         //Now add all holdings for this holdings account
