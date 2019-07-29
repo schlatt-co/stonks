@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class DatabaseConnector {
 
@@ -410,7 +411,7 @@ public class DatabaseConnector {
                         while (holdingResults.next()) {
                             holdingsAccount.addHolding(new Holding(
                                     holdingResults.getInt("id"),
-                                    holdingResults.getString("player_uuid"),
+                                    UUID.fromString(holdingResults.getString("player_uuid")),
                                     holdingResults.getDouble("share"),
                                     holdingResults.getDouble("balance")
                             ));

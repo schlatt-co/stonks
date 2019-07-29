@@ -67,9 +67,10 @@ public class HoldingsAccountGUI implements InventoryProvider {
         account.getHoldings().forEach(h->{
             ItemStack s = new ItemStack(Material.BOOK);
             ItemMeta meta = s.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + "[$" + h.getBalance() + ", "+ (h.getShare() / totalShare) * 100 +"%]");
+            meta.setDisplayName(ChatColor.GOLD + "["+ ChatColor.GREEN + "$"  + h.getBalance() + ChatColor.GOLD +
+                    ", "+ (h.getShare() / totalShare) * 100 +"%]");
             List<String> lore = new ArrayList<>();
-            lore.add(Bukkit.getOfflinePlayer( h.getPlayer_uuid()).getName());
+            lore.add(Bukkit.getOfflinePlayer(h.getPlayer_uuid()).getName());
             meta.setLore(lore);
             s.setItemMeta(meta);
 

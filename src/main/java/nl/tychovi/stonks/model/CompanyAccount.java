@@ -1,5 +1,7 @@
 package nl.tychovi.stonks.model;
 
+import java.util.UUID;
+
 ///The company account is simply a balance that can be paid into and out of
 public class CompanyAccount extends Account {
 
@@ -12,13 +14,13 @@ public class CompanyAccount extends Account {
     }
 
     @Override
-    public void payIn(String playerUUID, double amount) {
+    public void payIn(UUID playerUUID, double amount) {
         //todo: create a transaction history for this
         balance += amount;
     }
 
     @Override
-    public boolean payOut(String playerUUID, double amount) {
+    public boolean payOut(UUID playerUUID, double amount) {
         //todo: create a transaction history for this
         if (balance < amount) return false;
         balance -= amount;

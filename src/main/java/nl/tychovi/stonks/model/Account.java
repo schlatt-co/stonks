@@ -1,5 +1,7 @@
 package nl.tychovi.stonks.model;
 
+import java.util.UUID;
+
 public abstract class Account extends Entity {
     public Account(int id, String name) {
         super(id);
@@ -21,9 +23,9 @@ public abstract class Account extends Entity {
     }
 
     //Add money to the account
-    public abstract void payIn(String playerUUID, double amount);
+    public abstract void payIn(UUID playerUUID, double amount);
     //Withdraw money from the account (to pay someone / another company)
-    public abstract boolean payOut(String playerUUID, double amount);
+    public abstract boolean payOut(UUID playerUUID, double amount);
     //See the total quantity of money in the account
     public abstract double getBalance();
 

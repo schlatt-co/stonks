@@ -10,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 public class Stonks extends JavaPlugin {
     private Connection connection;
     private DataStore store;
@@ -24,7 +26,6 @@ public class Stonks extends JavaPlugin {
         DatabaseConnector connector = new DatabaseConnector(this);
         store = new DataStore(connector);
         this.getCommand("company").setExecutor(new CommandCompany(store, invManager));
-        Bukkit.getOfflinePlayer()
     }
 
     @Override
