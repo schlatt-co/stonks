@@ -1,8 +1,10 @@
 package nl.tychovi.stonks.model;
 
-public abstract class Account {
-    public Account(String name) {
+public abstract class Account extends Entity {
+    public Account(int id, String name) {
+        super(id);
         this.name = name;
+
     }
     String name;
 
@@ -25,5 +27,6 @@ public abstract class Account {
     //See the total quantity of money in the account
     public abstract double getBalance();
 
+    public abstract void accept(IAccountVisitor visitor);
 
 }

@@ -6,11 +6,14 @@ import java.util.List;
 
 public class HoldingsAccount extends Account {
 
-    private List<Holding> holdings = new ArrayList<Holding>();
+    private List<Holding> holdings = new ArrayList<>();
 
-    public HoldingsAccount(String name, Holding firstHolding) {
-        super(name);
+    public HoldingsAccount(int id, String name, Holding firstHolding) {
+        super(id, name);
         holdings.add(firstHolding);
+    }
+    public HoldingsAccount(int id, String name) {
+        super(id, name);
     }
 
     private double getTotalShare() {
@@ -67,16 +70,19 @@ public class HoldingsAccount extends Account {
         return total;
     }
 
+    @Override
+    public void accept(IAccountVisitor visitor) {
+        visitor.visit(this);
+    }
+
     //Returns true if holding added
     // Else returns false
-    public boolean addHolding(String player, double share) {
-        //Don't allow duplicate holdings
-        if (getPlayerHolding(player) != null) return false;
-        if (share > 0) {
-            holdings.add(new Holding(player, share));
-            return true;
-        } else {
+    public boolean addHolding(Holding h) {
+        if (holdings.contains(h)) {
             return false;
+        } else {
+            holdings.add(h);
+            return true;
         }
 
     }
@@ -85,10 +91,14 @@ public class HoldingsAccount extends Account {
         if (h != null) {
             holdings.remove(h);
             //todo: pay the player the money in the holding
+            //todo: handle holding deleted in database
             h.withdraw(h.getBalance());
             return true;
         } else {
             return false;
         }
+    }
+    public List<Holding> getHoldings() {
+        return holdings;
     }
 }

@@ -6,8 +6,9 @@ public class CompanyAccount extends Account {
 
     double balance;
 
-    public CompanyAccount(String name) {
-        super(name);
+    public CompanyAccount(int id, String name, double balance) {
+        super(id, name);
+        this.balance = balance;
     }
 
     @Override
@@ -27,5 +28,10 @@ public class CompanyAccount extends Account {
     @Override
     public double getBalance() {
         return balance;
+    }
+
+    @Override
+    public void accept(IAccountVisitor visitor) {
+        visitor.visit(this);
     }
 }

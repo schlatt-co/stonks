@@ -2,6 +2,7 @@ package nl.tychovi.stonks;
 
 import com.mysql.jdbc.Connection;
 import nl.tychovi.stonks.command.CommandCompany;
+import nl.tychovi.stonks.util.DataStore;
 import nl.tychovi.stonks.util.DatabaseConnector;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Stonks extends JavaPlugin {
     private Connection connection;
+    private DataStore store;
 
     @Override
     public void onEnable() {
@@ -18,8 +20,8 @@ public class Stonks extends JavaPlugin {
         FileConfiguration config = this.getConfig();
 
         DatabaseConnector connector = new DatabaseConnector(this);
-
-        this.getCommand("company").setExecutor(new CommandCompany(connector));
+        store = new DataStore(connector);
+        this.getCommand("company").setExecutor(new CommandCompany(store));
     }
 
     @Override
