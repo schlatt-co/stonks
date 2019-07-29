@@ -50,8 +50,52 @@ public class DatabaseConnector {
             return;
         }
 
-        noReturnStmt("CREATE TABLE IF NOT EXISTS `company` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`name`))");
-
+        noReturnStmt(
+                "CREATE TABLE IF NOT EXISTS `company` ("+
+                        " `id` INT NOT NULL AUTO_INCREMENT ,"+
+                        " `name` VARCHAR(64) NOT NULL ,"+
+                        " `creator_uuid` VARCHAR(36) NOT NULL ,"+
+                        " `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , "+
+                        " PRIMARY KEY (`id`), UNIQUE (`name`))");
+        noReturnStmt(
+                "CREATE TABLE IF NOT EXISTS `account` ("+
+                        " `id` INT NOT NULL AUTO_INCREMENT ,"+
+                        " `fk_company_id` INT NOT NULL ,"+
+                        " `name` VARCHAR(64) NOT NULL ,"+
+                        " `creator_uuid` VARCHAR(36) NOT NULL ,"+
+                        " `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , "+
+                        " PRIMARY KEY (`id`), UNIQUE (`name`)," +
+                        " KEY `fk_company_id` (`fk_company_id`),"+
+                        " CONSTRAINT `account_ibfk_1` FOREIGN KEY (`fk_company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE ON UPDATE CASCADE"+
+                        ")");
+        noReturnStmt(
+                "CREATE TABLE `company_account` (" +
+                " `id` int(11) NOT NULL AUTO_INCREMENT," +
+                " `fk_account_id` int(11) NOT NULL," +
+                " `balance` double NOT NULL DEFAULT '0'," +
+                " PRIMARY KEY (`id`)," +
+                " KEY `fk_account_id` (`fk_account_id`)," +
+                " CONSTRAINT `company_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")");
+        noReturnStmt(
+                "CREATE TABLE `holdings_account` (" +
+                "  `id` int(11) NOT NULL AUTO_INCREMENT," +
+                "  `fk_account_id` int(11) NOT NULL," +
+                "  PRIMARY KEY (`id`)," +
+                "  KEY `fk_account_id` (`fk_account_id`)," +
+                "  CONSTRAINT `holdings_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")");
+        noReturnStmt(
+                "CREATE TABLE `holding` (" +
+                " `id` int(11) NOT NULL AUTO_INCREMENT," +
+                " `fk_holdings_account_id` int(11) NOT NULL," +
+                " `player_uuid` varchar(36) NOT NULL," +
+                " `share` double NOT NULL," +
+                " `balance` double NOT NULL," +
+                " PRIMARY KEY (`id`)," +
+                " KEY `fk_holdings_account_id` (`fk_holdings_account_id`)," +
+                " CONSTRAINT `holding_ibfk_1` FOREIGN KEY (`fk_holdings_account_id`) REFERENCES `holdings_account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")");
     }
 
     public Connection getConnection() {
@@ -67,6 +111,22 @@ public class DatabaseConnector {
             e.printStackTrace();
         }
     }
+
+    public  Boolean createAccount(String name, String creator_uuid) {
+        try {
+            String sql = "INSERT INTO account(name, creator_uuid) VALUES (?, ?);";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setString(2, creator_uuid);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
     public Boolean createCompany(String name, String creator_uuid) {
         try {
