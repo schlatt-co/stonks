@@ -10,8 +10,5 @@
         <module name="stonks" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="stonks" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>

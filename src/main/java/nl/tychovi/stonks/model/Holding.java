@@ -4,15 +4,15 @@ package nl.tychovi.stonks.model;
 // This is done by ratio ( share1 : share2 : ...) so percentages do not need to be saved
 // A player can withdraw as much money as is in the holding
 public class Holding extends Entity {
-    String player;
+    String player_uuid;
     double balance;
     double share;
 
-    public Holding(int id, String player, double share, double balance) {
+    public Holding(int id, String player_uuid, double share, double balance) {
         super(id);
-        if (player == null) throw new IllegalArgumentException("Player string was blank");
+        if (player_uuid == null) throw new IllegalArgumentException("Player string was blank");
         if (share <= 0) throw new IllegalArgumentException("The holding share cannot be <= 0");
-        this.player = player;
+        this.player_uuid = player_uuid;
         this.share = share;
         this.balance = balance;
     }
@@ -41,6 +41,8 @@ public class Holding extends Entity {
     public double getBalance() {
         return balance;
     }
-
+    public String getPlayer_uuid() {
+        return player_uuid;
+    }
 
 }

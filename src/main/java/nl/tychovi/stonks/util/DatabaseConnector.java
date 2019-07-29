@@ -367,6 +367,7 @@ public class DatabaseConnector {
             //For each account base class, find a subclass
             while (baseResults.next()) {
                 int baseId = baseResults.getInt("id");
+                System.out.println("Base class ID: " + baseId);
                 //First try and find a company account
                 ResultSet companyAccountResults;
                 {
@@ -381,18 +382,20 @@ public class DatabaseConnector {
                             baseResults.getString("name"),
                             companyAccountResults.getDouble("balance")
                     ));
+                    System.out.println("^^ this is a company account");
                 } else {
                     //Otherwise there is a holdings account subclass
                     ResultSet holdingsAccountResults;
                     {
-                        String sql = "SELECT * FROM company_account WHERE fk_account_id = ?";
+                        String sql = "SELECT * FROM holdings_account WHERE fk_account_id = ?";
                         PreparedStatement stmt = connection.prepareStatement(sql);
                         stmt.setInt(1, baseId);
                         holdingsAccountResults = stmt.executeQuery();
                     }
                     if (holdingsAccountResults.next()) {
+                        System.out.println("^^ this is a holdings account");
                         HoldingsAccount holdingsAccount = new HoldingsAccount(
-                                companyAccountResults.getInt("id"),
+                                holdingsAccountResults.getInt("id"),
                                 baseResults.getString("name")
                         );
 
@@ -416,6 +419,7 @@ public class DatabaseConnector {
                         accounts.add(holdingsAccount);
 
                     } else {
+                        System.out.println("^^ this is a unknown account");
                         //Big error we have no child class
                     }
 

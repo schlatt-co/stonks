@@ -1,6 +1,5 @@
 package nl.tychovi.stonks.model;
 
-import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class HoldingsAccount extends Account {
         super(id, name);
     }
 
-    private double getTotalShare() {
+    public double getTotalShare() {
         double total = 0;
         for (Holding h : holdings) {
             total += h.getShare();
@@ -27,7 +26,7 @@ public class HoldingsAccount extends Account {
     //Returns the holding for the player entered, if none is found then return nothing
     private Holding getPlayerHolding(String player) {
         for (Holding h: holdings){
-            if (h.player.equals(player)) {
+            if (h.player_uuid.equals(player)) {
                 return h;
             }
         }

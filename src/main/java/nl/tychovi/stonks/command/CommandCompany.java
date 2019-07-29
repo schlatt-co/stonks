@@ -1,10 +1,11 @@
 package nl.tychovi.stonks.command;
 
-import net.milkbowl.vault.chat.Chat;
+import fr.minuskube.inv.InventoryManager;
+import fr.minuskube.inv.SmartInventory;
+import nl.tychovi.stonks.gui.CompanySelectorGUI;
 import nl.tychovi.stonks.model.Account;
 import nl.tychovi.stonks.model.Company;
 import nl.tychovi.stonks.util.DataStore;
-import nl.tychovi.stonks.util.DatabaseConnector;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,9 +15,11 @@ import org.bukkit.entity.Player;
 public class CommandCompany implements CommandExecutor {
 
     private DataStore store;
+    private InventoryManager manager;
 
-    public CommandCompany(DataStore store) {
+    public CommandCompany(DataStore store, InventoryManager manager) {
         this.store = store;
+        this.manager = manager;
     }
 
     @Override
@@ -26,7 +29,19 @@ public class CommandCompany implements CommandExecutor {
             return true;
         }
 
+
         switch (args[0].toLowerCase()) {
+            case "edit":
+                SmartInventory INVENTORY = SmartInventory.builder()
+                        .id("customInventory")
+                        .provider(new CompanySelectorGUI(store))
+                        .manager(manager)
+                        .size(4, 9)
+                        .title(ChatColor.YELLOW + "Company Edit")
+                        .closeable(true)
+                        .build();
+                INVENTORY.open((Player) sender);
+                return true;
             case "create":
                 if (args[1] != null) {
                     if (createCompany(args[1], sender)) {
@@ -60,8 +75,7 @@ public class CommandCompany implements CommandExecutor {
                     }
                     if (args[1].toLowerCase().equals("holding")) {
 
-                    } else
-                    if (args[1].toLowerCase().equals("company")) {
+                    } else if (args[1].toLowerCase().equals("company")) {
                         Company c = store.getCompanyByName(companyName);
                         String uuid = ((Player) sender).getUniqueId().toString();
                         if (c == null) {
@@ -82,6 +96,8 @@ public class CommandCompany implements CommandExecutor {
 
         sender.sendMessage(ChatColor.RED + "Not like that PLACEHOLDER");
         return true;
+
+
     }
 
     private Boolean createCompany(String name, CommandSender sender) {
