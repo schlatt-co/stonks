@@ -3,6 +3,7 @@ package nl.tychovi.stonks;
 import com.mysql.jdbc.Connection;
 import fr.minuskube.inv.InventoryManager;
 import nl.tychovi.stonks.command.CommandCompany;
+import nl.tychovi.stonks.listener.SignCreateTakeover;
 import nl.tychovi.stonks.util.DataStore;
 import nl.tychovi.stonks.util.DatabaseConnector;
 import org.bstats.bukkit.Metrics;
@@ -26,6 +27,7 @@ public class Stonks extends JavaPlugin {
         DatabaseConnector connector = new DatabaseConnector(this);
         store = new DataStore(connector);
         this.getCommand("company").setExecutor(new CommandCompany(store, invManager));
+        getServer().getPluginManager().registerEvents(new SignCreateTakeover(), this);
     }
 
     @Override
