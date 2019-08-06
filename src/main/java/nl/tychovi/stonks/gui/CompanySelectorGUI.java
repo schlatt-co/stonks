@@ -19,70 +19,74 @@ import java.util.List;
 
 
 public class CompanySelectorGUI implements InventoryProvider {
-    private ItemStack namedItem(ItemStack s, String name) {
-        ItemMeta meta = s.getItemMeta();
-        meta.setDisplayName(name);
-        s.setItemMeta(meta);
-        return s;
-    }
+  private ItemStack namedItem(ItemStack s, String name) {
+    ItemMeta meta = s.getItemMeta();
+    meta.setDisplayName(name);
+    s.setItemMeta(meta);
+    return s;
+  }
 
-    private ItemStack namedItem(Material m, String name) {
-        ItemStack s = new ItemStack(m);
-        ItemMeta meta = s.getItemMeta();
-        meta.setDisplayName(name);
-        s.setItemMeta(meta);
-        return s;
+  private ItemStack namedItem(Material m, String name) {
+    ItemStack s = new ItemStack(m);
+    ItemMeta meta = s.getItemMeta();
+    meta.setDisplayName(name);
+    s.setItemMeta(meta);
+    return s;
 
-    }
-    DataStore store;
-    SmartInventory inventory;
-    public CompanySelectorGUI(DataStore store) {
-        this.store = store;
-    }
-    @Override
-    public void init(Player player, InventoryContents contents) {
-        Pagination pagination = contents.pagination();
+  }
 
-        List<ClickableItem> companyItems = new ArrayList<>();
-        ClickableItem[] items = new ClickableItem[store.getCompanies().size()];
-        for (int i = 0; i < items.length; i++) {
-            Company c = store.getCompanies().get(i);
-            ItemStack item = new ItemStack(Material.PAPER);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(c.getName());
-            item.setItemMeta(meta);
-            items[i] = ClickableItem.of(item, e->{
-                SmartInventory inv = SmartInventory.builder()
-                        .provider(new CompanyGUI(c))
-                        .manager(contents.inventory().getManager())
-                        .title(ChatColor.YELLOW + "Company View")
-                        .parent(this.inventory)
-                        .build();
-                inv.open(player);
-            });
-        }
+  DataStore store;
+  SmartInventory inventory;
 
-        contents.fillBorders(ClickableItem.empty(namedItem(Material.GRAY_STAINED_GLASS_PANE, " ")));
-        pagination.setItems(items);
-        pagination.setItemsPerPage(2);
-        pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 1));
+  public CompanySelectorGUI(DataStore store) {
+    this.store = store;
+  }
 
+  @Override
+  public void init(Player player, InventoryContents contents) {
+    Pagination pagination = contents.pagination();
+
+    List<ClickableItem> companyItems = new ArrayList<>();
+    ClickableItem[] items = new ClickableItem[store.getCompanies().size()];
+    for (int i = 0; i < items.length; i++) {
+      Company c = store.getCompanies().get(i);
+      ItemStack item = new ItemStack(Material.PAPER);
+      ItemMeta meta = item.getItemMeta();
+      meta.setDisplayName(c.getName());
+      item.setItemMeta(meta);
+      items[i] = ClickableItem.of(item, e -> {
         SmartInventory inv = SmartInventory.builder()
-                .provider(this)
-                .manager(contents.inventory().getManager())
-                .size(4, 9)
-                .title(ChatColor.YELLOW + "Company Edit")
-                .build();
-
-        contents.set(2, 3, ClickableItem.of(new ItemStack(Material.ARROW),
-                e -> inv.open(player, pagination.previous().getPage())));
-        contents.set(2, 5, ClickableItem.of(new ItemStack(Material.ARROW),
-                e -> inv.open(player, pagination.next().getPage())));
-
+            .provider(new CompanyGUI(c))
+            .manager(contents.inventory().getManager())
+            .title(ChatColor.YELLOW + "Company View")
+            .parent(this.inventory)
+            .build();
+        inv.open(player);
+      });
     }
 
+    contents.fillBorders(ClickableItem.empty(namedItem(Material.GRAY_STAINED_GLASS_PANE, " ")));
+    pagination.setItems(items);
+    pagination.setItemsPerPage(2);
+    pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 1));
 
-    @Override
-    public void update(Player player, InventoryContents contents) {}
+    SmartInventory inv = SmartInventory.builder()
+        .provider(this)
+        .manager(contents.inventory().getManager())
+        .size(4, 9)
+        .title(ChatColor.YELLOW + "Company Edit")
+        .build();
+
+    contents.set(2, 3, ClickableItem.of(new ItemStack(Material.ARROW),
+        e -> inv.open(player, pagination.previous().getPage())));
+    contents.set(2, 5, ClickableItem.of(new ItemStack(Material.ARROW),
+        e -> inv.open(player, pagination.next().getPage())));
+
+  }
+
+
+  @Override
+  public void update(Player player, InventoryContents contents) {
+  }
 
 }

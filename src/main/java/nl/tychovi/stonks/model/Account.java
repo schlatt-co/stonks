@@ -3,32 +3,36 @@ package nl.tychovi.stonks.model;
 import java.util.UUID;
 
 public abstract class Account extends Entity {
-    public Account(int id, String name) {
-        super(id);
-        this.name = name;
+  public Account(int id, String name) {
+    super(id);
+    this.name = name;
 
+  }
+
+  String name;
+
+  public String getName() {
+    return name;
+  }
+
+  public boolean setName(String name) {
+    //Don't allow blank names
+    if (name == null) {
+      return false;
     }
-    String name;
+    this.name = name;
+    return true;
+  }
 
-    public String getName() {
-        return name;
-    }
-    public boolean setName(String name) {
-        //Don't allow blank names
-        if (name == null) {
-            return false;
-        }
-        this.name = name;
-        return true;
-    }
+  //Add money to the account
+  public abstract void payIn(UUID playerUUID, double amount);
 
-    //Add money to the account
-    public abstract void payIn(UUID playerUUID, double amount);
-    //Withdraw money from the account (to pay someone / another company)
-    public abstract boolean payOut(UUID playerUUID, double amount);
-    //See the total quantity of money in the account
-    public abstract double getBalance();
+  //Withdraw money from the account (to pay someone / another company)
+  public abstract boolean payOut(UUID playerUUID, double amount);
 
-    public abstract void accept(IAccountVisitor visitor);
+  //See the total quantity of money in the account
+  public abstract double getBalance();
+
+  public abstract void accept(IAccountVisitor visitor);
 
 }
