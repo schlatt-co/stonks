@@ -1,40 +1,37 @@
 package nl.tychovi.stonks;
 
-import com.mysql.jdbc.Connection;
-import fr.minuskube.inv.InventoryManager;
-import nl.tychovi.stonks.command.CommandCompany;
-import nl.tychovi.stonks.listener.SignCreateTakeover;
-import nl.tychovi.stonks.util.DataStore;
-import nl.tychovi.stonks.util.DatabaseConnector;
-import org.bstats.bukkit.Metrics;
-import org.bukkit.configuration.file.FileConfiguration;
+import nl.tychovi.stonks.managers.DatabaseManager;
+import nl.tychovi.stonks.managers.ShopManager;
+import nl.tychovi.stonks.managers.SpigotModule;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Stonks extends JavaPlugin {
-  private Connection connection;
-  private DataStore store;
+
+  private List<SpigotModule> loadedModules = new ArrayList<>();
 
   @Override
   public void onEnable() {
-    Metrics metrics = new Metrics(this);
-    InventoryManager invManager = new InventoryManager(this);
-    invManager.init();
-    this.saveDefaultConfig();
-    FileConfiguration config = this.getConfig();
-    DatabaseConnector connector = new DatabaseConnector(this);
-    store = new DataStore(connector);
-    this.getCommand("company").setExecutor(new CommandCompany(store, invManager));
-    getServer().getPluginManager().registerEvents(new SignCreateTakeover(), this);
+    getConfig().addDefault("mysql.username", "");
+    getConfig().addDefault("mysql.password", "");
+    getConfig().options().copyDefaults(true);
+    saveConfig();
+    reloadConfig();
+
+    loadedModules.add(new DatabaseManager(this));
+    loadedModules.add(new ShopManager(this));
+
+    for (SpigotModule module : loadedModules) {
+      module.onEnable();
+    }
   }
 
   @Override
   public void onDisable() {
-    try { //using a try catch to catch connection errors (like wrong sql password...)
-      if (connection != null && !connection.isClosed()) { //checking if connection isn't null to avoid receiving a nullpointer
-        connection.close(); //closing the connection field variable.
-      }
-    } catch (Exception e) {
-      //e.printStackTrace();
+    for (SpigotModule module : loadedModules) {
+      module.onDisable();
     }
   }
 }

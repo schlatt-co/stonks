@@ -6,16 +6,13 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
+import nl.tychovi.stonks.managers.DatabaseManager;
 import nl.tychovi.stonks.model.Company;
-import nl.tychovi.stonks.util.DataStore;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class CompanySelectorGUI implements InventoryProvider {
@@ -35,21 +32,20 @@ public class CompanySelectorGUI implements InventoryProvider {
 
   }
 
-  DataStore store;
-  SmartInventory inventory;
+  private DatabaseManager databaseManager;
+  private SmartInventory inventory;
 
-  public CompanySelectorGUI(DataStore store) {
-    this.store = store;
+  public CompanySelectorGUI(DatabaseManager databaseManager) {
+    this.databaseManager = databaseManager;
   }
 
   @Override
   public void init(Player player, InventoryContents contents) {
     Pagination pagination = contents.pagination();
 
-    List<ClickableItem> companyItems = new ArrayList<>();
-    ClickableItem[] items = new ClickableItem[store.getCompanies().size()];
+    ClickableItem[] items = new ClickableItem[databaseManager.getCachedCompanies().size()];
     for (int i = 0; i < items.length; i++) {
-      Company c = store.getCompanies().get(i);
+      Company c = databaseManager.getCachedCompanies().get(i);
       ItemStack item = new ItemStack(Material.PAPER);
       ItemMeta meta = item.getItemMeta();
       meta.setDisplayName(c.getName());

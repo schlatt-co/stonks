@@ -4,6 +4,7 @@ main: nl.tychovi.stonks.Stonks
 authors:
   - TychoVI
   - Tsarcasm
+  - JRoy
 depend:
   - Vault
 commands:
