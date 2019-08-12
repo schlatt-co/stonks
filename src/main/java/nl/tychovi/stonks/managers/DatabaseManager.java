@@ -1,6 +1,7 @@
 package nl.tychovi.stonks.managers;
 
 import fr.minuskube.inv.InventoryManager;
+import nl.tychovi.stonks.Stonks;
 import nl.tychovi.stonks.command.CommandCompany;
 import nl.tychovi.stonks.model.*;
 import nl.tychovi.stonks.util.Constants;
@@ -21,7 +22,7 @@ public class DatabaseManager extends SpigotModule {
   private List<Entity> entities = new ArrayList<>();
   private List<Company> companies = new ArrayList<>();
 
-  public DatabaseManager(JavaPlugin plugin) {
+  public DatabaseManager(Stonks plugin) {
     super("Database Manager", plugin);
   }
 
@@ -32,14 +33,14 @@ public class DatabaseManager extends SpigotModule {
       invManager.init();
       try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection("jdbc:mysql://" + Constants.databaseHost + ":" + Constants.databasePort + "/" + Constants.databaseName + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT",
+        connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getConfig().getString("mysql.host") + ":" + plugin.getConfig().getString("mysql.port") + "/" + plugin.getConfig().getString("mysql.database") + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=" + plugin.getConfig().getString("mysql.ssl"),
             plugin.getConfig().getString("mysql.username"),
             plugin.getConfig().getString("mysql.password"));
-        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `company` (`id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), UNIQUE (`name`))");
-        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `account` (`id` INT NOT NULL AUTO_INCREMENT , `fk_company_id` INT NOT NULL , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), UNIQUE (`name`), KEY `fk_company_id` (`fk_company_id`), CONSTRAINT `account_ibfk_1` FOREIGN KEY (`fk_company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
-        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `company_account` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_account_id` int(11) NOT NULL, `balance` double NOT NULL DEFAULT '0', PRIMARY KEY (`id`), KEY `fk_account_id` (`fk_account_id`), CONSTRAINT `company_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
-        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `holdings_account` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_account_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `fk_account_id` (`fk_account_id`), CONSTRAINT `holdings_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
-        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `holding` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_holdings_account_id` int(11) NOT NULL, `player_uuid` varchar(36) NOT NULL, `share` double NOT NULL, `balance` double NOT NULL, PRIMARY KEY (`id`), KEY `fk_holdings_account_id` (`fk_holdings_account_id`), CONSTRAINT `holding_ibfk_1` FOREIGN KEY (`fk_holdings_account_id`) REFERENCES `holdings_account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
+        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `company` (`id` VARCHAR(36) NOT NULL , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , UNIQUE (`id`), UNIQUE (`name`))");
+//        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `account` (`id` INT NOT NULL AUTO_INCREMENT , `fk_company_id` INT NOT NULL , `name` VARCHAR(64) NOT NULL , `creator_uuid` VARCHAR(36) NOT NULL , `creation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), UNIQUE (`name`), KEY `fk_company_id` (`fk_company_id`), CONSTRAINT `account_ibfk_1` FOREIGN KEY (`fk_company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
+//        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `company_account` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_account_id` int(11) NOT NULL, `balance` double NOT NULL DEFAULT '0', PRIMARY KEY (`id`), KEY `fk_account_id` (`fk_account_id`), CONSTRAINT `company_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
+//        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `holdings_account` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_account_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `fk_account_id` (`fk_account_id`), CONSTRAINT `holdings_account_ibfk_1` FOREIGN KEY (`fk_account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
+//        connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS `holding` (`id` int(11) NOT NULL AUTO_INCREMENT, `fk_holdings_account_id` int(11) NOT NULL, `player_uuid` varchar(36) NOT NULL, `share` double NOT NULL, `balance` double NOT NULL, PRIMARY KEY (`id`), KEY `fk_holdings_account_id` (`fk_holdings_account_id`), CONSTRAINT `holding_ibfk_1` FOREIGN KEY (`fk_holdings_account_id`) REFERENCES `holdings_account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)");
       } catch (ClassNotFoundException | SQLException e) {
         log("Error while connecting to MySQL: " + e.getMessage());
         e.printStackTrace();
@@ -90,9 +91,9 @@ public class DatabaseManager extends SpigotModule {
   }
 
   public boolean createCompanyObject(String name, String creator_uuid) {
-    int id = createCompany(name, creator_uuid);
-    if (id == -1) return false;
-    Company newCompany = new Company(id, name);
+    UUID uuid = createCompany(name, creator_uuid);
+    if (uuid == null) return false;
+    Company newCompany = new Company(uuid, name);
     companies.add(newCompany);
     return true;
   }
@@ -198,7 +199,7 @@ public class DatabaseManager extends SpigotModule {
     try {
       PreparedStatement stmt = connection.prepareStatement("UPDATE company SET name = ? WHERE id = ?;");
       stmt.setString(1, c.getName());
-      stmt.setInt(2, c.id());
+      stmt.setString(2, c.id().toString());
       stmt.executeUpdate();
       c.clean();
       return true;
@@ -208,21 +209,18 @@ public class DatabaseManager extends SpigotModule {
     }
   }
 
-  private int createCompany(String name, String creator_uuid) {
+  private UUID createCompany(String name, String creator_uuid) {
     try {
-      PreparedStatement stmt = connection.prepareStatement("INSERT INTO company (name, creator_uuid) VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
-      stmt.setString(1, name);
-      stmt.setString(2, creator_uuid);
+      UUID newUuid = UUID.randomUUID();
+      PreparedStatement stmt = connection.prepareStatement("INSERT INTO company (id, name, creator_uuid) VALUES (?, ?, ?);");
+      stmt.setString(1, newUuid.toString());
+      stmt.setString(2, name);
+      stmt.setString(3, creator_uuid);
       stmt.execute();
-      ResultSet set = stmt.getGeneratedKeys();
-      int id = -1;
-      if (set.next()) {
-        id = set.getInt(1);
-      }
-      return id;
+      return newUuid;
     } catch (SQLException e) {
       e.printStackTrace();
-      return -1;
+      return null;
     }
   }
 
@@ -267,7 +265,7 @@ public class DatabaseManager extends SpigotModule {
   private int createAccountBase(Company company, String name, String creator_uuid) {
     try {
       PreparedStatement stmt = connection.prepareStatement("INSERT INTO account (fk_company_id, name, creator_uuid) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-      stmt.setInt(1, company.id());
+      stmt.setString(1, company.id().toString());
       stmt.setString(2, name);
       stmt.setString(3, creator_uuid);
       ResultSet set = stmt.getGeneratedKeys();
@@ -302,7 +300,7 @@ public class DatabaseManager extends SpigotModule {
       ResultSet set = connection.createStatement().executeQuery("SELECT * FROM company");
       while (set.next()) {
         companies.add(new Company(
-            set.getInt("id"),
+            UUID.fromString(set.getString("uuid")),
             set.getString("name")
         ));
       }
@@ -317,7 +315,7 @@ public class DatabaseManager extends SpigotModule {
     try {
       List<Account> accounts = new ArrayList<>();
       PreparedStatement stmt = connection.prepareStatement("SELECT * FROM account WHERE fk_company_id = ?");
-      stmt.setInt(1, c.id());
+      stmt.setString(1, c.id().toString());
       ResultSet baseResults = stmt.executeQuery();
       while (baseResults.next()) {
         int baseId = baseResults.getInt("id");

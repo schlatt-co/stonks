@@ -2,14 +2,17 @@ package nl.tychovi.stonks.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class Company extends Entity {
+public class Company {
 
   private List<Account> accounts = new ArrayList<>();
   private String name;
+  private UUID uuid;
+  private boolean dirty = false;
 
-  public Company(int id, String name) {
-    super(id);
+  public Company(UUID uuid, String name) {
+    this.uuid = uuid;
     this.name = name;
   }
 
@@ -42,5 +45,17 @@ public class Company extends Entity {
 
   public List<Account> getAccounts() {
     return accounts;
+  }
+
+  public UUID id() {
+    return uuid;
+  }
+
+  public void dirty() {
+    dirty = true;
+  }
+
+  public void clean() {
+    dirty = false;
   }
 }

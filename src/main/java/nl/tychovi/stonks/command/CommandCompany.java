@@ -2,10 +2,12 @@ package nl.tychovi.stonks.command;
 
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
+import nl.tychovi.stonks.Stonks;
 import nl.tychovi.stonks.gui.CompanySelectorGUI;
 import nl.tychovi.stonks.managers.DatabaseManager;
 import nl.tychovi.stonks.model.Account;
 import nl.tychovi.stonks.model.Company;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -82,14 +84,32 @@ public class CommandCompany implements CommandExecutor {
               sender.sendMessage(ChatColor.RED + "That company does not exist");
               return false;
             }
-            if (databaseManager.createCompanyAccountObject(c, newName, uuid)) {
-              sender.sendMessage(ChatColor.GREEN + "Account created!");
-              return true;
-            } else {
-              return false;
-            }
+//            if (databaseManager.createCompanyAccountObject(c, newName, uuid)) {
+//              sender.sendMessage(ChatColor.GREEN + "Account created!");
+//              return true;
+//            } else {
+//              return false;
+//            }
           }
 
+        }
+      case "test":
+        if (args[1] != null) {
+          switch (args[1].toLowerCase()) {
+            case "createbank":
+              Stonks.economy.createBank(args[2], (Player) sender);
+            case "listbanks":
+              for(String bank : Stonks.economy.getBanks()) {
+                Bukkit.broadcastMessage(bank + ": $" + Stonks.economy.bankBalance(bank));
+              }
+            case "supportest":
+              if(Stonks.economy.hasBankSupport()) {
+                Bukkit.broadcastMessage("Yes banks");
+              } else {
+                Bukkit.broadcastMessage("No banks");
+              }
+              break;
+          }
         }
         break;
     }

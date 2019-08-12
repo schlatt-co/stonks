@@ -1,21 +1,44 @@
 package nl.tychovi.stonks.managers;
 
-import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
-import com.Acrobot.ChestShop.Signs.ChestShopSign;
+import com.Acrobot.ChestShop.Database.Account;
+import com.Acrobot.ChestShop.Events.AccountOwnerCheckEvent;
+import com.Acrobot.ChestShop.Events.AccountQueryEvent;
+import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
+import nl.tychovi.stonks.Stonks;
+import nl.tychovi.stonks.model.Company;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ShopManager extends SpigotModule {
 
-  public ShopManager(JavaPlugin plugin) {
+  public ShopManager(Stonks plugin) {
     super("Shop Manager", plugin);
   }
 
   @EventHandler
-  public static void onPreShopCreationTakeover(PreShopCreationEvent event) {
-    String nameLine = event.getSignLine(ChestShopSign.NAME_LINE);
-    if (nameLine.equals("#company")) {
-      event.setSignLine(ChestShopSign.NAME_LINE, "big yeet");
+  public void onAccountQuery(AccountQueryEvent event) {
+    if(event.getName().startsWith("#")) {
+      DatabaseManager databaseManagager = (DatabaseManager) plugin.getModule("Database Manager");
+
+      Company company = databaseManagager.getCompanyByName(event.getName());
+
+      Account CSAccount = new Account("Tycho inc.", "Tycho inc.", company.id());
+      event.setAccount(CSAccount);
+    }
+  }
+
+  @EventHandler
+  public void onAccountCheck(AccountCheckEvent event) {
+
+  }
+
+  @EventHandler
+  public void onOwnEvent(AccountOwnerCheckEvent event) {
+    Bukkit.broadcastMessage("--------------");
+    Bukkit.broadcastMessage("Player: " + event.getPlayer().getName());
+    Bukkit.broadcastMessage("AccountUuid: " + event.getAccount().getName());
+    if(event.getPlayer().getName().equals("TychoVI")) {
+      event.setOutcome(true);
     }
   }
 }

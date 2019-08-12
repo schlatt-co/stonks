@@ -1,5 +1,6 @@
 package nl.tychovi.stonks.managers;
 
+import nl.tychovi.stonks.Stonks;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -7,9 +8,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class SpigotModule implements Listener {
 
   private final String moduleName;
-  final JavaPlugin plugin;
+  final Stonks plugin;
 
-  SpigotModule(String moduleName, JavaPlugin plugin) {
+  SpigotModule(String moduleName, Stonks plugin) {
     this.moduleName = moduleName;
     this.plugin = plugin;
   }
@@ -47,5 +48,9 @@ public abstract class SpigotModule implements Listener {
 
   void log(String message) {
     System.out.println("[CowBot] " + moduleName + "> " + message);
+  }
+
+  public String getModuleName() {
+    return moduleName;
   }
 }
