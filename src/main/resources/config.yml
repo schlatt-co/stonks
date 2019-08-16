@@ -5,3 +5,6 @@ mysql:
   username: YOUR-USERNAME
   password: YOUR-PASSWORD
   ssl: false
+
+fees:
+  companycreation: 100

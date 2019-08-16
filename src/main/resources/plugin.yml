@@ -1,5 +1,6 @@
 name: Stonks
 version: 1.0
+api-version: 1.14
 main: nl.tychovi.stonks.Stonks
 authors:
   - TychoVI

@@ -5,7 +5,6 @@ import com.Acrobot.ChestShop.Events.AccountOwnerCheckEvent;
 import com.Acrobot.ChestShop.Events.AccountQueryEvent;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.model.Company;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 
@@ -18,12 +17,7 @@ public class ShopManager extends SpigotModule {
   @EventHandler
   public void onAccountQuery(AccountQueryEvent event) {
     if(event.getName().startsWith("#")) {
-      DatabaseManager databaseManagager = (DatabaseManager) plugin.getModule("Database Manager");
 
-      Company company = databaseManagager.getCompanyByName(event.getName());
-
-      Account CSAccount = new Account("Tycho inc.", "Tycho inc.", company.id());
-      event.setAccount(CSAccount);
     }
   }
 
@@ -38,7 +32,7 @@ public class ShopManager extends SpigotModule {
     Bukkit.broadcastMessage("Player: " + event.getPlayer().getName());
     Bukkit.broadcastMessage("AccountUuid: " + event.getAccount().getName());
     if(event.getPlayer().getName().equals("TychoVI")) {
-      event.setOutcome(true);
+      event.setCancelled(false);
     }
   }
 }
