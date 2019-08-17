@@ -1,11 +1,9 @@
 package nl.tychovi.stonks.managers;
 
 import com.Acrobot.ChestShop.Database.Account;
-import com.Acrobot.ChestShop.Events.AccountOwnerCheckEvent;
-import com.Acrobot.ChestShop.Events.AccountQueryEvent;
+import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
-import com.Acrobot.ChestShop.Events.PreCurrencyAddEvent;
 import com.Acrobot.ChestShop.Events.Protection.ProtectionCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -22,6 +20,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+
 
 public class ShopManager extends SpigotModule {
 
@@ -30,6 +30,41 @@ public class ShopManager extends SpigotModule {
   public ShopManager(Stonks plugin) {
     super("Shop Manager", plugin);
     databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
+  }
+
+  @EventHandler
+  public void onPreShopCreation(PreShopCreationEvent event) {
+    String accountLine = event.getSignLine(NAME_LINE);
+    if(!accountLine.startsWith("#")) {
+      return;
+    }
+
+    int accountId = 0;
+    if(accountLine.substring(1).matches("[0-9]")) {
+      accountId = Integer.parseInt(accountLine.substring(1));
+    } else if(accountLine.contains("-")) {
+      int indexOfDash = accountLine.indexOf("-");
+      if(accountLine.substring(1, indexOfDash).matches("[0-9]")) {
+        accountId = Integer.parseInt(accountLine.substring(1, indexOfDash));
+      }
+    } else {
+      return;
+    }
+    try {
+      if(databaseManager.getCompanyAccountDao().idExists(accountId)) {
+        CompanyAccount companyAccount = databaseManager.getCompanyAccountDao().queryForId(accountId);
+        UUID accountUuid = companyAccount.getCompany().getId();
+
+        QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
+        queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", accountUuid);
+        List<Member> list = queryBuilder.query();
+        if(list.isEmpty() || list.get(0).getRole().equals(Role.Slave) || !list.get(0).getAcceptedInvite()) {
+          event.setOutcome(PreShopCreationEvent.CreationOutcome.NO_PERMISSION);
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @EventHandler
@@ -47,7 +82,6 @@ public class ShopManager extends SpigotModule {
     } else {
       return;
     }
-
 
     try {
       if(databaseManager.getCompanyAccountDao().idExists(accountId)) {
@@ -124,6 +158,58 @@ public class ShopManager extends SpigotModule {
         event.setCancelled(true);
         companyAccounts.get(0).addBalance(event.getAmountSent().doubleValue());
         databaseManager.getCompanyAccountDao().update(companyAccounts.get(0));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @EventHandler
+  public void onCurrencySubtract(PreCurrencySubtractEvent event) {
+    try {
+      QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
+      queryBuilder.where().eq("uuid", event.getSender());
+      List<CompanyAccount> companyAccounts = null;
+      companyAccounts = queryBuilder.query();
+      if(!companyAccounts.isEmpty()) {
+        if(!companyAccounts.get(0).subtractBalance(event.getAmountSent().doubleValue())) {
+          event.setBalanceSufficient(false);
+        }
+        event.setCancelled(true);
+        databaseManager.getCompanyAccountDao().update(companyAccounts.get(0));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @EventHandler
+  public void onAmountCheck(PreAmountCheckEvent event) {
+    try {
+      QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
+      queryBuilder.where().eq("uuid", event.getAccount());
+      List<CompanyAccount> companyAccounts = null;
+      companyAccounts = queryBuilder.query();
+      if(!companyAccounts.isEmpty()) {
+        event.setCancelled(true);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @EventHandler
+  public void onCurrencyCheck(PreCurrencyCheckEvent event) {
+    try {
+      QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
+      queryBuilder.where().eq("uuid", event.getAccount());
+      List<CompanyAccount> companyAccounts = null;
+      companyAccounts = queryBuilder.query();
+      if(!companyAccounts.isEmpty()) {
+        if(companyAccounts.get(0).getBalance() >= event.getAmountSent().doubleValue()) {
+          event.setHasEnough(true);
+        }
+        event.setCancelled(true);
       }
     } catch (SQLException e) {
       e.printStackTrace();

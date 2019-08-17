@@ -59,4 +59,13 @@ public class CompanyAccount {
     public void addBalance(double amount) {
         balance += amount;
     }
+
+    public Boolean subtractBalance(double amount) {
+        if(amount > balance) {
+            return false;
+        } else {
+            balance -= amount;
+            return true;
+        }
+    }
 }
