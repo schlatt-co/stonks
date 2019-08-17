@@ -3,12 +3,14 @@ package nl.tychovi.stonks.command;
 import com.earth2me.essentials.Essentials;
 import net.ess3.api.IEssentials;
 import nl.tychovi.stonks.Database.Company;
+import nl.tychovi.stonks.Database.CompanyAccount;
 import nl.tychovi.stonks.Database.Member;
 import nl.tychovi.stonks.Database.Role;
 import nl.tychovi.stonks.Stonks;
 import nl.tychovi.stonks.gui.InvitesGui;
 import nl.tychovi.stonks.managers.DatabaseManager;
 import nl.tychovi.stonks.managers.GuiManager;
+import nl.tychovi.stonks.managers.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,16 +48,16 @@ public class CommandCompany implements CommandExecutor {
 
     if(args.length == 0) {
       //add list with all commands here later;
-      player.sendMessage("You used /company!");
+        MessageManager.sendHelpMessage(player);
       return true;
     }
 
     switch (args[0].toLowerCase()) {
         case "create": {
-            if (args[1] != null) {
+            if (!args[1].isEmpty()) {
               return companyCreate(args[1], player);
             } else {
-              player.sendMessage(ChatColor.RED + "Please enter a company name");
+              player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
               return true;
             }
         }
@@ -82,25 +84,25 @@ public class CommandCompany implements CommandExecutor {
             player.sendMessage("----------");
             return true;
         }
-        case "manage": {
-            if (args[1] != null) {
-              switch (args[1].toLowerCase()) {
-                case "invite":
-                  if (args[2] != null && args[3] != null) {
-                    return invitePlayerToCompany(args[2], args[3], player);
-                  } else {
-                    player.sendMessage(ChatColor.RED + "Please specify a player you want to invite and the company you want to invite them to.");
-                  }
-                  break;
-              }
+        case "invite": {
+            if (!args[1].isEmpty() && !args[2].isEmpty()) {
+                return invitePlayerToCompany(args[1], args[2], player);
             } else {
-              //add manage command options here
-              return true;
+                player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
+                return true;
             }
         }
-        break;
+        case "createcompanyaccount": {
+            try {
+                databaseManager.getCompanyDao().getCompany(args[1]).createCompanyAccount(databaseManager, args[2]);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
     }
-    return false;
+    MessageManager.sendHelpMessage(player);
+    return true;
   }
   
   private Boolean companyCreate(String companyName, Player player) {
@@ -123,6 +125,9 @@ public class CommandCompany implements CommandExecutor {
       Stonks.companies.add(newCompany);
       databaseManager.getCompanyDao().create(newCompany);
 
+      CompanyAccount companyAccount = new CompanyAccount(newCompany, "Main");
+      databaseManager.getCompanyAccountDao().create(companyAccount);
+
       Member creator = new Member(player, Role.CEO);
       newCompany.getMembers().add(creator);
 
@@ -143,7 +148,7 @@ public class CommandCompany implements CommandExecutor {
             Member playerProfile = company.getMember(player);
             if(playerProfile.hasManagamentPermission()) {
               Player playerToInviteObject = ess.getUser(playerToInvite).getBase();
-              Member newMember = new Member(playerToInviteObject, Role.Slave, company);
+              Member newMember = new Member(playerToInviteObject, Role.Employee, company);
               try {
                 databaseManager.getMemberDao().create(newMember);
                 player.sendMessage(playerToInviteObject.getName() + " has successfully been invited!");

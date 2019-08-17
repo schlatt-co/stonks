@@ -1,8 +1,7 @@
 package nl.tychovi.stonks.gui;
 
-import net.milkbowl.vault.chat.Chat;
+import nl.tychovi.stonks.managers.DatabaseManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,12 +16,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 
 public abstract class Gui implements InventoryHolder, Listener {
-    public final Inventory inv;
+    final Inventory inv;
     private String title;
+    DatabaseManager databaseManager;
 
-    public Gui(int size, String title) {
+    public Gui(int size, String title, DatabaseManager databaseManager) {
         inv = Bukkit.createInventory(this, size, title);
         this.title = title;
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -36,15 +37,15 @@ public abstract class Gui implements InventoryHolder, Listener {
         ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
-        ArrayList<String> metalore = new ArrayList<String>();
+        ArrayList<String> metaLore = new ArrayList<String>();
 
-        for(String lorecomments : lore) {
+        for(String loreComments : lore) {
 
-            metalore.add(lorecomments);
+            metaLore.add(loreComments);
 
         }
 
-        meta.setLore(metalore);
+        meta.setLore(metaLore);
         item.setItemMeta(meta);
         return item;
     }
@@ -68,8 +69,5 @@ public abstract class Gui implements InventoryHolder, Listener {
 
         // verify current item is not null
         if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
-
-        // Using slots click is a best option for your inventory click's
-        if (e.getRawSlot() == 10) p.sendMessage("You clicked at slot " + 10);
     }
 }

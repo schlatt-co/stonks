@@ -7,4 +7,4 @@ mysql:
   ssl: false
 
 fees:
-  companycreation: 100
+  companycreation: 10000

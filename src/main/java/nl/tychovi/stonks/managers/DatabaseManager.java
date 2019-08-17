@@ -5,15 +5,12 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.table.TableUtils;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.Database.MemberDao;
+import nl.tychovi.stonks.Database.*;
 import nl.tychovi.stonks.Stonks;
 import nl.tychovi.stonks.command.CommandCompany;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class DatabaseManager extends SpigotModule {
 
@@ -22,8 +19,9 @@ public class DatabaseManager extends SpigotModule {
     }
     private JdbcConnectionSource connectionSource = null;
 
-    private Dao<Company, UUID> companyDao = null;
+    private CompanyDao companyDao = null;
     private MemberDao memberDao = null;
+    private Dao<CompanyAccount, Integer> companyAccountDao = null;
 
     @Override
     public void enable() {
@@ -43,8 +41,10 @@ public class DatabaseManager extends SpigotModule {
                 connectionSource = new JdbcConnectionSource(databaseUrl, username, password);
                 companyDao = DaoManager.createDao(connectionSource, Company.class);
                 memberDao = DaoManager.createDao(connectionSource, Member.class);
+                companyAccountDao = DaoManager.createDao(connectionSource, CompanyAccount.class);
                 TableUtils.createTableIfNotExists(connectionSource, Company.class);
                 TableUtils.createTableIfNotExists(connectionSource, Member.class);
+                TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
 
                 Stonks.companies.addAll(companyDao.queryForAll());
             } catch (SQLException e) {
@@ -67,11 +67,13 @@ public class DatabaseManager extends SpigotModule {
         }
     }
 
-    public Dao<Company, UUID> getCompanyDao() {
+    public CompanyDao getCompanyDao() {
         return companyDao;
     }
 
     public MemberDao getMemberDao() {
         return memberDao;
     }
+
+    public Dao<CompanyAccount, Integer> getCompanyAccountDao() { return companyAccountDao; }
 }

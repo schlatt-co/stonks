@@ -1,7 +1,9 @@
 package nl.tychovi.stonks.Database;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import org.bukkit.entity.Player;
 
@@ -24,5 +26,29 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
             return list;
         }
         return null;
+    }
+
+    @Override
+    public void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException {
+        if(response) {
+            UpdateBuilder<Member, UUID> updateBuilder = updateBuilder();
+            updateBuilder.where()
+                    .eq("acceptedInvite", "0")
+                    .and()
+                    .eq("uuid", playerUuid)
+                    .and()
+                    .eq("company_id", companyUuid);
+            updateBuilder.updateColumnValue("acceptedInvite", true);
+            updateBuilder.update();
+        } else {
+            DeleteBuilder<Member, UUID> deleteBuilder = deleteBuilder();
+            deleteBuilder.where()
+                    .eq("acceptedInvite", "0")
+                    .and()
+                    .eq("uuid", playerUuid)
+                    .and()
+                    .eq("company_id", companyUuid);
+            deleteBuilder.delete();
+        }
     }
 }

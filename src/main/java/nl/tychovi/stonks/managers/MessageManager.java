@@ -2,6 +2,8 @@ package nl.tychovi.stonks.managers;
 
 import nl.tychovi.stonks.Database.Member;
 import nl.tychovi.stonks.Stonks;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -16,13 +18,20 @@ public class MessageManager extends SpigotModule {
         this.databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
     }
 
+    public static void sendHelpMessage(Player player) {
+        player.sendMessage(ChatColor.AQUA + "--------------------");
+        player.sendMessage(ChatColor.GOLD + "/stonks create <company> - Create a company with the specified name.");
+        player.sendMessage(ChatColor.GOLD + "/stonks list - A list with all companies and their total value.");
+        player.sendMessage(ChatColor.GOLD + "/stonks invite <player> <company> - Invite a player to your company.");
+        player.sendMessage(ChatColor.GOLD + "/stonks invites - View your invites.");
+        player.sendMessage(ChatColor.AQUA + "--------------------");
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
         List<Member> invites = databaseManager.getMemberDao().getInvites(event.getPlayer());
         if(invites != null) {
-            for(Member invite : invites) {
-                event.getPlayer().sendMessage("You have been invited to company: " + invite.getCompany().getName());
-            }
+            event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.GREEN + invites.size() + ChatColor.AQUA + " open company invites! Do " + ChatColor.GREEN + "/stonks invites" + ChatColor.AQUA + " to view them.");
         }
     }
 }

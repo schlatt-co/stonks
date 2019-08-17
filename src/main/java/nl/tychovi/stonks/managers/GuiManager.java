@@ -13,8 +13,8 @@ public class GuiManager extends SpigotModule {
     public GuiManager(Stonks plugin) {
         super("guiManager", plugin);
 
-        guiList.add(new ExampleGui());
-        guiList.add(new InvitesGui());
+        guiList.add(new ExampleGui((DatabaseManager) plugin.getModule("databaseManager")));
+        guiList.add(new InvitesGui((DatabaseManager) plugin.getModule("databaseManager")));
 
         for(Gui gui : guiList) {
             plugin.getServer().getPluginManager().registerEvents(gui, plugin);

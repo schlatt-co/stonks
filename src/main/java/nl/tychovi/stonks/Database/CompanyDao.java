@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface CompanyDao extends Dao<Company, UUID> {
     boolean companyExists(String name) throws SQLException;
+
+    Company getCompany(String name) throws SQLException;
 }

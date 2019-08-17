@@ -56,6 +56,12 @@ public class Member {
         return company;
     }
 
+    public boolean getAcceptedInvite() { return acceptedInvite; }
+
+    public void setAcceptedInvite(boolean acceptedInvite) {
+        this.acceptedInvite = acceptedInvite;
+    }
+
     public Boolean hasManagamentPermission() {
         if(this.role.equals(Role.CEO) || this.role.equals(Role.Manager)) {
             return true;

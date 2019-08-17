@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface MemberDao extends Dao<Member, UUID> {
     List<Member> getInvites(Player player) throws SQLException;
+
+    void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException;
 }

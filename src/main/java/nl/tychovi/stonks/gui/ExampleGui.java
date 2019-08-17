@@ -1,11 +1,12 @@
 package nl.tychovi.stonks.gui;
 
+import nl.tychovi.stonks.managers.DatabaseManager;
 import org.bukkit.Material;
 
 public class ExampleGui extends Gui {
 
-    public ExampleGui() {
-        super(9, "Example");
+    public ExampleGui(DatabaseManager databaseManager) {
+        super(9, "Example", databaseManager);
     }
 
     public void initializeItems() {
