@@ -1,26 +1,34 @@
 package nl.tychovi.stonks.command;
 
+import co.aikar.taskchain.TaskChainTasks;
 import com.earth2me.essentials.Essentials;
-import net.ess3.api.IEssentials;
+import com.j256.ormlite.stmt.QueryBuilder;
+import fr.minuskube.inv.InventoryManager;
+import fr.minuskube.inv.SmartInventory;
+import javafx.concurrent.Task;
 import nl.tychovi.stonks.Database.Company;
 import nl.tychovi.stonks.Database.CompanyAccount;
 import nl.tychovi.stonks.Database.Member;
 import nl.tychovi.stonks.Database.Role;
 import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.gui.InvitesGui;
+import nl.tychovi.stonks.gui.CompanyListGui;
+import nl.tychovi.stonks.gui.InviteListGui;
 import nl.tychovi.stonks.managers.DatabaseManager;
 import nl.tychovi.stonks.managers.GuiManager;
 import nl.tychovi.stonks.managers.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class CommandCompany implements CommandExecutor {
 
@@ -33,7 +41,7 @@ public class CommandCompany implements CommandExecutor {
     this.databaseManager = databaseManager;
     this.plugin = plugin;
     this.ess = (Essentials) plugin.getServer().getPluginManager().getPlugin("Essentials");
-    guiManager = (GuiManager) plugin.getModule("guiManager");
+    this.guiManager = (GuiManager) plugin.getModule("guiManager");
   }
 
   @Override
@@ -72,16 +80,11 @@ public class CommandCompany implements CommandExecutor {
               player.sendMessage(ChatColor.RED + "You don't have any invites!");
               return true;
             }
-            ((InvitesGui) guiManager.getGui("Invites")).initializeItems(invites);
-            guiManager.getGui("Invites").openInventory(player);
+            InviteListGui.getInventory().open(player);
             return true;
         }
         case "list": {
-            player.sendMessage("----------");
-            for (Company company : Stonks.companies) {
-              player.sendMessage("-" + company.getName());
-            }
-            player.sendMessage("----------");
+            CompanyListGui.getInventory().open(player);
             return true;
         }
         case "invite": {
@@ -100,12 +103,43 @@ public class CommandCompany implements CommandExecutor {
             }
             return true;
         }
+        case "setlogo": {
+            if(args.length < 2) {
+                player.sendMessage(ChatColor.RED + "Please specify a company!");
+                return true;
+            }
+            ItemStack itemInHand = player.getInventory().getItemInMainHand();
+            if(itemInHand.getAmount() == 0) {
+                player.sendMessage(ChatColor.RED + "You must be holding an item to set it as your company logo!");
+                return true;
+            }
+            try {
+                Company company = databaseManager.getCompanyDao().getCompany(args[1]);
+                if(company == null) {
+                    player.sendMessage(ChatColor.RED + "That company does not exist!");
+                    return true;
+                }
+                if(!company.hasMember(player)) {
+                    player.sendMessage(ChatColor.RED + "You're not a member of that company!");
+                    return true;
+                }
+                company.setLogoMaterial(itemInHand.getType().name());
+                databaseManager.getCompanyDao().update(company);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
     }
     MessageManager.sendHelpMessage(player);
     return true;
   }
   
   private Boolean companyCreate(String companyName, Player player) {
+      if(companyName.length() > 32) {
+          player.sendMessage(ChatColor.RED + "A company name can't be longer than 32 characters!");
+          return true;
+      }
     if(Stonks.companies.size() != 0) {
       for(Company company : Stonks.companies) {
         if(company.getName().equals(companyName)) {
@@ -150,6 +184,17 @@ public class CommandCompany implements CommandExecutor {
               Player playerToInviteObject = ess.getUser(playerToInvite).getBase();
               Member newMember = new Member(playerToInviteObject, Role.Employee, company);
               try {
+                  QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
+                  queryBuilder.where().eq("uuid", newMember.getUuid()).and().eq("company_id", newMember.getCompany().getId());
+                  List<Member> list = queryBuilder.query();
+                  if(!list.isEmpty()) {
+                      if(list.get(0).getAcceptedInvite()) {
+                          player.sendMessage(ChatColor.RED + playerToInvite + " is already a member of " + newMember.getCompany().getName());
+                      } else {
+                          player.sendMessage(ChatColor.RED + playerToInvite + " has already been invited to " + newMember.getCompany().getName());
+                      }
+                      return true;
+                  }
                 databaseManager.getMemberDao().create(newMember);
                 player.sendMessage(playerToInviteObject.getName() + " has successfully been invited!");
                 playerToInviteObject.sendMessage("You have been invited to join " + companyName);

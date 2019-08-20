@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.UUID;
 
-@DatabaseTable(tableName = "companyaccount")
+@DatabaseTable(tableName = "companyaccount", daoClass = CompanyAccountDaoImpl.class)
 public class CompanyAccount {
 
     @DatabaseField(generatedId = true)

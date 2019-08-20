@@ -5,6 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import nl.tychovi.stonks.managers.DatabaseManager;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
@@ -22,11 +23,14 @@ public class Company {
     @DatabaseField(unique = true)
     private String shopName;
 
-    @ForeignCollectionField(eager = true)
+    @ForeignCollectionField()
     private ForeignCollection<Member> members;
 
-    @ForeignCollectionField(eager = true)
+    @ForeignCollectionField()
     private ForeignCollection<CompanyAccount> companyAccounts;
+
+    @DatabaseField
+    private String logoMaterial;
 
     public Company() {
 
@@ -35,6 +39,7 @@ public class Company {
     public Company(String name, String shopName, Player creator) {
         this.name = name;
         this.shopName = shopName;
+        this.logoMaterial = Material.EMERALD.name();
     }
 
     public UUID getId() {
@@ -49,6 +54,8 @@ public class Company {
         return shopName;
     }
 
+    public String getLogoMaterial() { return logoMaterial; }
+
     public ForeignCollection<Member> getMembers() {
         return members;
     }
@@ -60,6 +67,10 @@ public class Company {
             }
         }
         return null;
+    }
+
+    public int getTotalValue(DatabaseManager databaseManager) throws SQLException {
+        return databaseManager.getCompanyAccountDao().getCompanyValue(this);
     }
 
     public void createCompanyAccount(DatabaseManager databaseManager, String name) throws SQLException {
@@ -78,5 +89,9 @@ public class Company {
             }
         }
         return false;
+    }
+
+    public void setLogoMaterial(String logoMaterial) {
+        this.logoMaterial = logoMaterial;
     }
 }

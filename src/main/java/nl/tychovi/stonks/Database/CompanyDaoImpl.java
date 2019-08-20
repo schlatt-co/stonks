@@ -5,6 +5,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -29,4 +30,5 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         List<Company> companyList = queryForEq("name", ChatColor.stripColor(name));
         return companyList.get(0);
     }
+
 }

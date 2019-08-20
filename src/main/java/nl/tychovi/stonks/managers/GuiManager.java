@@ -1,32 +1,35 @@
 package nl.tychovi.stonks.managers;
 
+import fr.minuskube.inv.InventoryManager;
 import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.gui.ExampleGui;
-import nl.tychovi.stonks.gui.Gui;
-import nl.tychovi.stonks.gui.InvitesGui;
-
-import java.util.ArrayList;
+import nl.tychovi.stonks.gui.CompanyInfoGui;
+import nl.tychovi.stonks.gui.CompanyListGui;
+import nl.tychovi.stonks.gui.InviteListGui;
 
 public class GuiManager extends SpigotModule {
-    private ArrayList<Gui> guiList = new ArrayList<>();
+
+    private InventoryManager inventoryManager;
+    private DatabaseManager databaseManager;
 
     public GuiManager(Stonks plugin) {
         super("guiManager", plugin);
-
-        guiList.add(new ExampleGui((DatabaseManager) plugin.getModule("databaseManager")));
-        guiList.add(new InvitesGui((DatabaseManager) plugin.getModule("databaseManager")));
-
-        for(Gui gui : guiList) {
-            plugin.getServer().getPluginManager().registerEvents(gui, plugin);
-        }
+        this.inventoryManager = new InventoryManager(plugin);
+        inventoryManager.init();
+        databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
     }
 
-    public Gui getGui(String name) {
-        for(Gui gui : guiList) {
-            if(gui.getTitle().equals(name)) {
-                return gui;
-            }
-        }
-        return null;
+    @Override
+    public void enable() {
+        InviteListGui.inventoryManager = inventoryManager;
+        InviteListGui.databaseManager = databaseManager;
+
+        CompanyListGui.inventoryManager = inventoryManager;
+        CompanyListGui.databaseManager = databaseManager;
+
+        CompanyInfoGui.inventoryManager = inventoryManager;
+        CompanyInfoGui.databaseManager = databaseManager;
+
+        MemberListGui.inventoryManager = inventoryManager;
+        MemberListGui.databaseManager = databaseManager;
     }
 }

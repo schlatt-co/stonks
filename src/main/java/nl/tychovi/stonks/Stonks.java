@@ -1,5 +1,9 @@
 package nl.tychovi.stonks;
 
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
+import fr.minuskube.inv.InventoryManager;
 import net.milkbowl.vault.economy.Economy;
 import nl.tychovi.stonks.Database.Company;
 import nl.tychovi.stonks.managers.*;
@@ -16,6 +20,14 @@ public class Stonks extends JavaPlugin {
   private List<SpigotModule> loadedModules = new ArrayList<>();
   public static Economy economy = null;
 
+  private static TaskChainFactory taskChainFactory;
+  public static <T> TaskChain<T> newChain() {
+    return taskChainFactory.newChain();
+  }
+  public static <T> TaskChain<T> newSharedChain(String name) {
+    return taskChainFactory.newSharedChain(name);
+  }
+
   public static List<Company> companies = new ArrayList<>();
 
   @Override
@@ -26,6 +38,8 @@ public class Stonks extends JavaPlugin {
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
+
+    taskChainFactory = BukkitTaskChainFactory.create(this);
 
     loadedModules.add(new DatabaseManager(this));
     loadedModules.add(new ShopManager(this));

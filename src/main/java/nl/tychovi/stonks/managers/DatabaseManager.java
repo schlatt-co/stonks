@@ -21,7 +21,7 @@ public class DatabaseManager extends SpigotModule {
 
     private CompanyDao companyDao = null;
     private MemberDao memberDao = null;
-    private Dao<CompanyAccount, Integer> companyAccountDao = null;
+    private CompanyAccountDao companyAccountDao = null;
 
     @Override
     public void enable() {
@@ -75,5 +75,5 @@ public class DatabaseManager extends SpigotModule {
         return memberDao;
     }
 
-    public Dao<CompanyAccount, Integer> getCompanyAccountDao() { return companyAccountDao; }
+    public CompanyAccountDao getCompanyAccountDao() { return companyAccountDao; }
 }

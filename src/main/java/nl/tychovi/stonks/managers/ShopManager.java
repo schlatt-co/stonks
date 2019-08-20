@@ -3,18 +3,14 @@ package nl.tychovi.stonks.managers;
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
-import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
-import com.Acrobot.ChestShop.Events.Protection.ProtectionCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
-import nl.tychovi.stonks.Database.Company;
 import nl.tychovi.stonks.Database.CompanyAccount;
 import nl.tychovi.stonks.Database.Member;
 import nl.tychovi.stonks.Database.Role;
 import nl.tychovi.stonks.Stonks;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -40,16 +36,17 @@ public class ShopManager extends SpigotModule {
     }
 
     int accountId = 0;
-    if(accountLine.substring(1).matches("[0-9]")) {
+    if(accountLine.substring(1).matches("\\d+")) {
       accountId = Integer.parseInt(accountLine.substring(1));
     } else if(accountLine.contains("-")) {
       int indexOfDash = accountLine.indexOf("-");
-      if(accountLine.substring(1, indexOfDash).matches("[0-9]")) {
+      if(accountLine.substring(1, indexOfDash).matches("\\d+]")) {
         accountId = Integer.parseInt(accountLine.substring(1, indexOfDash));
       }
     } else {
       return;
     }
+
     try {
       if(databaseManager.getCompanyAccountDao().idExists(accountId)) {
         CompanyAccount companyAccount = databaseManager.getCompanyAccountDao().queryForId(accountId);
@@ -74,7 +71,7 @@ public class ShopManager extends SpigotModule {
       return;
     }
     int accountId = 0;
-    if(accountLine.substring(1).matches("[0-9]")) {
+    if(accountLine.substring(1).matches("\\d+")) {
       accountId = Integer.parseInt(accountLine.substring(1));
     } else if(accountLine.contains("-")) {
       int indexOfDash = accountLine.indexOf("-");
