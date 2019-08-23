@@ -1,4 +1,4 @@
-package nl.tychovi.stonks.Database;
+package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

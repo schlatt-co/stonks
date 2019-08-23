@@ -1,13 +1,12 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.managers;
 
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.table.TableUtils;
-import nl.tychovi.stonks.Database.*;
-import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.command.CommandCompany;
+import dev.tycho.stonks.Database.*;
+import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.command.CommandCompany;
 
 import java.io.IOException;
 import java.sql.SQLException;

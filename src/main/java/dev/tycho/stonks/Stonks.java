@@ -1,12 +1,11 @@
-package nl.tychovi.stonks;
+package dev.tycho.stonks;
 
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
-import fr.minuskube.inv.InventoryManager;
+import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.managers.*;
+import dev.tycho.stonks.Database.Company;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;

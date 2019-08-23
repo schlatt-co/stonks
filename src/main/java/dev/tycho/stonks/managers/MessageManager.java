@@ -1,7 +1,7 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.managers;
 
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.Stonks;
+import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.Stonks;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

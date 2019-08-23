@@ -1,15 +1,14 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.managers;
 
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
-import nl.tychovi.stonks.Database.CompanyAccount;
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.Database.Role;
-import nl.tychovi.stonks.Stonks;
-import org.bukkit.Bukkit;
+import dev.tycho.stonks.Database.CompanyAccount;
+import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.Database.Role;
 import org.bukkit.event.EventHandler;
 
 import java.sql.SQLException;
@@ -40,7 +39,7 @@ public class ShopManager extends SpigotModule {
       accountId = Integer.parseInt(accountLine.substring(1));
     } else if(accountLine.contains("-")) {
       int indexOfDash = accountLine.indexOf("-");
-      if(accountLine.substring(1, indexOfDash).matches("\\d+]")) {
+      if(accountLine.substring(1, indexOfDash).matches("\\d+")) {
         accountId = Integer.parseInt(accountLine.substring(1, indexOfDash));
       }
     } else {

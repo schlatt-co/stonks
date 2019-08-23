@@ -1,14 +1,16 @@
-package nl.tychovi.stonks.Database;
+package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.DatabaseTable;
-import nl.tychovi.stonks.managers.DatabaseManager;
+import dev.tycho.stonks.managers.DatabaseManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @DatabaseTable(tableName = "company", daoClass = CompanyDaoImpl.class)
@@ -23,14 +25,16 @@ public class Company {
     @DatabaseField(unique = true)
     private String shopName;
 
-    @ForeignCollectionField()
+    @ForeignCollectionField(eager = true)
     private ForeignCollection<Member> members;
 
-    @ForeignCollectionField()
+    @ForeignCollectionField(eager = true)
     private ForeignCollection<CompanyAccount> companyAccounts;
 
     @DatabaseField
     private String logoMaterial;
+
+    private double totalValue;
 
     public Company() {
 
@@ -69,8 +73,8 @@ public class Company {
         return null;
     }
 
-    public int getTotalValue(DatabaseManager databaseManager) throws SQLException {
-        return databaseManager.getCompanyAccountDao().getCompanyValue(this);
+    public double getTotalValue() {
+        return totalValue;
     }
 
     public void createCompanyAccount(DatabaseManager databaseManager, String name) throws SQLException {
@@ -89,6 +93,15 @@ public class Company {
             }
         }
         return false;
+    }
+
+    public void calculateTotalValue(){
+        double totalValue = 0;
+        for(CompanyAccount companyAccount : companyAccounts) {
+            totalValue += companyAccount.getBalance();
+        }
+        this.totalValue = totalValue;
+
     }
 
     public void setLogoMaterial(String logoMaterial) {

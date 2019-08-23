@@ -1,4 +1,4 @@
-package nl.tychovi.stonks.util;
+package dev.tycho.stonks.util;
 
 import fr.minuskube.inv.SmartInventory;
 

@@ -1,4 +1,4 @@
-package nl.tychovi.stonks.Database;
+package dev.tycho.stonks.Database;
 
 public enum Role {
     CEO, Manager, Employee, Slave;

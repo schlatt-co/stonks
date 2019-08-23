@@ -1,6 +1,6 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.gui;
 
-import com.j256.ormlite.stmt.QueryBuilder;
+import dev.tycho.stonks.managers.DatabaseManager;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
@@ -8,18 +8,15 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.gui.CompanyInfoGui;
-import nl.tychovi.stonks.util.Util;
+import dev.tycho.stonks.Database.Company;
+import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 public class MemberListGui implements InventoryProvider {
 
@@ -28,14 +25,17 @@ public class MemberListGui implements InventoryProvider {
 
     private Company company;
 
-    public MemberListGui(Company company) {
+    private List<Member> list;
+
+    public MemberListGui(Company company, List<Member> members) {
         this.company = company;
+        this.list = members;
     }
 
-    public static SmartInventory getInventory(Company company) {
+    public static SmartInventory getInventory(Company company, List<Member> members) {
         return SmartInventory.builder()
                 .id("memberList")
-                .provider(new MemberListGui(company))
+                .provider(new MemberListGui(company, members))
                 .manager(inventoryManager)
                 .size(5, 9)
                 .title(company.getName() + " Members")
@@ -46,19 +46,11 @@ public class MemberListGui implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillRow(0, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
         contents.fillRow(4, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
+        contents.set(0,0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.getName())));
 
         contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
 
         Pagination pagination = contents.pagination();
-
-        List<Member> list = null;
-        try {
-            QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
-            queryBuilder.where().eq("company_id", company.getId()).and().eq("acceptedInvite", true);
-            list = queryBuilder.query();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         ClickableItem[] items = new ClickableItem[list.size()];
 
@@ -76,9 +68,9 @@ public class MemberListGui implements InventoryProvider {
 
 
         contents.set(4, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
-                e -> getInventory(company).open(player, pagination.previous().getPage())));
+                e -> getInventory(company, list).open(player, pagination.previous().getPage())));
         contents.set(4, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
-                e -> getInventory(company).open(player, pagination.next().getPage())));
+                e -> getInventory(company, list).open(player, pagination.next().getPage())));
 
     }
 

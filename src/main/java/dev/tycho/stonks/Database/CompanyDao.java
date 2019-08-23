@@ -1,7 +1,6 @@
-package nl.tychovi.stonks.Database;
+package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.dao.Dao;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.UUID;

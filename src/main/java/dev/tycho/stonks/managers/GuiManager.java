@@ -1,10 +1,9 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.managers;
 
+import com.Acrobot.ChestShop.Database.Account;
+import dev.tycho.stonks.gui.*;
 import fr.minuskube.inv.InventoryManager;
-import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.gui.CompanyInfoGui;
-import nl.tychovi.stonks.gui.CompanyListGui;
-import nl.tychovi.stonks.gui.InviteListGui;
+import dev.tycho.stonks.Stonks;
 
 public class GuiManager extends SpigotModule {
 
@@ -31,5 +30,8 @@ public class GuiManager extends SpigotModule {
 
         MemberListGui.inventoryManager = inventoryManager;
         MemberListGui.databaseManager = databaseManager;
+
+        AccountListGui.inventoryManager = inventoryManager;
+        AccountListGui.databaseManager = databaseManager;
     }
 }

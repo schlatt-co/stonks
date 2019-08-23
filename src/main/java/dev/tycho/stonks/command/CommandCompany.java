@@ -1,22 +1,16 @@
-package nl.tychovi.stonks.command;
+package dev.tycho.stonks.command;
 
-import co.aikar.taskchain.TaskChainTasks;
 import com.earth2me.essentials.Essentials;
 import com.j256.ormlite.stmt.QueryBuilder;
-import fr.minuskube.inv.InventoryManager;
-import fr.minuskube.inv.SmartInventory;
-import javafx.concurrent.Task;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.Database.CompanyAccount;
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.Database.Role;
-import nl.tychovi.stonks.Stonks;
-import nl.tychovi.stonks.gui.CompanyListGui;
-import nl.tychovi.stonks.gui.InviteListGui;
-import nl.tychovi.stonks.managers.DatabaseManager;
-import nl.tychovi.stonks.managers.GuiManager;
-import nl.tychovi.stonks.managers.MessageManager;
-import org.bukkit.Bukkit;
+import dev.tycho.stonks.Database.Company;
+import dev.tycho.stonks.Database.CompanyAccount;
+import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.Database.Role;
+import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.gui.*;
+import dev.tycho.stonks.managers.DatabaseManager;
+import dev.tycho.stonks.managers.GuiManager;
+import dev.tycho.stonks.managers.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -84,7 +78,31 @@ public class CommandCompany implements CommandExecutor {
             return true;
         }
         case "list": {
-            CompanyListGui.getInventory().open(player);
+            openCompanyList(player, OrderBy.NAMEASC);
+            return true;
+        }
+        case "info": {
+            if(args.length < 2) {
+                player.sendMessage(ChatColor.RED + "Please specify a company!");
+                return true;
+            }
+            openCompanyInfo(player, args[1]);
+            return true;
+        }
+        case "members": {
+            if(args.length < 2) {
+                player.sendMessage(ChatColor.RED + "Please specify a company!");
+                return true;
+            }
+            openCompanyMembers(player, args[1]);
+            return true;
+        }
+        case "accounts": {
+            if(args.length < 2) {
+                player.sendMessage(ChatColor.RED + "Please specify a company!");
+                return true;
+            }
+            openCompanyAccounts(player, args[1]);
             return true;
         }
         case "invite": {
@@ -210,4 +228,119 @@ public class CommandCompany implements CommandExecutor {
     }
     return false;
   }
+
+  private void openCompanyList(Player player, OrderBy orderBy) {
+      player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
+      Stonks.newChain()
+              .asyncFirst(() -> {
+                  List<Company> list = null;
+                  try {
+                      QueryBuilder<Company, UUID> companyQueryBuilder = databaseManager.getCompanyDao().queryBuilder();
+                      switch(orderBy) {
+                          case NAMEASC: {
+                              companyQueryBuilder.orderBy("name", true);
+                              break;
+                          }
+                          case NAMEDESC: {
+                              companyQueryBuilder.orderBy("name", false);
+                              break;
+                          }
+//                          case COMPANYVALUE: {
+//                              QueryBuilder<CompanyAccount, Integer> accountQueryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
+//                              companyQueryBuilder.leftJoin(accountQueryBuilder);
+//                              companyQueryBuilder.orderBy("companyaccount.balance", false);
+//                          }
+                      }
+                      list = companyQueryBuilder.query();
+                      for(Company company : list) {
+                          company.calculateTotalValue();
+                      }
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+                  return CompanyListGui.getInventory(list);
+              })
+              .sync((result) -> result.open(player))
+              .execute();
+  }
+
+  private enum OrderBy {
+      NAMEASC, NAMEDESC, COMPANYVALUE
+  }
+
+  private void openCompanyInfo(Player player, String companyName) {
+      Stonks.newChain()
+              .asyncFirst(() -> {
+                  try {
+                      Company company = databaseManager.getCompanyDao().getCompany(companyName);
+                      if(company == null) {
+                          player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+                          return null;
+                      }
+                      return CompanyInfoGui.getInventory(company);
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+                  return null;
+              })
+              .abortIfNull()
+              .sync((result) -> result.open(player))
+              .execute();
+  }
+
+    private void openCompanyMembers(Player player, String companyName) {
+        Stonks.newChain()
+                .asyncFirst(() -> {
+                    try {
+                        Company company = databaseManager.getCompanyDao().getCompany(companyName);
+                        if(company == null) {
+                            player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+                            return null;
+                        }
+                        List<Member> list = null;
+                        try {
+                            QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
+                            queryBuilder.where().eq("company_id", company.getId()).and().eq("acceptedInvite", true);
+                            list = queryBuilder.query();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        return MemberListGui.getInventory(company, list);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .abortIfNull()
+                .sync((result) -> result.open(player))
+                .execute();
+    }
+
+    private void openCompanyAccounts(Player player, String companyName) {
+        Stonks.newChain()
+                .asyncFirst(() -> {
+                    try {
+                        Company company = databaseManager.getCompanyDao().getCompany(companyName);
+                        if(company == null) {
+                            player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+                            return null;
+                        }
+                        List<CompanyAccount> list = null;
+                        try {
+                            QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
+                            queryBuilder.where().eq("company_id", company.getId());
+                            list = queryBuilder.query();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        return AccountListGui.getInventory(company, list);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .abortIfNull()
+                .sync((result) -> result.open(player))
+                .execute();
+    }
 }

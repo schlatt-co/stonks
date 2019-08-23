@@ -1,9 +1,8 @@
-package nl.tychovi.stonks.managers;
+package dev.tycho.stonks.managers;
 
-import nl.tychovi.stonks.Stonks;
+import dev.tycho.stonks.Stonks;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class SpigotModule implements Listener {
 

@@ -1,4 +1,4 @@
-package nl.tychovi.stonks.gui;
+package dev.tycho.stonks.gui;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -7,10 +7,10 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.Database.Member;
-import nl.tychovi.stonks.managers.DatabaseManager;
-import nl.tychovi.stonks.util.Util;
+import dev.tycho.stonks.Database.Company;
+import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.managers.DatabaseManager;
+import dev.tycho.stonks.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

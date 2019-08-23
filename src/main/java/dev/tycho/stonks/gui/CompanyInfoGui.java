@@ -1,14 +1,13 @@
-package nl.tychovi.stonks.gui;
+package dev.tycho.stonks.gui;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import nl.tychovi.stonks.Database.Company;
-import nl.tychovi.stonks.managers.DatabaseManager;
-import nl.tychovi.stonks.managers.MemberListGui;
-import nl.tychovi.stonks.util.Util;
+import dev.tycho.stonks.Database.Company;
+import dev.tycho.stonks.managers.DatabaseManager;
+import dev.tycho.stonks.util.Util;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -36,12 +35,11 @@ public class CompanyInfoGui implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
+        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "Companylist"), e -> player.performCommand("stonks list")));
 
         contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
-        contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> {
-            MemberListGui.getInventory(company).open(player);
-        }));
-        contents.set(2, 5, ClickableItem.empty(Util.item(Material.GOLD_BLOCK, "Accounts")));
+        contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> player.performCommand("stonks members " + company.getName())));
+        contents.set(2, 5, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"), e -> player.performCommand("stonks accounts " + company.getName())));
     }
 
     @Override

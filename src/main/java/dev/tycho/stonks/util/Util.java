@@ -1,5 +1,6 @@
-package nl.tychovi.stonks.util;
+package dev.tycho.stonks.util;
 
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -29,7 +30,7 @@ public class Util {
     itemMeta.setDisplayName(ChatColor.RESET + name);
     List<String> lores = new ArrayList<>();
     for (String curLore : lore) {
-      lores.add(curLore);
+      lores.add(ChatColor.RESET + curLore);
     }
     itemMeta.setLore(lores);
 //    if (shine) {

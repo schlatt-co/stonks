@@ -1,4 +1,4 @@
-package nl.tychovi.stonks.Database;
+package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -31,6 +31,8 @@ public class CompanyAccount {
         this.name = name;
         this.uuid = UUID.randomUUID();
     }
+
+    public int getId() {return id;}
 
     public double getBalance() {
         return balance;
