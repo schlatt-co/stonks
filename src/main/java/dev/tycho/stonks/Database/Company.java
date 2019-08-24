@@ -98,8 +98,6 @@ public class Company {
     public void calculateTotalValue(){
         double totalValue = 0;
         for(AccountLink accountLink : accounts) {
-            if (accountLink == null) System.out.println("AccountLink");
-            if (accountLink.getAccount() == null) System.out.println("AccountLink.getaccount");
             totalValue += accountLink.getAccount().getTotalBalance();
         }
         this.totalValue = totalValue;

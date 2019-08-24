@@ -36,7 +36,6 @@ public class AccountLink {
 
         //Only set one of the two account types to a reference
         //The other will stay null
-        //todo improve this switch statement
         switch (type[0]) {
             case CompanyAccount:
                 this.companyAccount = (CompanyAccount)account;
@@ -51,7 +50,7 @@ public class AccountLink {
     }
 
     public Account getAccount() {
-        if (companyAccount == null) return null;
+        if (companyAccount == null) return  null;
         return companyAccount;
     }
 
