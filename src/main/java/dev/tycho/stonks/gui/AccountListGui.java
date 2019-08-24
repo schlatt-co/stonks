@@ -1,8 +1,6 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.Database.Company;
-import dev.tycho.stonks.Database.CompanyAccount;
-import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -27,14 +25,14 @@ public class AccountListGui implements InventoryProvider {
 
     private Company company;
 
-    private List<CompanyAccount> list;
+    private List<Account> list;
 
-    public AccountListGui(Company company, List<CompanyAccount> companyAccounts) {
+    public AccountListGui(Company company, List<Account> companyAccounts) {
         this.company = company;
         this.list = companyAccounts;
     }
 
-    public static SmartInventory getInventory(Company company, List<CompanyAccount> members) {
+    public static SmartInventory getInventory(Company company, List<Account> members) {
         return SmartInventory.builder()
                 .id("memberList")
                 .provider(new AccountListGui(company, members))
@@ -59,8 +57,21 @@ public class AccountListGui implements InventoryProvider {
         ClickableItem[] items = new ClickableItem[list.size()];
 
         for (int i = 0; i < list.size(); i++) {
-            CompanyAccount companyAccount = list.get(i);
-            ClickableItem item = ClickableItem.empty(Util.item(Material.DIAMOND, companyAccount.getName(), "ID: " + companyAccount.getId()));
+            Account account = list.get(i);
+            AccountLink link = databaseManager.getAccountlinkDao().getAccountLink(account);
+            Material displayMaterial;
+            switch (link.getAccountType()) {
+                case HoldingsAccount:
+                    displayMaterial = Material.GOLD_INGOT;
+                    break;
+                case CompanyAccount:
+                    displayMaterial = Material.DIAMOND;
+                    break;
+                default:
+                    displayMaterial = Material.IRON_INGOT;
+                    break;
+            }
+            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId()));
             items[i] = item;
         }
 

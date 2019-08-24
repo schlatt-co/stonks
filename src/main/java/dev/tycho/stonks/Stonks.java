@@ -3,6 +3,7 @@ package dev.tycho.stonks;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import dev.tycho.stonks.dbtest.Subclass1;
 import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import dev.tycho.stonks.Database.Company;
@@ -44,6 +45,9 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
+
+
+
 
     if(!setupEconomy()) { return; }
 

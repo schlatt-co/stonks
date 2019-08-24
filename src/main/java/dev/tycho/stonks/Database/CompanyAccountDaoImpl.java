@@ -12,15 +12,5 @@ public class CompanyAccountDaoImpl extends BaseDaoImpl<CompanyAccount, Integer> 
         super(connectionSource, CompanyAccount.class);
     }
 
-    @Override
-    public int getCompanyValue(Company company) throws SQLException {
-        QueryBuilder<CompanyAccount, Integer> queryBuilder = queryBuilder();
-        queryBuilder.where().eq("company_id", company.getId());
-        List<CompanyAccount> list = queryBuilder.query();
-        int value = 0;
-        for(CompanyAccount companyAccount : list) {
-            value += companyAccount.getBalance();
-        }
-        return value;
-    }
+
 }

@@ -5,6 +5,7 @@ import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
+import dev.tycho.stonks.Database.AccountLink;
 import dev.tycho.stonks.Database.CompanyAccount;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.Database.Member;
@@ -47,12 +48,13 @@ public class ShopManager extends SpigotModule {
     }
 
     try {
-      if(databaseManager.getCompanyAccountDao().idExists(accountId)) {
-        CompanyAccount companyAccount = databaseManager.getCompanyAccountDao().queryForId(accountId);
-        UUID accountUuid = companyAccount.getCompany().getId();
+      //If an account exists for this account id
+      if(databaseManager.getAccountlinkDao().idExists(accountId)) {
+        AccountLink link = databaseManager.getAccountlinkDao().queryForId(accountId);
+        UUID companyUuid = link.getCompany().getId();
 
         QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
-        queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", accountUuid);
+        queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", companyUuid);
         List<Member> list = queryBuilder.query();
         if(list.isEmpty() || list.get(0).getRole().equals(Role.Slave) || !list.get(0).getAcceptedInvite()) {
           event.setOutcome(PreShopCreationEvent.CreationOutcome.NO_PERMISSION);
@@ -80,13 +82,16 @@ public class ShopManager extends SpigotModule {
     }
 
     try {
-      if(databaseManager.getCompanyAccountDao().idExists(accountId)) {
-        CompanyAccount companyAccount = databaseManager.getCompanyAccountDao().queryForId(accountId);
-        UUID accountUuid = companyAccount.getUuid();
+      //If an account exists with this id
+      if(databaseManager.getAccountlinkDao().idExists(accountId)) {
+        AccountLink link = databaseManager.getAccountlinkDao().queryForId(accountId);
+        UUID accountUuid = link.getAccount().getUuid();
+        //Get the chest shop account associated with this uuid
         Account CSaccount = NameManager.getAccount(accountUuid);
 
         if(CSaccount == null) {
-          String name = companyAccount.getCompany().getName();
+          //If none exists then make a new one
+          String name = link.getCompany().getName();
           Account newCSaccount = new Account("#" + accountId + "-" + name, accountUuid);
           event.setAccount(newCSaccount);
         } else {
@@ -113,11 +118,12 @@ public class ShopManager extends SpigotModule {
       event.setCancelled(true);
       return;
     }
-    int companyAccountId = Integer.parseInt(event.getName().substring(1, dashIndex));
+    int accountId = Integer.parseInt(event.getName().substring(1, dashIndex));
     try {
-      CompanyAccount companyAccount = databaseManager.getCompanyAccountDao().queryForId(companyAccountId);
+      //Find the account for this id
+      AccountLink link = databaseManager.getAccountlinkDao().queryForId(accountId);
       QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
-      queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", companyAccount.getCompany().getId());
+      queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", link.getCompany().getId());
       List<Member> list = queryBuilder.query();
       if(list.isEmpty() || list.get(0).getRole().equals(Role.Slave) || !list.get(0).getAcceptedInvite()) {
         return;
@@ -130,6 +136,8 @@ public class ShopManager extends SpigotModule {
 
   @EventHandler
   public void onEconomyCheck(AccountCheckEvent event) {
+    //Try to see if we have an account for this UUID
+    //TODO add a second check for other accounts
     try {
       QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
       queryBuilder.where().eq("uuid", event.getAccount());
@@ -145,15 +153,15 @@ public class ShopManager extends SpigotModule {
 
   @EventHandler
   public void onCurrencyAdd(PreCurrencyAddEvent event) {
+    //todo add a second check here
     try {
       QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
       queryBuilder.where().eq("uuid", event.getTarget());
-      List<CompanyAccount> companyAccounts = null;
-      companyAccounts = queryBuilder.query();
-      if(!companyAccounts.isEmpty()) {
+      CompanyAccount companyAccount = queryBuilder.queryForFirst();
+      if(companyAccount != null) {
         event.setCancelled(true);
-        companyAccounts.get(0).addBalance(event.getAmountSent().doubleValue());
-        databaseManager.getCompanyAccountDao().update(companyAccounts.get(0));
+        companyAccount.addBalance(event.getAmountSent().doubleValue());
+        databaseManager.getCompanyAccountDao().update(companyAccount);
       }
     } catch (SQLException e) {
       e.printStackTrace();

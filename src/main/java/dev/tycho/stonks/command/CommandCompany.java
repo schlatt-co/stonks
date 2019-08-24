@@ -2,10 +2,7 @@ package dev.tycho.stonks.command;
 
 import com.earth2me.essentials.Essentials;
 import com.j256.ormlite.stmt.QueryBuilder;
-import dev.tycho.stonks.Database.Company;
-import dev.tycho.stonks.Database.CompanyAccount;
-import dev.tycho.stonks.Database.Member;
-import dev.tycho.stonks.Database.Role;
+import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
 import dev.tycho.stonks.managers.DatabaseManager;
@@ -177,8 +174,12 @@ public class CommandCompany implements CommandExecutor {
       Stonks.companies.add(newCompany);
       databaseManager.getCompanyDao().create(newCompany);
 
-      CompanyAccount companyAccount = new CompanyAccount(newCompany, "Main");
+      CompanyAccount companyAccount = new CompanyAccount("Main");
       databaseManager.getCompanyAccountDao().create(companyAccount);
+
+      //Create an link so the account is stored as belonging to the new company
+      AccountLink link = new AccountLink(newCompany, companyAccount);
+      databaseManager.getAccountlinkDao().create(link);
 
       Member creator = new Member(player, Role.CEO);
       newCompany.getMembers().add(creator);
@@ -325,15 +326,7 @@ public class CommandCompany implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "That company doesn't exist!");
                             return null;
                         }
-                        List<CompanyAccount> list = null;
-                        try {
-                            QueryBuilder<CompanyAccount, Integer> queryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
-                            queryBuilder.where().eq("company_id", company.getId());
-                            list = queryBuilder.query();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                        return AccountListGui.getInventory(company, list);
+                        return AccountListGui.getInventory(company, databaseManager.getAccountlinkDao().getAccounts(company));
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

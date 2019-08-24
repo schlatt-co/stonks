@@ -3,14 +3,12 @@ package dev.tycho.stonks.Database;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.managers.DatabaseManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 @DatabaseTable(tableName = "company", daoClass = CompanyDaoImpl.class)
@@ -29,7 +27,7 @@ public class Company {
     private ForeignCollection<Member> members;
 
     @ForeignCollectionField(eager = true)
-    private ForeignCollection<CompanyAccount> companyAccounts;
+    private ForeignCollection<AccountLink> accounts;
 
     @DatabaseField
     private String logoMaterial;
@@ -78,12 +76,14 @@ public class Company {
     }
 
     public void createCompanyAccount(DatabaseManager databaseManager, String name) throws SQLException {
-        CompanyAccount companyAccount = new CompanyAccount(this, name);
+        CompanyAccount companyAccount = new CompanyAccount(name);
         databaseManager.getCompanyAccountDao().create(companyAccount);
+        //Create an link entry so the account is registered as ours
+        databaseManager.getAccountlinkDao().create(new AccountLink(this, companyAccount));
     }
 
-    public ForeignCollection<CompanyAccount> getCompanyAccounts() {
-        return companyAccounts;
+    public ForeignCollection<AccountLink> getAccounts() {
+        return accounts;
     }
 
     public Boolean hasMember(Player player) {
@@ -97,8 +97,10 @@ public class Company {
 
     public void calculateTotalValue(){
         double totalValue = 0;
-        for(CompanyAccount companyAccount : companyAccounts) {
-            totalValue += companyAccount.getBalance();
+        for(AccountLink accountLink : accounts) {
+            if (accountLink == null) System.out.println("AccountLink");
+            if (accountLink.getAccount() == null) System.out.println("AccountLink.getaccount");
+            totalValue += accountLink.getAccount().getTotalBalance();
         }
         this.totalValue = totalValue;
 
