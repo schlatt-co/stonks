@@ -1,9 +1,11 @@
 package dev.tycho.stonks.managers;
 
+import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
 import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.Stonks;
@@ -14,6 +16,7 @@ import dev.tycho.stonks.Database.AccountLinkDaoImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class DatabaseManager extends SpigotModule {
 
@@ -26,6 +29,8 @@ public class DatabaseManager extends SpigotModule {
     private MemberDao memberDao = null;
     private CompanyAccountDao companyAccountDao = null;
     private AccountLinkDaoImpl accountlinkDao = null;
+    private Dao<Holding, Integer> holdingDao = null;
+    private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
 
     @Override
     public void enable() {
@@ -47,12 +52,16 @@ public class DatabaseManager extends SpigotModule {
                 memberDao = DaoManager.createDao(connectionSource, Member.class);
                 companyAccountDao = new CompanyAccountDaoImpl(connectionSource);
                 accountlinkDao =  new AccountLinkDaoImpl(connectionSource);
+                holdingDao = DaoManager.createDao(connectionSource, Holding.class);
+                holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
+
 
                 TableUtils.createTableIfNotExists(connectionSource, Company.class);
                 TableUtils.createTableIfNotExists(connectionSource, Member.class);
-                TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
                 TableUtils.createTableIfNotExists(connectionSource, AccountLink.class);
                 TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
+                TableUtils.createTableIfNotExists(connectionSource, Holding.class);
+                TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
 
 
                 Stonks.companies.addAll(companyDao.queryForAll());
@@ -100,7 +109,34 @@ public class DatabaseManager extends SpigotModule {
         return memberDao;
     }
 
-    public AccountLinkDaoImpl getAccountlinkDao() {        return accountlinkDao;    }
+    public AccountLinkDaoImpl getAccountLinkDao() {        return accountlinkDao;    }
 
     public CompanyAccountDao getCompanyAccountDao() { return companyAccountDao; }
+    public Dao<HoldingsAccount, Integer> getHoldingAccountDao() {return  holdingAccountDao;}
+    public Dao<Holding, Integer> getHoldingDao() {return  holdingDao;}
+
+    //TODO move this method to a better place
+    public Account getAccountWithUUID(UUID uuid) {
+        try {
+            //Try company account first as those are the most common
+            QueryBuilder<CompanyAccount, Integer> queryBuilder = getCompanyAccountDao().queryBuilder();
+            queryBuilder.where().eq("uuid", uuid);
+            CompanyAccount companyAccount = queryBuilder.queryForFirst();
+            //If no company account was found try and find a holdings account
+            if (companyAccount == null) {
+                QueryBuilder<HoldingsAccount, Integer> queryBuilder2 = getHoldingAccountDao().queryBuilder();
+                queryBuilder2.where().eq("uuid", uuid);
+                //This will either return a result or null
+                //If it is null there are no accounts with this match
+                return queryBuilder2.queryForFirst();
+            } else {
+                return companyAccount;
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

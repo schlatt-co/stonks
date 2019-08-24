@@ -8,6 +8,7 @@ import dev.tycho.stonks.Database.accountvisitors.ReturningAccountVisitor;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
     public AccountLinkDaoImpl(ConnectionSource connectionSource) throws SQLException {
@@ -44,6 +45,9 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
         }
     }
 
+
+
+
     public List<CompanyAccount> getCompanyAccounts(Company company) {
         QueryBuilder<AccountLink, Integer> queryBuilder = queryBuilder();
         try {
@@ -66,8 +70,13 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
         try {
             ReturningAccountVisitor v = new ReturningAccountVisitor() {
                 @Override
-                public void Visit(CompanyAccount a) {
+                public void visit(CompanyAccount a) {
                     val = "companyAccount_id";
+                }
+
+                @Override
+                public void visit(HoldingsAccount a) {
+                    val = "holdingsAccount_id";
                 }
             };
             account.accept(v);

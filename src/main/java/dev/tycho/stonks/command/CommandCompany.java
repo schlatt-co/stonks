@@ -179,7 +179,7 @@ public class CommandCompany implements CommandExecutor {
 
       //Create an link so the account is stored as belonging to the new company
       AccountLink link = new AccountLink(newCompany, companyAccount);
-      databaseManager.getAccountlinkDao().create(link);
+      databaseManager.getAccountLinkDao().create(link);
 
       Member creator = new Member(player, Role.CEO);
       newCompany.getMembers().add(creator);
@@ -326,7 +326,7 @@ public class CommandCompany implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "That company doesn't exist!");
                             return null;
                         }
-                        return AccountListGui.getInventory(company, databaseManager.getAccountlinkDao().getAccounts(company));
+                        return AccountListGui.getInventory(company, databaseManager.getAccountLinkDao().getAccounts(company));
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

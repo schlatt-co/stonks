@@ -16,6 +16,8 @@ public class AccountLink {
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private CompanyAccount companyAccount = null;
 
+    @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+    private HoldingsAccount holdingsAccount = null;
 
     public AccountLink() {
 
@@ -28,8 +30,13 @@ public class AccountLink {
         final AccountType[] type = new AccountType[1];
         IAccountVisitor visitor = new IAccountVisitor() {
             @Override
-            public void Visit(CompanyAccount a) {
+            public void visit(CompanyAccount a) {
                 type[0] = AccountType.CompanyAccount;
+            }
+
+            @Override
+            public void visit(HoldingsAccount a) {
+                type[0] = AccountType.HoldingsAccount;
             }
         };
         account.accept(visitor);
@@ -41,6 +48,7 @@ public class AccountLink {
                 this.companyAccount = (CompanyAccount)account;
                 break;
             case HoldingsAccount:
+                this.holdingsAccount = (HoldingsAccount)account;
                 break;
         }
     }
@@ -50,12 +58,11 @@ public class AccountLink {
     }
 
     public Account getAccount() {
-        if (companyAccount == null) return  null;
-        return companyAccount;
+        return (companyAccount != null) ? companyAccount : holdingsAccount;
     }
 
     public AccountType getAccountType() {
-        return (companyAccount == null) ? AccountType.HoldingsAccount : AccountType.CompanyAccount;
+        return (companyAccount != null) ? AccountType.CompanyAccount : AccountType.HoldingsAccount;
     }
 
     public Company getCompany() {

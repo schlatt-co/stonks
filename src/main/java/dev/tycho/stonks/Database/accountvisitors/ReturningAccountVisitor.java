@@ -10,7 +10,7 @@ public abstract class ReturningAccountVisitor implements IAccountVisitor {
         return val;
     }
     @Override
-    public void Visit(CompanyAccount a) {
+    public void visit(CompanyAccount a) {
 
     }
 }

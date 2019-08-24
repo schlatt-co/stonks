@@ -10,10 +10,8 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -58,7 +56,7 @@ public class AccountListGui implements InventoryProvider {
 
         for (int i = 0; i < list.size(); i++) {
             Account account = list.get(i);
-            AccountLink link = databaseManager.getAccountlinkDao().getAccountLink(account);
+            AccountLink link = databaseManager.getAccountLinkDao().getAccountLink(account);
             Material displayMaterial;
             switch (link.getAccountType()) {
                 case HoldingsAccount:

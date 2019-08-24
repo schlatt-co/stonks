@@ -2,8 +2,6 @@ package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import dev.tycho.stonks.Database.Account;
-import dev.tycho.stonks.Database.IAccountVisitor;
 
 @DatabaseTable(tableName = "companyaccount")
 public class CompanyAccount extends Account {
@@ -31,11 +29,7 @@ public class CompanyAccount extends Account {
 
     @Override
     public void accept(IAccountVisitor visitor) {
-        visitor.Visit(this);
-    }
-
-    public double getBalance() {
-        return balance;
+        visitor.visit(this);
     }
 
     public CompanyAccount(){};

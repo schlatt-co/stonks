@@ -11,23 +11,8 @@ public class AccountDaoImpl extends BaseDaoImpl<CompanyAccount, Integer> {
     }
 
     public double getBalance(Account account) {
-        AccountBalanceVisitor visitor = new AccountBalanceVisitor();
-        account.accept(visitor);
-        return visitor.getLastValue();
+        return account.getTotalBalance();
     }
 
-
-
-    private class AccountBalanceVisitor implements IAccountVisitor {
-        private double lastValue = 0;
-        public double getLastValue() {
-            return lastValue;
-        }
-
-        @Override
-        public void Visit(CompanyAccount a) {
-            lastValue = a.getBalance();
-        }
-    }
 
 }

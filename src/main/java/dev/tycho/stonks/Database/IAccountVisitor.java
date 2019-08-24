@@ -1,5 +1,6 @@
 package dev.tycho.stonks.Database;
 
 public interface IAccountVisitor {
-    void Visit(CompanyAccount a);
+    void visit(CompanyAccount a);
+    void visit(HoldingsAccount a);
 }

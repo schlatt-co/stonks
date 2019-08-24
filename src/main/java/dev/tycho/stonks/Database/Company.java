@@ -79,7 +79,7 @@ public class Company {
         CompanyAccount companyAccount = new CompanyAccount(name);
         databaseManager.getCompanyAccountDao().create(companyAccount);
         //Create an link entry so the account is registered as ours
-        databaseManager.getAccountlinkDao().create(new AccountLink(this, companyAccount));
+        databaseManager.getAccountLinkDao().create(new AccountLink(this, companyAccount));
     }
 
     public ForeignCollection<AccountLink> getAccounts() {
