@@ -808,6 +808,7 @@ public class CommandCompany implements CommandExecutor {
     private void openCompanyAccounts(Player player, String companyName) {
         Stonks.newChain()
                 .asyncFirst(() -> {
+                    player.sendMessage(ChatColor.AQUA + "Loading accounts...");
                     try {
                         Company company = databaseManager.getCompanyDao().getCompany(companyName);
                         if (company == null) {
