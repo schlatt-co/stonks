@@ -155,36 +155,37 @@ public class ShopManager extends SpigotModule {
     @EventHandler
     public void onCurrencyAdd(PreCurrencyAddEvent event) {
         dev.tycho.stonks.Database.Account account = databaseManager.getAccountWithUUID(event.getTarget());
-        System.out.println(account.getName());
-        System.out.println(event.getTarget());
-        System.out.println(event.getAmountSent());
         if (account != null) {
             event.setCancelled(true);
-            account.addBalance(event.getAmountSent().doubleValue());
-            //Create a visitor to use the correct DAO to update the account
-            IAccountVisitor visitor = new IAccountVisitor() {
-                @Override
-                public void visit(CompanyAccount a) {
-                    try {
-                        databaseManager.getCompanyAccountDao().update(a);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
 
-                @Override
-                public void visit(HoldingsAccount a) {
-                    try {
-                        databaseManager.getHoldingAccountDao().update(a);
-                      for (Holding h: a.getHoldings()) {
-                        databaseManager.getHoldingDao().update(h);
-                      }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            account.accept(visitor);
+            Stonks.newChain()
+                    .async(() -> {
+                        account.addBalance(event.getAmountSent().doubleValue());
+                        //Create a visitor to use the correct DAO to update the account
+                        IAccountVisitor visitor = new IAccountVisitor() {
+                            @Override
+                            public void visit(CompanyAccount a) {
+                                try {
+                                    databaseManager.getCompanyAccountDao().update(a);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void visit(HoldingsAccount a) {
+                                try {
+                                    databaseManager.getHoldingAccountDao().update(a);
+                                    for (Holding h: a.getHoldings()) {
+                                        databaseManager.getHoldingDao().update(h);
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        account.accept(visitor);
+                    }).execute();
         }
     }
 
@@ -198,7 +199,6 @@ public class ShopManager extends SpigotModule {
                     if (!a.subtractBalance(event.getAmountSent().doubleValue())) {
                         event.setBalanceSufficient(false);
                     }
-                    event.setCancelled(true);
                     try {
                         databaseManager.getCompanyAccountDao().update(a);
                     } catch (SQLException e) {

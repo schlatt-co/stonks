@@ -11,7 +11,6 @@ public class AccountLink {
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Company company;
 
-
     //TODO replace the double fields with a single one and a custom data persister class
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private CompanyAccount companyAccount = null;

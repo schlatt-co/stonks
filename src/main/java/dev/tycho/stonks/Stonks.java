@@ -28,7 +28,7 @@ public class Stonks extends JavaPlugin {
     return taskChainFactory.newSharedChain(name);
   }
 
-  public static List<Company> companies = new ArrayList<>();
+  //public static List<Company> companies = new ArrayList<>();
 
   @Override
   public void onEnable() {
@@ -45,6 +45,7 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
+    loadedModules.add(new SignManager(this));
 
 
 

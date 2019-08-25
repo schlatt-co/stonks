@@ -8,7 +8,9 @@ import dev.tycho.stonks.gui.*;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -53,25 +55,15 @@ public class CommandCompany implements CommandExecutor {
 
     switch (args[0].toLowerCase()) {
         case "create": {
-            if (!args[1].isEmpty()) {
-              return companyCreate(args[1], player);
+            if (args.length > 1) {
+              companyCreate(args[1], player);
             } else {
               player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
-              return true;
             }
+            return true;
         }
         case "invites": {
-            List<Member> invites = null;
-            try {
-              invites = databaseManager.getMemberDao().getInvites(player);
-            } catch (SQLException e) {
-              e.printStackTrace();
-            }
-            if(invites == null) {
-              player.sendMessage(ChatColor.RED + "You don't have any invites!");
-              return true;
-            }
-            InviteListGui.getInventory().open(player);
+            openInvitesList(player);
             return true;
         }
         case "list": {
@@ -103,7 +95,7 @@ public class CommandCompany implements CommandExecutor {
             return true;
         }
         case "invite": {
-            if (!args[1].isEmpty() && !args[2].isEmpty()) {
+            if (args.length > 2) {
                 return invitePlayerToCompany(args[1], args[2], player);
             } else {
                 player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
@@ -111,11 +103,6 @@ public class CommandCompany implements CommandExecutor {
             }
         }
         case "createcompanyaccount": {
-            try {
-                databaseManager.getCompanyDao().getCompany(args[1]).createCompanyAccount(databaseManager, args[2]);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
             return true;
         }
         case "setlogo": {
@@ -123,111 +110,177 @@ public class CommandCompany implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "Please specify a company!");
                 return true;
             }
-            ItemStack itemInHand = player.getInventory().getItemInMainHand();
-            if(itemInHand.getAmount() == 0) {
-                player.sendMessage(ChatColor.RED + "You must be holding an item to set it as your company logo!");
+            setLogo(player, args[1]);
+            return true;
+        }
+        case "pay": {
+            if(args.length < 3) {
+                player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
                 return true;
             }
-            try {
-                Company company = databaseManager.getCompanyDao().getCompany(args[1]);
-                if(company == null) {
-                    player.sendMessage(ChatColor.RED + "That company does not exist!");
-                    return true;
-                }
-                if(!company.hasMember(player)) {
-                    player.sendMessage(ChatColor.RED + "You're not a member of that company!");
-                    return true;
-                }
-                company.setLogoMaterial(itemInHand.getType().name());
-                databaseManager.getCompanyDao().update(company);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
             return true;
         }
     }
     MessageManager.sendHelpMessage(player);
     return true;
   }
-  
-  private Boolean companyCreate(String companyName, Player player) {
-      if(companyName.length() > 32) {
-          player.sendMessage(ChatColor.RED + "A company name can't be longer than 32 characters!");
-          return true;
+
+  private void payAccount(double amount, int accountId, Player sender) {
+      Stonks.newChain()
+              .async(() -> {
+                  AccountLink accountLink = null;
+                  try {
+                      accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+                  if(accountLink == null) {
+                      sender.sendMessage(ChatColor.RED + "That account doesn't exist!");
+                  }
+
+                  if(!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
+                      sender.sendMessage(ChatColor.RED + "Insufficient funds!");
+                      return;
+                  }
+
+                  accountLink.getAccount().addBalance(amount);
+                  IAccountVisitor visitor = new IAccountVisitor() {
+                      @Override
+                      public void visit(CompanyAccount a) {
+                          try {
+                              databaseManager.getCompanyAccountDao().update(a);
+                          } catch (SQLException e) {
+                              e.printStackTrace();
+                          }
+                      }
+
+                      @Override
+                      public void visit(HoldingsAccount a) {
+                          try {
+                              databaseManager.getHoldingAccountDao().update(a);
+                              for (Holding h: a.getHoldings()) {
+                                  databaseManager.getHoldingDao().update(h);
+                              }
+                          } catch (SQLException e) {
+                              e.printStackTrace();
+                          }
+                      }
+                  };
+                  accountLink.getAccount().accept(visitor);
+                  return;
+              }).execute();
+  }
+
+  private void setLogo(Player player, String companyName) {
+      ItemStack itemInHand = player.getInventory().getItemInMainHand();
+      if(itemInHand.getAmount() == 0) {
+          player.sendMessage(ChatColor.RED + "You must be holding an item to set it as your company logo!");
+          return;
       }
-    if(Stonks.companies.size() != 0) {
-      for(Company company : Stonks.companies) {
-        if(company.getName().equals(companyName)) {
-          player.sendMessage(ChatColor.RED + "A company with that name already exists!");
-          return true;
-        }
-      }
-    }
-    try {
-      double creationFee = plugin.getConfig().getInt("fees.companycreation");
-      if(!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
-        player.sendMessage(ChatColor.RED + "There is a $" + creationFee + " fee for creating a company and you did not have sufficient funds, get more money you poor fuck.");
-        return true;
-      }
-      Company newCompany = new Company(companyName, "S" + companyName, player);
-      databaseManager.getCompanyDao().assignEmptyForeignCollection(newCompany, "members");
-      Stonks.companies.add(newCompany);
-      databaseManager.getCompanyDao().create(newCompany);
+      Stonks.newChain()
+              .async(() -> {
+                  Company company = null;
+                  try {
+                      company = databaseManager.getCompanyDao().getCompany(companyName);
+                      if(company == null) {
+                          player.sendMessage(ChatColor.RED + "That company does not exist!");
+                          return;
+                      }
+                      if(!company.hasMember(player)) {
+                          player.sendMessage(ChatColor.RED + "You're not a member of that company!");
+                          return;
+                      }
+                      company.setLogoMaterial(itemInHand.getType().name());
+                      databaseManager.getCompanyDao().update(company);
+                      player.sendMessage(ChatColor.GREEN + "Company logo updated successfully!");
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+              })
+              .execute();
+  }
 
-      CompanyAccount companyAccount = new CompanyAccount("Main");
-      databaseManager.getCompanyAccountDao().create(companyAccount);
+  private void companyCreate(String companyName, Player player) {
+      Stonks.newChain()
+              .async(() -> {
+                  if(companyName.length() > 32) {
+                      player.sendMessage(ChatColor.RED + "A company name can't be longer than 32 characters!");
+                      return;
+                  }
+                  try {
+                      if(databaseManager.getCompanyDao().companyExists(companyName)) {
+                          player.sendMessage(ChatColor.RED + "A company with that name already exists!");
+                          return;
+                      }
+                      double creationFee = plugin.getConfig().getInt("fees.companycreation");
+                      if(!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
+                          player.sendMessage(ChatColor.RED + "There is a $" + creationFee + " fee for creating a company and you did not have sufficient funds, get more money you poor fuck.");
+                          return;
+                      }
+                      Company newCompany = new Company(companyName, "S" + companyName, player);
+                      databaseManager.getCompanyDao().assignEmptyForeignCollection(newCompany, "members");
+                      databaseManager.getCompanyDao().create(newCompany);
 
-      //Create an link so the account is stored as belonging to the new company
-      AccountLink link = new AccountLink(newCompany, companyAccount);
-      databaseManager.getAccountLinkDao().create(link);
+                      CompanyAccount companyAccount = new CompanyAccount("Main");
+                      databaseManager.getCompanyAccountDao().create(companyAccount);
 
-      Member creator = new Member(player, Role.CEO);
-      newCompany.getMembers().add(creator);
+                      //Create an link so the account is stored as belonging to the new company
+                      AccountLink link = new AccountLink(newCompany, companyAccount);
+                      databaseManager.getAccountLinkDao().create(link);
 
-      player.sendMessage(ChatColor.GREEN + "Company with name: \"" + companyName + "\" created successfully!");
-      return true;
-    } catch (SQLException e) {
-      e.printStackTrace();
-      player.sendMessage(ChatColor.RED + "Something went wrong! :(");
-      return false;
-    }
+                      Member creator = new Member(player, Role.CEO);
+                      newCompany.getMembers().add(creator);
+
+                      player.sendMessage(ChatColor.GREEN + "Company with name: \"" + companyName + "\" created successfully!");
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                      player.sendMessage(ChatColor.RED + "Something went wrong! :(");
+                  }
+              }).execute();
   }
 
   private Boolean invitePlayerToCompany(String playerToInvite, String companyName, Player player) {
-    if(Stonks.companies.size() != 0) {
-      for(Company company : Stonks.companies) {
-        if(company.getName().equals(companyName)) {
-          if(company.hasMember(player)) {
-            Member playerProfile = company.getMember(player);
-            if(playerProfile.hasManagamentPermission()) {
-              Player playerToInviteObject = ess.getUser(playerToInvite).getBase();
-              Member newMember = new Member(playerToInviteObject, Role.Employee, company);
-              try {
-                  QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
-                  queryBuilder.where().eq("uuid", newMember.getUuid()).and().eq("company_id", newMember.getCompany().getId());
-                  List<Member> list = queryBuilder.query();
-                  if(!list.isEmpty()) {
-                      if(list.get(0).getAcceptedInvite()) {
-                          player.sendMessage(ChatColor.RED + playerToInvite + " is already a member of " + newMember.getCompany().getName());
-                      } else {
-                          player.sendMessage(ChatColor.RED + playerToInvite + " has already been invited to " + newMember.getCompany().getName());
+      Stonks.newChain()
+              .async(() -> {
+                  try {
+                      Player playerToInviteObject = ess.getUser(playerToInvite).getBase();
+
+                      QueryBuilder<Company, UUID> queryBuilder = databaseManager.getCompanyDao().queryBuilder();
+                      queryBuilder.where().eq("name", companyName);
+                      List<Company> companies = queryBuilder.query();
+                      if(companies.isEmpty()) {
+                          player.sendMessage(ChatColor.RED + "That company does not exist.");
+                          return;
                       }
-                      return true;
+                      if(companies.get(0).getMember(player) == null) {
+                          player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+                          return;
+                      }
+                      if(!companies.get(0).getMember(player).hasManagamentPermission()) {
+                          player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+                          return;
+                      }
+                      Member newMember = new Member(playerToInviteObject, Role.Employee, companies.get(0));
+                      QueryBuilder<Member, UUID> checkQueryBuilder = databaseManager.getMemberDao().queryBuilder();
+                      checkQueryBuilder.where().eq("uuid", newMember.getUuid()).and().eq("company_id", newMember.getCompany().getId());
+                      List<Member> list = checkQueryBuilder.query();
+                      if(!list.isEmpty()) {
+                          if(list.get(0).getAcceptedInvite()) {
+                              player.sendMessage(ChatColor.RED + playerToInvite + " is already a member of " + newMember.getCompany().getName());
+                          } else {
+                              player.sendMessage(ChatColor.RED + playerToInvite + " has already been invited to " + newMember.getCompany().getName());
+                          }
+                          return;
+                      }
+                      databaseManager.getMemberDao().create(newMember);
+                      player.sendMessage(playerToInviteObject.getName() + " has successfully been invited!");
+                      playerToInviteObject.sendMessage("You have been invited to join " + companyName);
+                  } catch (SQLException e) {
+                      e.printStackTrace();
                   }
-                databaseManager.getMemberDao().create(newMember);
-                player.sendMessage(playerToInviteObject.getName() + " has successfully been invited!");
-                playerToInviteObject.sendMessage("You have been invited to join " + companyName);
-                return true;
-              } catch (SQLException e) {
-                e.printStackTrace();
-              }
-            }
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+              }).execute();
+    return true;
   }
 
   private void openCompanyList(Player player, OrderBy orderBy) {
@@ -335,5 +388,26 @@ public class CommandCompany implements CommandExecutor {
                 .abortIfNull()
                 .sync((result) -> result.open(player))
                 .execute();
+    }
+
+    private void openInvitesList(Player player) {
+      Stonks.newChain()
+              .asyncFirst(() -> {
+                  List<Member> invites;
+                  try {
+                      invites = databaseManager.getMemberDao().getInvites(player);
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                      return null;
+                  }
+                  if(invites == null) {
+                      player.sendMessage(ChatColor.RED + "You don't have any invites!");
+                      return null;
+                  }
+                  return InviteListGui.getInventory();
+              })
+              .abortIfNull()
+              .sync((result) -> result.open(player))
+              .execute();
     }
 }

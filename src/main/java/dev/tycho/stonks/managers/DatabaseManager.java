@@ -63,11 +63,6 @@ public class DatabaseManager extends SpigotModule {
                 TableUtils.createTableIfNotExists(connectionSource, Holding.class);
                 TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
 
-
-                Stonks.companies.addAll(companyDao.queryForAll());
-
-
-
 //                Subclass1 boi = new Subclass1();
 //                boi.setName("big one");
 //                boi.setCustomField1("smol");
