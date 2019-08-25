@@ -64,7 +64,7 @@ public class ShopManager extends SpigotModule {
                 QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
                 queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", companyUuid);
                 Member membership = queryBuilder.queryForFirst();
-                if (membership == null || membership.getRole().equals(Role.Slave) || !membership.getAcceptedInvite()) {
+                if (membership == null || membership.getRole().equals(Role.Intern) || !membership.getAcceptedInvite()) {
                     event.setOutcome(PreShopCreationEvent.CreationOutcome.NO_PERMISSION);
                 }
 
@@ -134,7 +134,7 @@ public class ShopManager extends SpigotModule {
             QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
             queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", link.getCompany().getId());
             List<Member> list = queryBuilder.query();
-            if (list.isEmpty() || list.get(0).getRole().equals(Role.Slave) || !list.get(0).getAcceptedInvite()) {
+            if (list.isEmpty() || list.get(0).getRole().equals(Role.Intern) || !list.get(0).getAcceptedInvite()) {
                 return;
             }
             event.setCancelled(true);

@@ -56,7 +56,7 @@ public class Holding {
         this.balance += amount;
     }
 
-    public boolean withdraw(double amount) {
+    public boolean subtractBalance(double amount) {
         if (balance < amount) return false;
         balance -= amount;
         return true;

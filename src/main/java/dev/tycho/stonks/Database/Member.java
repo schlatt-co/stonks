@@ -52,6 +52,16 @@ public class Member {
         return role;
     }
 
+    public boolean canChangeRole(Member other, Role newRole) {
+        //We are the same role or superior to them
+        //So we can change their role
+        if (role.compareTo(other.getRole()) <= 0) {
+            //We cannot promote them higher than us
+            return role.compareTo(newRole) <= 0;
+        }
+        return false;
+    }
+
     public Company getCompany() {
         return company;
     }
@@ -67,5 +77,9 @@ public class Member {
             return true;
         }
         return false;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

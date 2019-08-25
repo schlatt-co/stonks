@@ -26,6 +26,7 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
     @Override
     public Company getCompany(String name) throws SQLException {
         List<Company> companyList = queryForEq("name", ChatColor.stripColor(name));
+        if (companyList.size() == 0) return null;
         return companyList.get(0);
     }
 

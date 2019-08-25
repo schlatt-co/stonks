@@ -18,9 +18,8 @@ public class HoldingsAccount extends Account {
     public HoldingsAccount() {
     }
 
-    public HoldingsAccount(String name, Holding firstHolding) {
+    public HoldingsAccount(String name) {
         super(name);
-        holdings.add(firstHolding);
     }
 
     public double getTotalShare() {
@@ -36,7 +35,7 @@ public class HoldingsAccount extends Account {
     }
 
     //Returns the holding for the player entered, if none is found then return nothing
-    private Holding getPlayerHolding(UUID player) {
+    public Holding getPlayerHolding(UUID player) {
         for (Holding h : holdings) {
             if (h.getPlayer().equals(player)) {
                 return h;
