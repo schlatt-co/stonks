@@ -351,10 +351,12 @@ public class CommandCompany implements CommandExecutor {
                                         User u = ess.getOfflineUser(playerName);
                                         //check if the player has been on the server
                                         if (u != null) {
-                                            Player op = ess.getOfflineUser(playerName).getBase();
-                                            if (account.getPlayerHolding(op.getUniqueId()) == null) {
+                                            Player newHoldingOwner = ess.getOfflineUser(playerName).getBase();
+                                            //Check they are a member of that company
+                                            if (link.getCompany().hasMember(newHoldingOwner))
+                                            if (account.getPlayerHolding(newHoldingOwner.getUniqueId()) == null) {
                                                 //We can make a holding
-                                                Holding holding = new Holding(op.getUniqueId(), share, account);
+                                                Holding holding = new Holding(newHoldingOwner.getUniqueId(), share, account);
                                                 databaseManager.getHoldingDao().create(holding);
                                                 player.sendMessage(ChatColor.GREEN + "Holding successfully created!");
                                             } else {
