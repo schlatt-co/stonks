@@ -1,6 +1,8 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.Database.*;
+import dev.tycho.stonks.Database.Account;
+import dev.tycho.stonks.Database.AccountLink;
+import dev.tycho.stonks.Database.Company;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -16,7 +18,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class AccountListGui implements InventoryProvider {
+public class HoldingListGui implements InventoryProvider {
 
     public static DatabaseManager databaseManager;
     public static InventoryManager inventoryManager;
@@ -25,15 +27,15 @@ public class AccountListGui implements InventoryProvider {
 
     private List<Account> list;
 
-    public AccountListGui(Company company, List<Account> companyAccounts) {
+    public HoldingListGui(Company company, List<Account> companyAccounts) {
         this.company = company;
         this.list = companyAccounts;
     }
 
     public static SmartInventory getInventory(Company company, List<Account> members) {
         return SmartInventory.builder()
-                .id("memberList")
-                .provider(new AccountListGui(company, members))
+                .id("holdingList")
+                .provider(new HoldingListGui(company, members))
                 .manager(inventoryManager)
                 .size(5, 9)
                 .title(company.getName() + " accounts")
@@ -54,28 +56,9 @@ public class AccountListGui implements InventoryProvider {
 
         ClickableItem[] items = new ClickableItem[list.size()];
 
-//        for (int i = 0; i < list.size(); i++) {
-//            Account account = list.get(i);
-//            AccountLink link = databaseManager.getAccountLinkDao().getAccountLink(account);
-//            Material displayMaterial;
-//            switch (link.getAccountType()) {
-//                case HoldingsAccount:
-//                    displayMaterial = Material.GOLD_INGOT;
-//                    break;
-//                case CompanyAccount:
-//                    displayMaterial = Material.DIAMOND;
-//                    break;
-//                default:
-//                    displayMaterial = Material.IRON_INGOT;
-//                    break;
-//            }
-//            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId()));
-//            items[i] = item;
-//        }
-
-        int i = 0;
-        for (AccountLink link : company.getAccounts()) {
-            Account account = link.getAccount();
+        for (int i = 0; i < list.size(); i++) {
+            Account account = list.get(i);
+            AccountLink link = databaseManager.getAccountLinkDao().getAccountLink(account);
             Material displayMaterial;
             switch (link.getAccountType()) {
                 case HoldingsAccount:
@@ -88,9 +71,8 @@ public class AccountListGui implements InventoryProvider {
                     displayMaterial = Material.IRON_INGOT;
                     break;
             }
-            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()));
+            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId()));
             items[i] = item;
-            i++;
         }
 
         pagination.setItems(items);
