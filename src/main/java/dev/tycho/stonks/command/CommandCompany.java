@@ -353,14 +353,17 @@ public class CommandCompany implements CommandExecutor {
                                         if (u != null) {
                                             Player newHoldingOwner = ess.getOfflineUser(playerName).getBase();
                                             //Check they are a member of that company
-                                            if (link.getCompany().hasMember(newHoldingOwner))
-                                            if (account.getPlayerHolding(newHoldingOwner.getUniqueId()) == null) {
-                                                //We can make a holding
-                                                Holding holding = new Holding(newHoldingOwner.getUniqueId(), share, account);
-                                                databaseManager.getHoldingDao().create(holding);
-                                                player.sendMessage(ChatColor.GREEN + "Holding successfully created!");
+                                            if (link.getCompany().hasMember(newHoldingOwner)) {
+                                                if (account.getPlayerHolding(newHoldingOwner.getUniqueId()) == null) {
+                                                    //We can make a holding
+                                                    Holding holding = new Holding(newHoldingOwner.getUniqueId(), share, account);
+                                                    databaseManager.getHoldingDao().create(holding);
+                                                    player.sendMessage(ChatColor.GREEN + "Holding successfully created!");
+                                                } else {
+                                                    player.sendMessage(ChatColor.RED + "The player you are making a holding for already has a holding in this account");
+                                                }
                                             } else {
-                                                player.sendMessage(ChatColor.RED + "The player you are making a holding for already has a holding in this account");
+                                                player.sendMessage(ChatColor.RED + "The player you are making a holding for is not a member of the company");
                                             }
                                         } else {
                                             player.sendMessage(ChatColor.RED + "The player you are making a holding for has never played on this server");
