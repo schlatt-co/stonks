@@ -29,7 +29,7 @@ public class DatabaseManager extends SpigotModule {
     private MemberDao memberDao = null;
     private CompanyAccountDao companyAccountDao = null;
     private AccountLinkDaoImpl accountlinkDao = null;
-    private Dao<Holding, Integer> holdingDao = null;
+    private HoldingDaoImpl holdingDao = null;
     private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
 
     @Override
@@ -108,7 +108,7 @@ public class DatabaseManager extends SpigotModule {
 
     public CompanyAccountDao getCompanyAccountDao() { return companyAccountDao; }
     public Dao<HoldingsAccount, Integer> getHoldingAccountDao() {return  holdingAccountDao;}
-    public Dao<Holding, Integer> getHoldingDao() {return  holdingDao;}
+    public HoldingDao getHoldingDao() {return  holdingDao;}
 
     //TODO move this method to a better place
     public Account getAccountWithUUID(UUID uuid) {

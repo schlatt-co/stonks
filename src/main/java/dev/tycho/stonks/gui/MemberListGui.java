@@ -57,7 +57,7 @@ public class MemberListGui implements InventoryProvider {
         for (int i = 0; i < list.size(); i++) {
             Member member = list.get(i);
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(member.getUuid());
-            ClickableItem item = ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " + member.getRole().toString()));
+            ClickableItem item = ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " + member.getRole().toString()), e -> player.performCommand("stonks memberinfo " + offlinePlayer.getName() + " " + company.getName()));
             items[i] = item;
         }
 

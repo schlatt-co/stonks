@@ -2,6 +2,7 @@ package dev.tycho.stonks.Database;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.managers.DatabaseManager;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -81,5 +82,9 @@ public class Member {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Boolean hasHoldings(DatabaseManager databaseManager) {
+        return databaseManager.getHoldingDao().memberHasHoldings(this);
     }
 }
