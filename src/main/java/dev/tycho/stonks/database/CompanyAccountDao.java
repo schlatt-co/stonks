@@ -1,8 +1,7 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.database;
 
 import com.j256.ormlite.dao.Dao;
-
-import java.sql.SQLException;
+import dev.tycho.stonks.model.CompanyAccount;
 
 public interface CompanyAccountDao extends Dao<CompanyAccount, Integer> {
 }

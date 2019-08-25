@@ -1,6 +1,6 @@
 package dev.tycho.stonks.managers;
 
-import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.model.Member;
 import dev.tycho.stonks.Stonks;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

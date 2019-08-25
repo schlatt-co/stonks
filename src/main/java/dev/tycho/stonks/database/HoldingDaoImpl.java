@@ -1,7 +1,9 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.database;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.support.ConnectionSource;
+import dev.tycho.stonks.model.Holding;
+import dev.tycho.stonks.model.Member;
 
 import java.sql.SQLException;
 

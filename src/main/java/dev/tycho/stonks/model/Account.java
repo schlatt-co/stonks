@@ -1,6 +1,7 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.model;
 
 import com.j256.ormlite.field.DatabaseField;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 
 import java.util.UUID;
 

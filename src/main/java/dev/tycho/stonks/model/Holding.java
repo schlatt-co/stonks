@@ -1,7 +1,8 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.database.HoldingDaoImpl;
 
 import java.util.UUID;
 

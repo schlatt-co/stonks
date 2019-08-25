@@ -1,7 +1,6 @@
-package dev.tycho.stonks.Database.accountvisitors;
+package dev.tycho.stonks.model.accountvisitors;
 
-import dev.tycho.stonks.Database.CompanyAccount;
-import dev.tycho.stonks.Database.IAccountVisitor;
+import dev.tycho.stonks.model.CompanyAccount;
 
 public abstract class ReturningAccountVisitor implements IAccountVisitor {
     protected Object val;

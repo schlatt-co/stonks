@@ -1,9 +1,10 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.model;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.database.CompanyDaoImpl;
 import dev.tycho.stonks.managers.DatabaseManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

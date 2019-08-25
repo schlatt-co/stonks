@@ -1,8 +1,7 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.Database.Company;
-import dev.tycho.stonks.Database.Member;
-import dev.tycho.stonks.Database.Role;
+import dev.tycho.stonks.model.Member;
+import dev.tycho.stonks.model.Role;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;

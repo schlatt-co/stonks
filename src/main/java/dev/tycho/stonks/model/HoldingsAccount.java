@@ -1,12 +1,10 @@
-package dev.tycho.stonks.Database;
+package dev.tycho.stonks.model;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @DatabaseTable(tableName = "holdingsaccount")

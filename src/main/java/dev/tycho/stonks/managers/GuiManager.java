@@ -1,6 +1,5 @@
 package dev.tycho.stonks.managers;
 
-import com.Acrobot.ChestShop.Database.Account;
 import dev.tycho.stonks.gui.*;
 import fr.minuskube.inv.InventoryManager;
 import dev.tycho.stonks.Stonks;

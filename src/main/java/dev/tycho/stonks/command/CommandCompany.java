@@ -3,16 +3,16 @@ package dev.tycho.stonks.command;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
-import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
+import dev.tycho.stonks.logging.Transaction;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
-import net.milkbowl.vault.chat.Chat;
+import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import static dev.tycho.stonks.Database.Role.*;
+import static dev.tycho.stonks.model.Role.*;
 
 //TODO break this class up into sublcasses
 // its almost 1000 lines long
@@ -405,6 +405,11 @@ public class CommandCompany implements CommandExecutor {
                                                     Stonks.economy.depositPlayer(player, amount);
                                                     //todo transaction fee
                                                     player.sendMessage(ChatColor.GREEN + "Money Withdrawn!");
+
+
+                                                    //Log the transaction
+                                                    databaseManager.logTransaction(new Transaction(link, player.getUniqueId(), -amount));
+
                                                 } catch (SQLException e) {
                                                     e.printStackTrace();
                                                     player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
@@ -666,6 +671,8 @@ public class CommandCompany implements CommandExecutor {
                         }
                     };
                     accountLink.getAccount().accept(visitor);
+                    //Log the transaction
+                    databaseManager.logTransaction(new Transaction(accountLink, sender.getUniqueId(), amount));
                     //Tell the user we paid the account
                     sender.sendMessage(ChatColor.GREEN + "Paid " + ChatColor.DARK_GREEN + accountLink.getCompany().getName() +
                             " (" + accountLink.getAccount().getName() + ")" + ChatColor.GREEN + " $" + amount + "!");
@@ -917,4 +924,5 @@ public class CommandCompany implements CommandExecutor {
                 .sync((result) -> result.open(player))
                 .execute();
     }
+
 }

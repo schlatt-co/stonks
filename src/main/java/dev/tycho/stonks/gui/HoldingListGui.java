@@ -1,8 +1,8 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.Database.Account;
-import dev.tycho.stonks.Database.AccountLink;
-import dev.tycho.stonks.Database.Company;
+import dev.tycho.stonks.model.Account;
+import dev.tycho.stonks.model.AccountLink;
+import dev.tycho.stonks.model.Company;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
