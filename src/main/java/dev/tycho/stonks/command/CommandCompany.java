@@ -59,141 +59,141 @@ public class CommandCompany implements CommandExecutor {
             return true;
         }
 
-    switch (args[0].toLowerCase()) {
-        case "create": {
-            if (args.length > 1) {
-              companyCreate(args[1], player);
-            } else {
-              player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
-            }
-            return true;
-        }
-        case "invites": {
-            openInvitesList(player);
-            return true;
-        }
-        case "list": {
-            openCompanyList(player, OrderBy.NAMEASC);
-            return true;
-        }
-        case "info": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+        switch (args[0].toLowerCase()) {
+            case "create": {
+                if (args.length > 1) {
+                    companyCreate(args[1], player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
+                }
                 return true;
             }
-            openCompanyInfo(player, args[1]);
-            return true;
-        }
-        case "members": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "invites": {
+                openInvitesList(player);
                 return true;
             }
-            openCompanyMembers(player, args[1]);
-            return true;
-        }
-        case "accounts": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "list": {
+                openCompanyList(player, OrderBy.NAMEASC);
                 return true;
             }
-            openCompanyAccounts(player, args[1]);
-            return true;
-        }
-        case "invite": {
-            if (args.length > 2) {
-                return invitePlayerToCompany(args[1], args[2], player);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
+            case "info": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyInfo(player, args[1]);
                 return true;
             }
-        }
-        // /comp createcompanyaccount <company_name> <account_name>
-        case "createcompanyaccount": {
-            if (args.length > 2) {
-                createCompanyAccount(player, args[1], args[2]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createcompanyaccount <company_name> <account_name>");
-            }
-            return true;
-        }
-        // /comp createholdingsaccount <company_name> <account_name>
-        case "createholdingsaccount": {
-            if (args.length > 2) {
-                createHoldingsAccount(player, args[1], args[2]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholdingsaccount <company_name> <account_name>");
-            }
-            return true;
-        }
-        // /comp createholding <account_id> <player_name> <share>
-        case "createholding": {
-            if (args.length > 3) {
-                createHolding(player, Integer.parseInt(args[1]), args[2], Double.parseDouble(args[3]));
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <account_id> <player_name> <share>");
-            }
-            return true;
-        }
-        // /comp removehholding <accountid> <player_name>
-        case "removeholding": {
-            if (args.length > 2) {
-                removeHolding(player, Integer.parseInt(args[1]), args[2]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks removehholding <accountid> <player_name>");
-            }
-            return true;
-        }
-        // /comp withdraw <amount> <accountid>
-        case "withdraw": {
-            if (args.length > 2) {
-                withdrawFromAccount(player, Double.parseDouble(args[1]), Integer.parseInt(args[2]));
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks withdraw <amount> <accountid>");
-            }
-            return true;
-        }
-        case "setlogo": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "members": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyMembers(player, args[1]);
                 return true;
             }
-            setLogo(player, args[1]);
-            return true;
-        }
-        case "pay": {
-            if(args.length < 3) {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+            case "accounts": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyAccounts(player, args[1]);
                 return true;
             }
-            payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
-            return true;
-        }
-        // /comp setrole <playername> <company> <role>
-        case "setrole": {
-            if (args.length > 3) {
-                setRole(player, args[1], args[2], args[3]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks setrole <player> <company> <role>");
+            case "invite": {
+                if (args.length > 2) {
+                    return invitePlayerToCompany(args[1], args[2], player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
+                    return true;
+                }
             }
-            return true;
-        }
-        case "memberinfo": {
-            if (args.length < 3) {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
+            // /comp createcompanyaccount <company_name> <account_name>
+            case "createcompanyaccount": {
+                if (args.length > 2) {
+                    createCompanyAccount(player, args[1], args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createcompanyaccount <company_name> <account_name>");
+                }
                 return true;
             }
-            openMemberInfo(args[1], args[2], player);
-            return true;
-        }
-        case "kickmember": {
-            if (args.length < 3) {
-                player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
+            // /comp createholdingsaccount <company_name> <account_name>
+            case "createholdingsaccount": {
+                if (args.length > 2) {
+                    createHoldingsAccount(player, args[1], args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholdingsaccount <company_name> <account_name>");
+                }
                 return true;
             }
-            kickMember(args[1], args[2], player);
-            return true;
-        }
+            // /comp createholding <account_id> <player_name> <share>
+            case "createholding": {
+                if (args.length > 3) {
+                    createHolding(player, Integer.parseInt(args[1]), args[2], Double.parseDouble(args[3]));
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <account_id> <player_name> <share>");
+                }
+                return true;
+            }
+            // /comp removehholding <accountid> <player_name>
+            case "removeholding": {
+                if (args.length > 2) {
+                    removeHolding(player, Integer.parseInt(args[1]), args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks removehholding <accountid> <player_name>");
+                }
+                return true;
+            }
+            // /comp withdraw <amount> <accountid>
+            case "withdraw": {
+                if (args.length > 2) {
+                    withdrawFromAccount(player, Double.parseDouble(args[1]), Integer.parseInt(args[2]));
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks withdraw <amount> <accountid>");
+                }
+                return true;
+            }
+            case "setlogo": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                setLogo(player, args[1]);
+                return true;
+            }
+            case "pay": {
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+                    return true;
+                }
+                payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
+                return true;
+            }
+            // /comp setrole <playername> <company> <role>
+            case "setrole": {
+                if (args.length > 3) {
+                    setRole(player, args[1], args[2], args[3]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks setrole <player> <company> <role>");
+                }
+                return true;
+            }
+            case "memberinfo": {
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
+                    return true;
+                }
+                openMemberInfo(args[1], args[2], player);
+                return true;
+            }
+            case "kickmember": {
+                if (args.length < 3) {
+                    player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
+                    return true;
+                }
+                kickMember(args[1], args[2], player);
+                return true;
+            }
         }
         MessageManager.sendHelpMessage(player);
         return true;
@@ -290,22 +290,27 @@ public class CommandCompany implements CommandExecutor {
                                 if (memberToChange != null) {
                                     //Both players are a member of the company
                                     //Now check permissions
-                                    if (changingMember.canChangeRole(memberToChange, newRole)) {
-                                        //If we are promoting them to a ceo then demote us
-                                        try {
-                                            databaseManager.getMemberDao().setRole(memberToChange, newRole);
-                                            player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
-                                            if (newRole == CEO) {
-                                                databaseManager.getMemberDao().setRole(changingMember, Manager);
-                                                player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
-                                                        " to CEO, you have been demoted to a Manager since there can only be one CEO.");
+                                    //A player can't change their own role
+                                    if (!changingMember.getUuid().equals(memberToChange.getUuid())) {
+                                        if (changingMember.canChangeRole(memberToChange, newRole)) {
+                                            //If we are promoting them to a ceo then demote us
+                                            try {
+                                                databaseManager.getMemberDao().setRole(memberToChange, newRole);
+                                                player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
+                                                if (newRole == CEO) {
+                                                    databaseManager.getMemberDao().setRole(changingMember, Manager);
+                                                    player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
+                                                            " to CEO, you have been demoted to a Manager since there can only be one CEO.");
+                                                }
+                                            } catch (SQLException e) {
+                                                player.sendMessage(ChatColor.RED + "SQL ERROR! Tell wheezy please");
+                                                e.printStackTrace();
                                             }
-                                        } catch (SQLException e) {
-                                            player.sendMessage(ChatColor.RED + "SQL ERROR! Tell wheezy please");
-                                            e.printStackTrace();
+                                        } else {
+                                            player.sendMessage(ChatColor.RED + "You do not have the permissions to promote " + playerName + " to " + roleString);
                                         }
                                     } else {
-                                        player.sendMessage(ChatColor.RED + "You do not have the permissions to promote " + playerName + " to " + roleString);
+                                        player.sendMessage(ChatColor.RED + "You cannot change your own role");
                                     }
                                 } else {
                                     player.sendMessage(ChatColor.RED + "The player you are changing the role of is not a member of that company");

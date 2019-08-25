@@ -55,30 +55,15 @@ public class DatabaseManager extends SpigotModule {
                 holdingDao = DaoManager.createDao(connectionSource, Holding.class);
                 holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
 
-
                 TableUtils.createTableIfNotExists(connectionSource, Company.class);
                 TableUtils.createTableIfNotExists(connectionSource, Member.class);
                 TableUtils.createTableIfNotExists(connectionSource, AccountLink.class);
                 TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
                 TableUtils.createTableIfNotExists(connectionSource, Holding.class);
                 TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
-
-//                Subclass1 boi = new Subclass1();
-//                boi.setName("big one");
-//                boi.setCustomField1("smol");
-//                System.out.println("  ____  Created Entity ID:  ____  ");
-//                System.out.println(boi.getId());
-//                subclass1Dao.create(boi);
-//                System.out.println(boi.getId());
-
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-
-
-
         }
     }
 
