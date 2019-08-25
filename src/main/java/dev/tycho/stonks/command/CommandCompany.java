@@ -174,27 +174,26 @@ public class CommandCompany implements CommandExecutor {
             if (args.length > 3) {
                 setRole(player, args[1], args[2], args[3]);
             } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+                player.sendMessage(ChatColor.RED + "Correct usage: /stonks setrole <player> <company> <role>");
             }
-
+            return true;
+        }
+        case "memberinfo": {
+            if (args.length < 3) {
+                player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
                 return true;
             }
-            case "memberinfo": {
-                if (args.length < 3) {
-                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
-                    return true;
-                }
-                openMemberInfo(args[1], args[2], player);
+            openMemberInfo(args[1], args[2], player);
+            return true;
+        }
+        case "kickmember": {
+            if (args.length < 3) {
+                player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
                 return true;
             }
-            case "kickmember": {
-                if (args.length < 3) {
-                    player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
-                    return true;
-                }
-                kickMember(args[1], args[2], player);
-                return true;
-            }
+            kickMember(args[1], args[2], player);
+            return true;
+        }
         }
         MessageManager.sendHelpMessage(player);
         return true;
@@ -264,11 +263,12 @@ public class CommandCompany implements CommandExecutor {
                     //Try and parse the role
                     Role newRole;
                     try {
-                        newRole = valueOf(roleString);
+                        newRole = Role.valueOf(roleString);
                     } catch (IllegalArgumentException e) {
                         player.sendMessage(ChatColor.RED + "Role entered was not a valid role");
                         return;
                     }
+                    Bukkit.broadcastMessage(newRole.toString());
 
                     //Now see if the player to promote exists
                     Player playerToChange = ess.getUser(playerName).getBase();
@@ -293,17 +293,16 @@ public class CommandCompany implements CommandExecutor {
                                     if (changingMember.canChangeRole(memberToChange, newRole)) {
                                         //If we are promoting them to a ceo then demote us
                                         try {
-                                            memberToChange.setRole(newRole);
-                                            databaseManager.getMemberDao().update(memberToChange);
+                                            databaseManager.getMemberDao().setRole(memberToChange, newRole);
                                             player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
                                             if (newRole == CEO) {
-                                                changingMember.setRole(Manager);
-                                                databaseManager.getMemberDao().update(changingMember);
+                                                databaseManager.getMemberDao().setRole(changingMember, Manager);
                                                 player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
-                                                        " to CEO, you have been demoted to a Manager since you can only have 1 CEO");
+                                                        " to CEO, you have been demoted to a Manager since there can only be one CEO.");
                                             }
                                         } catch (SQLException e) {
                                             player.sendMessage(ChatColor.RED + "SQL ERROR! Tell wheezy please");
+                                            e.printStackTrace();
                                         }
                                     } else {
                                         player.sendMessage(ChatColor.RED + "You do not have the permissions to promote " + playerName + " to " + roleString);

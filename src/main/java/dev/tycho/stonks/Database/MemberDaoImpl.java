@@ -69,4 +69,12 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
         deleteBuilder.where().eq("uuid", member.getUuid()).and().eq("company_id", member.getCompany().getId());
         deleteBuilder.delete();
     }
+
+    @Override
+    public void setRole(Member member, Role role) throws SQLException {
+        UpdateBuilder<Member, UUID> updateBuilder = updateBuilder();
+        updateBuilder.where().eq("uuid", member.getUuid()).and().eq("company_id", member.getCompany().getId());
+        updateBuilder.updateColumnValue("role", role);
+        updateBuilder.update();
+    }
 }

@@ -2,6 +2,7 @@ package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.Database.Company;
 import dev.tycho.stonks.Database.Member;
+import dev.tycho.stonks.Database.Role;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -45,12 +46,12 @@ public class MemberInfoGui implements InventoryProvider {
 
         contents.set(0, 4, ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " + member.getRole().toString())));
 
-        contents.set(1, 0, ClickableItem.of(Util.item(Material.DIRT, "Set role to intern"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName())));
-        contents.set(1, 1, ClickableItem.of(Util.item(Material.IRON_BLOCK, "Set role to employee"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + member.getRole().toString())));
-        contents.set(1, 2, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Set role to manager"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + member.getRole().toString())));
-        contents.set(1, 3, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + member.getRole().toString())));
+        contents.set(1, 3, ClickableItem.of(Util.item(Material.DIRT, "Set role to intern"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.Intern.toString())));
+        contents.set(1, 2, ClickableItem.of(Util.item(Material.IRON_BLOCK, "Set role to employee"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.Employee.toString())));
+        contents.set(1, 1, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Set role to manager"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.Manager.toString())));
+        contents.set(1, 0, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.CEO.toString())));
 
-        contents.set(1, 8, ClickableItem.of(Util.item(Material.BARRIER, ChatColor.RED + "Kick member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + member.getCompany().getName())));
+        contents.set(1, 8, ClickableItem.of(Util.item(Material.BARRIER, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + member.getCompany().getName())));
     }
 
     @Override
