@@ -199,35 +199,38 @@ public class ShopManager extends SpigotModule {
     public void onCurrencySubtract(PreCurrencySubtractEvent event) {
         dev.tycho.stonks.model.Account account = databaseManager.getAccountWithUUID(event.getSender());
         if (account != null) {
-            IAccountVisitor visitor = new IAccountVisitor() {
-                @Override
-                public void visit(CompanyAccount a) {
-                    if (!a.subtractBalance(event.getAmountSent().doubleValue())) {
-                        event.setBalanceSufficient(false);
-                    } else {
-                        //Transaction success
-                        //Log the transaction
-                        databaseManager.logTransaction(new Transaction(
-                                databaseManager.getAccountLinkDao().getAccountLink(account),
-                                -event.getAmountSent().doubleValue()));
-                    }
-                    try {
-                        databaseManager.getCompanyAccountDao().update(a);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void visit(HoldingsAccount a) {
-                    //A holdings account can't pay out
-                    System.out.println("Tried to pay out of a holdings account using a shop sign");
-                    System.out.println("Holdings account ID: " + a.getId());
-                    event.setBalanceSufficient(false);
-                }
-            };
-            account.accept(visitor);
             event.setCancelled(true);
+            Stonks.newChain()
+                    .async(() -> {
+                        IAccountVisitor visitor = new IAccountVisitor() {
+                            @Override
+                            public void visit(CompanyAccount a) {
+                                if (!a.subtractBalance(event.getAmountSent().doubleValue())) {
+                                    event.setBalanceSufficient(false);
+                                } else {
+                                    //Transaction success
+                                    //Log the transaction
+                                    databaseManager.logTransaction(new Transaction(
+                                            databaseManager.getAccountLinkDao().getAccountLink(account),
+                                            -event.getAmountSent().doubleValue()));
+                                }
+                                try {
+                                    databaseManager.getCompanyAccountDao().update(a);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void visit(HoldingsAccount a) {
+                                //A holdings account can't pay out
+                                System.out.println("Tried to pay out of a holdings account using a shop sign");
+                                System.out.println("Holdings account ID: " + a.getId());
+                                event.setBalanceSufficient(false);
+                            }
+                        };
+                        account.accept(visitor);
+                    }).execute();
         }
     }
 

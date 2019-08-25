@@ -3,6 +3,7 @@ package dev.tycho.stonks;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import dev.tycho.stonks.command.TabCompleterCompany;
 import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -53,6 +54,8 @@ public class Stonks extends JavaPlugin {
     for (SpigotModule module : loadedModules) {
       module.onEnable();
     }
+
+    getCommand("company").setTabCompleter(new TabCompleterCompany());
   }
 
   @Override
