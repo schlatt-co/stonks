@@ -194,67 +194,113 @@ public class CommandCompany implements CommandExecutor {
                 kickMember(args[1], args[2], player);
                 return true;
             }
+            case "fees": {
+                player.sendMessage(ChatColor.GOLD + "----------------");
+                player.sendMessage(ChatColor.AQUA + "Company creation: €" + plugin.getConfig().getDouble("fees.companycreation"));
+                player.sendMessage(ChatColor.AQUA + "CompanyAccount creation: €" + plugin.getConfig().getDouble("fees.companyaccountcreation"));
+                player.sendMessage(ChatColor.AQUA + "HoldingsAccount creation: €" + plugin.getConfig().getDouble("fees.holdingsaccountcreation"));
+                player.sendMessage(ChatColor.GOLD + "----------------");
+                return true;
+            }
+            case "holdinginfo": {
+                if(args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks holdinginfo <accountid>");
+                    return true;
+                }
+                openHoldingAccountInfo(player, Integer.parseInt(args[1]));
+                return true;
+            }
         }
         MessageManager.sendHelpMessage(player);
         return true;
     }
 
+    private void openHoldingAccountInfo(Player player, int accountId) {
+        Stonks.newChain()
+                .asyncFirst(() -> {
+                    try {
+                        AccountLink link = null;
+                        link = databaseManager.getAccountLinkDao().queryForId(accountId);
+                        if(!link.getAccountType().equals(AccountType.HoldingsAccount)) {
+                            player.sendMessage(ChatColor.RED + "You can only view holdings for holdingsaccounts.");
+                            return null;
+                        }
+                        return HoldingListGui.getInventory((HoldingsAccount) link.getAccount());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .abortIfNull()
+                .sync((result) -> result.open(player))
+                .execute();
+    }
+
     private void removeHolding(Player player, int accountId, String playerName) {
-        try {
-            AccountLink link = databaseManager.getAccountLinkDao().queryForId(accountId);
-            if (link != null) {
-                //We have a valid account
-                //First make sure the account is a holdings account
-                //todo turn this into a visitor, try and avoid casts
-                if (link.getAccountType() == AccountType.HoldingsAccount) {
-                    HoldingsAccount account = (HoldingsAccount) link.getAccount();
-                    Member member = link.getCompany().getMember(player);
-                    //Is the player a member of that company
-                    if (member != null) {
-                        //Does the player have permission to create a holding in that account?
-                        if (member.hasManagamentPermission()) {
-                            //Try and find the UUID of that player
-                            User u = ess.getOfflineUser(playerName);
-                            //check if the player has been on the server
-                            if (u != null) {
-                                Player op = ess.getOfflineUser(playerName).getBase();
-                                Holding playerHolding = account.getPlayerHolding(op.getUniqueId());
-                                if (playerHolding != null) {
-                                    //That player has a holding
-                                    //If their balance is lower than 1 we can remove it
-                                    //This isnt == 0 because of possible floating point errors
-                                    if (playerHolding.getBalance() < 1) {
-                                        account.removeHolding(playerHolding);
-                                        databaseManager.getHoldingDao().delete(playerHolding);
-                                        player.sendMessage(ChatColor.GREEN + "Holding successfully removed!");
+        Stonks.newChain()
+                .async(() -> {
+                    try {
+                        AccountLink link = databaseManager.getAccountLinkDao().queryForId(accountId);
+                        if (link != null) {
+                            //We have a valid account
+                            //First make sure the account is a holdings account
+                            //todo turn this into a visitor, try and avoid casts
+                            if (link.getAccountType() == AccountType.HoldingsAccount) {
+                                HoldingsAccount account = (HoldingsAccount) link.getAccount();
+                                Member member = link.getCompany().getMember(player);
+                                //Is the player a member of that company
+                                if (member != null) {
+                                    //Does the player have permission to create a holding in that account?
+                                    if (member.hasManagamentPermission()) {
+                                        //Try and find the UUID of that player
+                                        User u = ess.getOfflineUser(playerName);
+                                        //check if the player has been on the server
+                                        if (u != null) {
+                                            Player op = ess.getOfflineUser(playerName).getBase();
+                                            Holding playerHolding = account.getPlayerHolding(op.getUniqueId());
+                                            if (playerHolding != null) {
+                                                //That player has a holding
+                                                //If their balance is lower than 1 we can remove it
+                                                //This isnt == 0 because of possible floating point errors
+                                                if (playerHolding.getBalance() < 1) {
+                                                    if(account.getHoldings().size() < 2) {
+                                                        player.sendMessage(ChatColor.RED + "There always needs to be at least one holding per holdingsaccount!");
+                                                        return;
+                                                    }
+                                                    account.removeHolding(playerHolding);
+                                                    databaseManager.getHoldingDao().delete(playerHolding);
+                                                    player.sendMessage(ChatColor.GREEN + "Holding successfully removed!");
+                                                } else {
+                                                    player.sendMessage(ChatColor.RED + "There is more than $1 in that holding");
+                                                    player.sendMessage(ChatColor.RED + "Please get " + playerName +
+                                                            " to withdraw so there is less than $1 remaining or set the ratio to 0.");
+                                                }
+                                            } else {
+                                                player.sendMessage(ChatColor.RED + "There is no holding for the player " + playerName);
+                                            }
+                                        } else {
+                                            player.sendMessage(ChatColor.RED + "Player " + playerName + " not found");
+                                        }
                                     } else {
-                                        player.sendMessage(ChatColor.RED + "There is more than $1 in that holding");
-                                        player.sendMessage(ChatColor.RED + "Please get " + playerName +
-                                                " to withdraw so there is less than $1 remaining");
+                                        player.sendMessage(ChatColor.RED + "You don't have the correct permissions within your company to remove a holding");
+                                        player.sendMessage("Ask your manager to promote you to a manager to do this");
                                     }
                                 } else {
-                                    player.sendMessage(ChatColor.RED + "There is no holding for the player " + playerName);
+                                    player.sendMessage(ChatColor.RED + "You are not a member of that company");
                                 }
                             } else {
-                                player.sendMessage(ChatColor.RED + "Player " + playerName + " not found");
+                                player.sendMessage(ChatColor.RED + "The account ID entered is not a holdings account");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "You don't have the correct permissions within your company to remove a holding");
-                            player.sendMessage("Ask your manager to promote you to a manager to do this");
+                            player.sendMessage(ChatColor.RED + "No account exists for that ID");
                         }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You are not a member of that company");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
                     }
-                } else {
-                    player.sendMessage(ChatColor.RED + "The account ID entered is not a holdings account");
-                }
-            } else {
-                player.sendMessage(ChatColor.RED + "No account exists for that ID");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
-        }
+                })
+                .sync(() -> player.closeInventory())
+                .execute();
     }
 
     private void setRole(Player player, String playerName, String companyName, String roleString) {
@@ -484,6 +530,11 @@ public class CommandCompany implements CommandExecutor {
                                 Member member = company.getMember(player);
                                 if (member != null) {
                                     if (member.hasManagamentPermission()) {
+                                        double creationFee = plugin.getConfig().getDouble("fees.companyaccountcreation");
+                                        if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
+                                            player.sendMessage(ChatColor.RED + "There is a $" + creationFee + " fee for creating a companyaccount and you do not have sufficient funds, get some more money you poor fuck.");
+                                            return;
+                                        }
                                         CompanyAccount ca = new CompanyAccount(accountName);
                                         databaseManager.getCompanyAccountDao().create(ca);
 
@@ -525,11 +576,20 @@ public class CommandCompany implements CommandExecutor {
                                 Member member = company.getMember(player);
                                 if (member != null) {
                                     if (member.hasManagamentPermission()) {
+                                        double creationFee = plugin.getConfig().getDouble("fees.companyaccountcreation");
+                                        if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
+                                            player.sendMessage(ChatColor.RED + "There is a $" + creationFee + " fee for creating a holdingsaccount and you do not have sufficient funds, get some more money you poor fuck.");
+                                            return;
+                                        }
                                         HoldingsAccount ha = new HoldingsAccount(accountName);
                                         databaseManager.getHoldingAccountDao().create(ha);
 
                                         AccountLink link = new AccountLink(company, ha);
                                         databaseManager.getAccountLinkDao().create(link);
+
+                                        //Make first holding
+                                        Holding holding = new Holding(player.getUniqueId(), 1, ha);
+                                        databaseManager.getHoldingDao().create(holding);
 
                                         player.sendMessage(ChatColor.GREEN + "Holdings account '" + accountName + "' added to '" + companyName + "' !");
                                     } else {
@@ -726,7 +786,7 @@ public class CommandCompany implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "A company with that name already exists!");
                             return;
                         }
-                        double creationFee = plugin.getConfig().getInt("fees.companycreation");
+                        double creationFee = plugin.getConfig().getDouble("fees.companycreation");
                         if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
                             player.sendMessage(ChatColor.RED + "There is a $" + creationFee + " fee for creating a company and you did not have sufficient funds, get more money you poor fuck.");
                             return;

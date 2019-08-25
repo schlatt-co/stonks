@@ -56,41 +56,25 @@ public class AccountListGui implements InventoryProvider {
 
         ClickableItem[] items = new ClickableItem[list.size()];
 
-//        for (int i = 0; i < list.size(); i++) {
-//            Account account = list.get(i);
-//            AccountLink link = databaseManager.getAccountLinkDao().getAccountLink(account);
-//            Material displayMaterial;
-//            switch (link.getAccountType()) {
-//                case HoldingsAccount:
-//                    displayMaterial = Material.GOLD_INGOT;
-//                    break;
-//                case CompanyAccount:
-//                    displayMaterial = Material.DIAMOND;
-//                    break;
-//                default:
-//                    displayMaterial = Material.IRON_INGOT;
-//                    break;
-//            }
-//            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId()));
-//            items[i] = item;
-//        }
 
         int i = 0;
         for (AccountLink link : company.getAccounts()) {
             Account account = link.getAccount();
             Material displayMaterial;
+            ClickableItem item = null;
             switch (link.getAccountType()) {
                 case HoldingsAccount:
                     displayMaterial = Material.GOLD_INGOT;
+                    item = ClickableItem.of(Util.item(Material.GOLD_INGOT, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()), e -> player.performCommand("stonks holdinginfo " + link.getId()));
                     break;
                 case CompanyAccount:
-                    displayMaterial = Material.DIAMOND;
+                    item = ClickableItem.empty(Util.item(Material.DIAMOND, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()));
                     break;
                 default:
                     displayMaterial = Material.IRON_INGOT;
                     break;
             }
-            ClickableItem item = ClickableItem.empty(Util.item(displayMaterial, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()));
+
             items[i] = item;
             i++;
         }
