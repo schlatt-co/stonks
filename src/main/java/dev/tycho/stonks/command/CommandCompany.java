@@ -27,6 +27,8 @@ import java.util.UUID;
 
 import static dev.tycho.stonks.Database.Role.*;
 
+//TODO break this class up into sublcasses
+// its almost 1000 lines long
 public class CommandCompany implements CommandExecutor {
 
     private DatabaseManager databaseManager;
@@ -57,137 +59,205 @@ public class CommandCompany implements CommandExecutor {
             return true;
         }
 
-    switch (args[0].toLowerCase()) {
-        case "create": {
-            if (args.length > 1) {
-              companyCreate(args[1], player);
-            } else {
-              player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
-            }
-            return true;
-        }
-        case "invites": {
-            openInvitesList(player);
-            return true;
-        }
-        case "list": {
-            openCompanyList(player, OrderBy.NAMEASC);
-            return true;
-        }
-        case "info": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+        switch (args[0].toLowerCase()) {
+            case "create": {
+                if (args.length > 1) {
+                    companyCreate(args[1], player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks create <company>");
+                }
                 return true;
             }
-            openCompanyInfo(player, args[1]);
-            return true;
-        }
-        case "members": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "invites": {
+                openInvitesList(player);
                 return true;
             }
-            openCompanyMembers(player, args[1]);
-            return true;
-        }
-        case "accounts": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "list": {
+                openCompanyList(player, OrderBy.NAMEASC);
                 return true;
             }
-            openCompanyAccounts(player, args[1]);
-            return true;
-        }
-        case "invite": {
-            if (args.length > 2) {
-                return invitePlayerToCompany(args[1], args[2], player);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
+            case "info": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyInfo(player, args[1]);
                 return true;
             }
-        }
-        // /comp createcompanyaccount <company_name> <account_name>
-        case "createcompanyaccount": {
-            if (args.length > 2) {
-                return createCompanyAccount(player, args[1], args[2]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createcompanyaccount <company_name> <account_name>");
-                return false;
-            }
-        }
-        // /comp createholdingsaccount <company_name> <account_name>
-        case "createholdingsaccount": {
-            if (args.length > 2) {
-                return createHoldingsAccount(player, args[1], args[2]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholdingsaccount <company_name> <account_name>");
-                return false;
-            }
-        }
-        // /comp createholding <account_id> <player_name> <share>
-        case "createholding": {
-            if (args.length > 3) {
-                return createHolding(player, Integer.parseInt(args[1]), args[2], Double.parseDouble(args[3]));
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <account_id> <player_name> <share>");
-                return false;
-            }
-        }
-        // /comp withdraw <amount> <accountid>
-        case "withdraw": {
-            if (args.length > 2) {
-                return withdrawFromAccount(player, Double.parseDouble(args[1]), Integer.parseInt(args[2]));
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks withdraw <amount> <accountid>");
-            }
-            return true;
-        }
-        case "setlogo": {
-            if(args.length < 2) {
-                player.sendMessage(ChatColor.RED + "Please specify a company!");
+            case "members": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyMembers(player, args[1]);
                 return true;
             }
-            setLogo(player, args[1]);
-            return true;
-        }
-        case "pay": {
-            if(args.length < 3) {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+            case "accounts": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                openCompanyAccounts(player, args[1]);
                 return true;
             }
-            payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
-            return true;
-        }
-        // /comp setrole <playername> <company> <role>
-        case "setrole": {
-            if (args.length > 3) {
-                return setRole(player, args[1], args[2], args[3]);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+            case "invite": {
+                if (args.length > 2) {
+                    return invitePlayerToCompany(args[1], args[2], player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
+                    return true;
+                }
             }
+            // /comp createcompanyaccount <company_name> <account_name>
+            case "createcompanyaccount": {
+                if (args.length > 2) {
+                    return createCompanyAccount(player, args[1], args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createcompanyaccount <company_name> <account_name>");
+                    return false;
+                }
+            }
+            // /comp createholdingsaccount <company_name> <account_name>
+            case "createholdingsaccount": {
+                if (args.length > 2) {
+                    return createHoldingsAccount(player, args[1], args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholdingsaccount <company_name> <account_name>");
+                    return false;
+                }
+            }
+            // /comp createholding <account_id> <player_name> <share>
+            case "createholding": {
+                if (args.length > 3) {
+                    return createHolding(player, Integer.parseInt(args[1]), args[2], Double.parseDouble(args[3]));
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <account_id> <player_name> <share>");
+                    return false;
+                }
+            }
+            // /comp removehholding <accountid> <player_name>
+            case "removeholding": {
+                if (args.length > 2) {
+                    return removeHolding(player, Integer.parseInt(args[1]), args[2]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks removehholding <accountid> <player_name>");
+                    return false;
+                }
+            }
+            // /comp withdraw <amount> <accountid>
+            case "withdraw": {
+                if (args.length > 2) {
+                    return withdrawFromAccount(player, Double.parseDouble(args[1]), Integer.parseInt(args[2]));
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks withdraw <amount> <accountid>");
+                }
+                return true;
+            }
+            case "setlogo": {
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Please specify a company!");
+                    return true;
+                }
+                setLogo(player, args[1]);
+                return true;
+            }
+            case "pay": {
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+                    return true;
+                }
+                payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
+                return true;
+            }
+            // /comp setrole <playername> <company> <role>
+            case "setrole": {
+                if (args.length > 3) {
+                    return setRole(player, args[1], args[2], args[3]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks pay <amount> <accountid>");
+                }
 
-            return true;
-        }
-        case "memberinfo": {
-            if(args.length < 3) {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
                 return true;
             }
-            openMemberInfo(args[1], args[2], player);
-            return true;
-        }
-        case "kickmember": {
-            if(args.length < 3) {
-                player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
+            case "memberinfo": {
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
+                    return true;
+                }
+                openMemberInfo(args[1], args[2], player);
                 return true;
             }
-            kickMember(args[1], args[2], player);
-            return true;
+            case "kickmember": {
+                if (args.length < 3) {
+                    player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
+                    return true;
+                }
+                kickMember(args[1], args[2], player);
+                return true;
+            }
         }
+        MessageManager.sendHelpMessage(player);
+        return true;
     }
-    MessageManager.sendHelpMessage(player);
-    return true;
-  }
+
+    private boolean removeHolding(Player player, int accountId, String playerName) {
+        try {
+            AccountLink link = databaseManager.getAccountLinkDao().queryForId(accountId);
+            if (link != null) {
+                //We have a valid account
+                //First make sure the account is a holdings account
+                //todo turn this into a visitor, try and avoid casts
+                if (link.getAccountType() == AccountType.HoldingsAccount) {
+                    HoldingsAccount account = (HoldingsAccount) link.getAccount();
+                    Member member = link.getCompany().getMember(player);
+                    //Is the player a member of that company
+                    if (member != null) {
+                        //Does the player have permission to create a holding in that account?
+                        if (member.hasManagamentPermission()) {
+                            //Try and find the UUID of that player
+                            User u = ess.getOfflineUser(playerName);
+                            //check if the player has been on the server
+                            if (u != null) {
+                                Player op = ess.getOfflineUser(playerName).getBase();
+                                Holding playerHolding = account.getPlayerHolding(op.getUniqueId());
+                                if (playerHolding != null) {
+                                    //That player has a holding
+                                    //If their balance is lower than 1 we can remove it
+                                    //This isnt == 0 because of possible floating point errors
+                                    if (playerHolding.getBalance() < 1) {
+                                        account.removeHolding(playerHolding);
+                                        databaseManager.getHoldingDao().delete(playerHolding);
+                                        player.sendMessage(ChatColor.GREEN + "Holding successfully removed!");
+                                    } else {
+                                        player.sendMessage(ChatColor.RED + "There is more than $1 in that holding");
+                                        player.sendMessage(ChatColor.RED + "Please get " + playerName +
+                                                " to withdraw so there is less than $1 remaining");
+                                    }
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "There is no holding for the player " + playerName);
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Player " + playerName + " not found");
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You don't have the correct permissions within your company to remove a holding");
+                            player.sendMessage("Ask your manager to promote you to a manager to do this");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You are not a member of that company");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "The account ID entered is not a holdings account");
+                }
+            } else {
+                player.sendMessage(ChatColor.RED + "No account exists for that ID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
+        }
+        return true;
+    }
 
     private boolean setRole(Player player, String playerName, String companyName, String roleString) {
         //Try and parse the role
@@ -464,99 +534,97 @@ public class CommandCompany implements CommandExecutor {
         return false;
     }
 
+    private void kickMember(String memberName, String companyName, Player player) {
+        Stonks.newChain()
+                .async(() -> {
+                    try {
+                        User u = ess.getUser(memberName);
+                        if (u == null) {
+                            player.sendMessage(ChatColor.RED + "That player could not be found!");
+                            return;
+                        }
+                        Player playerProfile = u.getBase();
+                        Company company = databaseManager.getCompanyDao().getCompany(companyName);
 
+                        if (company == null) {
+                            player.sendMessage(ChatColor.RED + "That player/company could not be found!");
+                            return;
+                        }
 
-  private void kickMember(String memberName, String companyName, Player player) {
-      Stonks.newChain()
-              .async(() -> {
-                  try {
-                      User u = ess.getUser(memberName);
-                      if(u == null) {
-                          player.sendMessage(ChatColor.RED + "That player could not be found!");
-                          return;
-                      }
-                      Player playerProfile = u.getBase();
-                      Company company = databaseManager.getCompanyDao().getCompany(companyName);
+                        Member memberToKick = databaseManager.getMemberDao().getMember(playerProfile, company);
+                        if (memberToKick == null) {
+                            player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
+                            return;
+                        }
 
-                      if(company == null) {
-                          player.sendMessage(ChatColor.RED + "That player/company could not be found!");
-                          return;
-                      }
+                        Member sender = databaseManager.getMemberDao().getMember(player, company);
+                        if (sender == null || !sender.hasManagamentPermission()) {
+                            player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+                            return;
+                        }
+                        if (memberToKick.getRole() == Role.CEO) {
+                            player.sendMessage(ChatColor.RED + "You can't kick a CEO!");
+                            return;
+                        }
 
-                      Member memberToKick = databaseManager.getMemberDao().getMember(playerProfile, company);
-                      if(memberToKick == null) {
-                          player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
-                          return;
-                      }
-
-                      Member sender = databaseManager.getMemberDao().getMember(player, company);
-                      if(sender == null || !sender.hasManagamentPermission()) {
-                          player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
-                          return;
-                      }
-                      if(memberToKick.getRole() == Role.CEO) {
-                          player.sendMessage(ChatColor.RED + "You can't kick a CEO!");
-                          return;
-                      }
-
-                      if(memberToKick.hasHoldings(databaseManager)) {
-                          player.sendMessage(ChatColor.RED + "This player still has holdings, delete them before kicking the player!");
-                          return;
-                      }
-                      databaseManager.getMemberDao().deleteMember(memberToKick);
-                      player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
-                      return;
-                  } catch (SQLException e) {
-                      e.printStackTrace();
-                  }
-              })
-              .sync(() -> {
-                  player.performCommand("stonks members " + companyName);
-              })
-              .execute();
-  }
-
-  private void openMemberInfo(String memberName, String companyName, Player player) {
-      Stonks.newChain()
-              .asyncFirst(() -> {
-                  try {
-                      Player playerProfile = ess.getUser(memberName).getBase();
-                      Company company = databaseManager.getCompanyDao().getCompany(companyName);
-
-                      if(company == null || playerProfile == null) {
-                          player.sendMessage(ChatColor.RED + "That player/company could not be found!");
-                          return null;
-                      }
-
-                      Member member = databaseManager.getMemberDao().getMember(playerProfile, company);
-                      if(member == null) {
-                          player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
-                          return null;
-                      }
-                      return MemberInfoGui.getInventory(member);
-                  } catch (SQLException e) {
-                      e.printStackTrace();
-                  }
-                  return null;
-              })
-              .abortIfNull()
-              .sync((result) -> result.open(player))
-              .execute();
-  }
-
-  private void payAccount(double amount, int accountId, Player sender) {
-      Stonks.newChain()
-              .async(() -> {
-                  AccountLink accountLink = null;
-                  try {
-                      accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
-                  } catch (SQLException e) {
-                      e.printStackTrace();
-                  }
-                  if(accountLink == null) {
-                      sender.sendMessage(ChatColor.RED + "That account doesn't exist!");
+                        if (memberToKick.hasHoldings(databaseManager)) {
+                            player.sendMessage(ChatColor.RED + "This player still has holdings, delete them before kicking the player!");
+                            return;
+                        }
+                        databaseManager.getMemberDao().deleteMember(memberToKick);
+                        player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
                         return;
-                  }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .sync(() -> {
+                    player.performCommand("stonks members " + companyName);
+                })
+                .execute();
+    }
+
+    private void openMemberInfo(String memberName, String companyName, Player player) {
+        Stonks.newChain()
+                .asyncFirst(() -> {
+                    try {
+                        Player playerProfile = ess.getUser(memberName).getBase();
+                        Company company = databaseManager.getCompanyDao().getCompany(companyName);
+
+                        if (company == null || playerProfile == null) {
+                            player.sendMessage(ChatColor.RED + "That player/company could not be found!");
+                            return null;
+                        }
+
+                        Member member = databaseManager.getMemberDao().getMember(playerProfile, company);
+                        if (member == null) {
+                            player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
+                            return null;
+                        }
+                        return MemberInfoGui.getInventory(member);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .abortIfNull()
+                .sync((result) -> result.open(player))
+                .execute();
+    }
+
+    private void payAccount(double amount, int accountId, Player sender) {
+        Stonks.newChain()
+                .async(() -> {
+                    AccountLink accountLink = null;
+                    try {
+                        accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (accountLink == null) {
+                        sender.sendMessage(ChatColor.RED + "That account doesn't exist!");
+                        return;
+                    }
 
                     if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
                         sender.sendMessage(ChatColor.RED + "Insufficient funds!");
@@ -591,7 +659,7 @@ public class CommandCompany implements CommandExecutor {
                     accountLink.getAccount().accept(visitor);
                     //Tell the user we paid the account
                     sender.sendMessage(ChatColor.GREEN + "Paid " + ChatColor.DARK_GREEN + accountLink.getCompany().getName() +
-                            " (" + accountLink.getAccount().getName()  + ")" + ChatColor.GREEN + " $" + amount + "!");
+                            " (" + accountLink.getAccount().getName() + ")" + ChatColor.GREEN + " $" + amount + "!");
 
                 }).execute();
     }
