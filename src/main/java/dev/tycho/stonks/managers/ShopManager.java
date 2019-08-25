@@ -7,6 +7,7 @@ import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.Stonks;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+import static com.Acrobot.ChestShop.Signs.ChestShopSign.PRICE_LINE;
 
 
 public class ShopManager extends SpigotModule {
@@ -28,6 +30,7 @@ public class ShopManager extends SpigotModule {
     @EventHandler
     public void onPreShopCreation(PreShopCreationEvent event) {
         String accountLine = event.getSignLine(NAME_LINE);
+        String priceLine = event.getSignLine(PRICE_LINE);
         if (!accountLine.startsWith("#")) {
             return;
         }
@@ -50,12 +53,21 @@ public class ShopManager extends SpigotModule {
                 AccountLink link = databaseManager.getAccountLinkDao().queryForId(accountId);
                 UUID companyUuid = link.getCompany().getId();
 
+                //If the sign is a sell sign don't allow holdings accounts
+                if (priceLine.toLowerCase().contains("s") && link.getAccountType() == AccountType.HoldingsAccount) {
+                    event.setOutcome(PreShopCreationEvent.CreationOutcome.INVALID_PRICE);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot create a sell sign for a holdings account"
+                    + "\n" + link.getAccount().getName() +" (id " + link.getId() + ") is a holdings account");
+                    return;
+                }
+
                 QueryBuilder<Member, UUID> queryBuilder = databaseManager.getMemberDao().queryBuilder();
                 queryBuilder.where().eq("uuid", event.getPlayer().getUniqueId()).and().eq("company_id", companyUuid);
-                List<Member> list = queryBuilder.query();
-                if (list.isEmpty() || list.get(0).getRole().equals(Role.Slave) || !list.get(0).getAcceptedInvite()) {
+                Member membership = queryBuilder.queryForFirst();
+                if (membership == null || membership.getRole().equals(Role.Slave) || !membership.getAcceptedInvite()) {
                     event.setOutcome(PreShopCreationEvent.CreationOutcome.NO_PERMISSION);
                 }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
