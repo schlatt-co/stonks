@@ -135,12 +135,12 @@ public class CommandCompany implements CommandExecutor {
                 }
                 return true;
             }
-            // /comp removehholding <accountid> <player_name>
+            // /comp removeholding <accountid> <player_name>
             case "removeholding": {
                 if (args.length > 2) {
                     removeHolding(player, Integer.parseInt(args[1]), args[2]);
                 } else {
-                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks removehholding <accountid> <player_name>");
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks removeholding <accountid> <player_name>");
                 }
                 return true;
             }
