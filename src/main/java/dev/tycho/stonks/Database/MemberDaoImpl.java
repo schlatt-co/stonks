@@ -51,4 +51,22 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
             deleteBuilder.delete();
         }
     }
+
+    @Override
+    public Member getMember(Player player, Company company) throws SQLException {
+        QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
+        queryBuilder.where().eq("uuid", player.getUniqueId()).and().eq("company_id", company.getId());
+        List<Member> list = queryBuilder.query();
+        if(!list.isEmpty()) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteMember(Member member) throws SQLException {
+        DeleteBuilder<Member, UUID> deleteBuilder = deleteBuilder();
+        deleteBuilder.where().eq("uuid", member.getUuid()).and().eq("company_id", member.getCompany().getId());
+        deleteBuilder.delete();
+    }
 }

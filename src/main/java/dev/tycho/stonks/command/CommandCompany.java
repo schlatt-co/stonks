@@ -1,6 +1,7 @@
 package dev.tycho.stonks.command;
 
 import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Database.*;
 import dev.tycho.stonks.Stonks;
@@ -8,6 +9,7 @@ import dev.tycho.stonks.gui.*;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -121,9 +123,103 @@ public class CommandCompany implements CommandExecutor {
             payAccount(Double.parseDouble(args[1]), Integer.parseInt(args[2]), player);
             return true;
         }
+        case "memberinfo": {
+            if(args.length < 3) {
+                player.sendMessage(ChatColor.RED + "Correct usage: /stonks memberinfo <player> <company>");
+                return true;
+            }
+            openMemberInfo(args[1], args[2], player);
+            return true;
+        }
+        case "kickmember": {
+            if(args.length < 3) {
+                player.performCommand(ChatColor.RED + "Correct usage: /stonks kickmember <player> <company>");
+                return true;
+            }
+            kickMember(args[1], args[2], player);
+            return true;
+        }
     }
     MessageManager.sendHelpMessage(player);
     return true;
+  }
+
+  private void kickMember(String memberName, String companyName, Player player) {
+      Stonks.newChain()
+              .async(() -> {
+                  try {
+                      User u = ess.getUser(memberName);
+                      if(u == null) {
+                          player.sendMessage(ChatColor.RED + "That player could not be found!");
+                          return;
+                      }
+                      Player playerProfile = u.getBase();
+                      Company company = databaseManager.getCompanyDao().getCompany(companyName);
+
+                      if(company == null) {
+                          player.sendMessage(ChatColor.RED + "That player/company could not be found!");
+                          return;
+                      }
+
+                      Member memberToKick = databaseManager.getMemberDao().getMember(playerProfile, company);
+                      if(memberToKick == null) {
+                          player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
+                          return;
+                      }
+
+                      Member sender = databaseManager.getMemberDao().getMember(player, company);
+                      if(sender == null || !sender.hasManagamentPermission()) {
+                          player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+                          return;
+                      }
+                      if(memberToKick.getRole() == Role.CEO) {
+                          player.sendMessage(ChatColor.RED + "You can't kick a CEO!");
+                          return;
+                      }
+
+                      if(memberToKick.hasHoldings(databaseManager)) {
+                          player.sendMessage(ChatColor.RED + "This player still has holdings, delete them before kicking the player!");
+                          return;
+                      }
+                      databaseManager.getMemberDao().deleteMember(memberToKick);
+                      player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
+                      return;
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+              })
+              .sync(() -> {
+                  player.performCommand("stonks members " + companyName);
+              })
+              .execute();
+  }
+
+  private void openMemberInfo(String memberName, String companyName, Player player) {
+      Stonks.newChain()
+              .asyncFirst(() -> {
+                  try {
+                      Player playerProfile = ess.getUser(memberName).getBase();
+                      Company company = databaseManager.getCompanyDao().getCompany(companyName);
+
+                      if(company == null || playerProfile == null) {
+                          player.sendMessage(ChatColor.RED + "That player/company could not be found!");
+                          return null;
+                      }
+
+                      Member member = databaseManager.getMemberDao().getMember(playerProfile, company);
+                      if(member == null) {
+                          player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
+                          return null;
+                      }
+                      return MemberInfoGui.getInventory(member);
+                  } catch (SQLException e) {
+                      e.printStackTrace();
+                  }
+                  return null;
+              })
+              .abortIfNull()
+              .sync((result) -> result.open(player))
+              .execute();
   }
 
   private void payAccount(double amount, int accountId, Player sender) {
@@ -168,6 +264,7 @@ public class CommandCompany implements CommandExecutor {
                       }
                   };
                   accountLink.getAccount().accept(visitor);
+                  sender.sendMessage(ChatColor.GREEN + "Payment processed successfully!");
                   return;
               }).execute();
   }

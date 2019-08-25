@@ -8,7 +8,7 @@ import java.util.UUID;
 // A holding represents a share of an account held by a player
 // This is done by ratio ( share1 : share2 : ...) so percentages do not need to be saved
 // A player can withdraw as much money as is in the holding
-@DatabaseTable(tableName = "holding")
+@DatabaseTable(tableName = "holding", daoClass = HoldingDaoImpl.class)
 public class Holding {
     @DatabaseField(generatedId = true)
     private int id;

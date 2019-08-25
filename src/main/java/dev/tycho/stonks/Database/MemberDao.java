@@ -11,4 +11,8 @@ public interface MemberDao extends Dao<Member, UUID> {
     List<Member> getInvites(Player player) throws SQLException;
 
     void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException;
+
+    Member getMember(Player player, Company company) throws SQLException;
+
+    void deleteMember(Member member) throws SQLException;
 }
