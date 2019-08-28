@@ -40,6 +40,10 @@ public class CompanyInfoGui implements InventoryProvider {
         contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
         contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> player.performCommand("stonks members " + company.getName())));
         contents.set(2, 5, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"), e -> player.performCommand("stonks accounts " + company.getName())));
+
+        //If the player is a member of the company with management permissions then we can show an edit option
+
+
     }
 
     @Override

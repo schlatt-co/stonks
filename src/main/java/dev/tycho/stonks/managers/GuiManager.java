@@ -16,6 +16,7 @@ public class GuiManager extends SpigotModule {
         databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
     }
 
+    //TODO turn these into singletons
     @Override
     public void enable() {
         InviteListGui.inventoryManager = inventoryManager;
@@ -38,5 +39,15 @@ public class GuiManager extends SpigotModule {
 
         HoldingListGui.databaseManager = databaseManager;
         HoldingListGui.inventoryManager = inventoryManager;
+
+        CompanySelectorGui.inventoryManager = inventoryManager;
+        CompanySelectorGui.databaseManager = databaseManager;
+
+        AccountSelectorGui.inventoryManager = inventoryManager;
+        AccountSelectorGui.databaseManager = databaseManager;
+
+        AccountTypeSelectorGui.inventoryManager = inventoryManager;
+        AccountTypeSelectorGui.databaseManager = databaseManager;
+
     }
 }

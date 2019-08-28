@@ -2,9 +2,13 @@ package dev.tycho.stonks.database;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.Member;
+import dev.tycho.stonks.model.Role;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -30,5 +34,25 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         if (companyList.size() == 0) return null;
         return companyList.get(0);
     }
+
+    public List<Company> getAllCompanies() throws  SQLException {
+        QueryBuilder<Company, UUID> queryBuilder = queryBuilder();
+        queryBuilder.orderBy("name", true);
+        return queryBuilder.query();
+    }
+
+    public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) throws SQLException  {
+
+        Where<Member, UUID> where = memberQuery.where();
+        where.and(
+                where.or(
+                        where.eq("role", Role.CEO),
+                        where.eq("role", Role.CEO)),
+                where.eq("uuid", player.getUniqueId()));
+        QueryBuilder<Company, UUID> companyQuery = queryBuilder();
+        // join with the order query
+        return companyQuery.join(memberQuery).query();
+    }
+
 
 }

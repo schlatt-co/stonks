@@ -11,6 +11,7 @@ import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
 import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,12 +56,42 @@ public class CommandCompany implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            //add list with all commands here later;
-            MessageManager.sendHelpMessage(player);
+            //If no arg is provided just list companies
+            openCompanyList(player, OrderBy.NAMEASC);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "anvil": {
+
+                List<Company> list = new ArrayList<>();
+                try {
+                    list = databaseManager.getCompanyDao()
+                            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
+                new CompanySelectorGui.Builder()
+                        .companies(list)
+                        .title("Select a company")
+                        .companySelected((company -> {
+                            Bukkit.broadcastMessage(company.getName());
+                            new AccountSelectorGui.Builder()
+                                    .company(company)
+                                    .title("Select an account")
+                                    .accountSelected(account -> {
+                                        Bukkit.broadcastMessage(account.getAccount().getName());
+                                        new AccountTypeSelectorGui.Builder()
+                                                .typeSelected(accountType -> Bukkit.broadcastMessage(accountType.toString()))
+                                                .open(player);
+                                    })
+                                    .open(player);
+                        }))
+                        .open(player);
+                return true;
+            }
             case "create": {
                 if (args.length > 1) {
                     companyCreate(args[1], player);
@@ -108,8 +140,50 @@ public class CommandCompany implements CommandExecutor {
                     return true;
                 }
             }
+
+            //stonks createaccount <account_name>
+            case "createaccount": {
+                if (args.length > 1) {
+                    String newName = args[1];
+                    new AccountTypeSelectorGui.Builder()
+                            .title("Select an account type")
+                            .typeSelected(type -> {
+                                        List<Company> list = new ArrayList<>();
+                                        //Get all the accounts the player is a manager of
+                                        try {
+                                            list = databaseManager.getCompanyDao()
+                                                    .getAllCompaniesWhereManager(player,
+                                                            databaseManager.getMemberDao().queryBuilder());
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                            player.sendMessage(ChatColor.RED +
+                                                    "SQL ERROR GETTING MANAGED COMPANIES, TELL WHEEZY");
+                                            return;
+                                        }
+                                        new CompanySelectorGui.Builder()
+                                                .title("Select a company")
+                                                .companies(list)
+                                                .companySelected(company -> {
+                                                    switch (type) {
+                                                        case HoldingsAccount:
+                                                            createHoldingsAccount(player, company.getName(), newName);
+                                                            break;
+                                                        case CompanyAccount:
+                                                            createCompanyAccount(player, company.getName(), newName);
+                                                            break;
+                                                    }
+                                                })
+                                                .open(player);
+                                    }
+                            ).open(player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Correct usage: /sstonks createaccount <account_name>");
+                }
+                return true;
+            }
+
             // /comp createcompanyaccount <company_name> <account_name>
-            case "createcompanyaccount": {
+            case "dep_createcompanyaccount": {
                 if (args.length > 2) {
                     createCompanyAccount(player, args[1], args[2]);
                 } else {
@@ -117,8 +191,9 @@ public class CommandCompany implements CommandExecutor {
                 }
                 return true;
             }
+
             // /comp createholdingsaccount <company_name> <account_name>
-            case "createholdingsaccount": {
+            case "dep_createholdingsaccount": {
                 if (args.length > 2) {
                     createHoldingsAccount(player, args[1], args[2]);
                 } else {
@@ -126,12 +201,35 @@ public class CommandCompany implements CommandExecutor {
                 }
                 return true;
             }
-            // /comp createholding <account_id> <player_name> <share>
+
+            // /comp createholding <player_name> <share>
             case "createholding": {
-                if (args.length > 3) {
-                    createHolding(player, Integer.parseInt(args[1]), args[2], Double.parseDouble(args[3]));
+                if (args.length > 2) {
+                    String playerName = args[1];
+                    double share = Double.parseDouble(args[2]);
+                    List<Company> list = new ArrayList<>();
+                    try {
+                        list = databaseManager.getCompanyDao()
+                                .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        player.sendMessage(ChatColor.RED +
+                                "SQL ERROR GETTING MANAGED COMPANIES, TELL WHEEZY");
+                        return true;
+                    }
+                    new CompanySelectorGui.Builder()
+                            .companies(list)
+                            .title("Select a company")
+                            .companySelected((company -> {
+                                new AccountSelectorGui.Builder()
+                                        .company(company)
+                                        .title("Select an account")
+                                        .accountSelected(l -> createHolding(player, l.getId(), playerName, share))
+                                        .open(player);
+                            }))
+                            .open(player);
                 } else {
-                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <account_id> <player_name> <share>");
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks createholding <player_name> <share>");
                 }
                 return true;
             }
@@ -203,7 +301,7 @@ public class CommandCompany implements CommandExecutor {
                 return true;
             }
             case "holdinginfo": {
-                if(args.length < 2) {
+                if (args.length < 2) {
                     player.sendMessage(ChatColor.RED + "Correct usage: /stonks holdinginfo <accountid>");
                     return true;
                 }
@@ -221,7 +319,7 @@ public class CommandCompany implements CommandExecutor {
                     try {
                         AccountLink link = null;
                         link = databaseManager.getAccountLinkDao().queryForId(accountId);
-                        if(!link.getAccountType().equals(AccountType.HoldingsAccount)) {
+                        if (!link.getAccountType().equals(AccountType.HoldingsAccount)) {
                             player.sendMessage(ChatColor.RED + "You can only view holdings for holdingsaccounts.");
                             return null;
                         }
@@ -263,7 +361,7 @@ public class CommandCompany implements CommandExecutor {
                                                 //If their balance is lower than 1 we can remove it
                                                 //This isnt == 0 because of possible floating point errors
                                                 if (playerHolding.getBalance() < 1) {
-                                                    if(account.getHoldings().size() < 2) {
+                                                    if (account.getHoldings().size() < 2) {
                                                         player.sendMessage(ChatColor.RED + "There always needs to be at least one holding per holdingsaccount!");
                                                         return;
                                                     }
