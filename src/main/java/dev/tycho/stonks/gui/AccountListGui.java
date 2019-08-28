@@ -16,6 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 public class AccountListGui implements InventoryProvider {
@@ -25,17 +26,14 @@ public class AccountListGui implements InventoryProvider {
 
     private Company company;
 
-    private List<Account> list;
-
-    public AccountListGui(Company company, List<Account> companyAccounts) {
+    public AccountListGui(Company company) {
         this.company = company;
-        this.list = companyAccounts;
     }
 
-    public static SmartInventory getInventory(Company company, List<Account> members) {
+    public static SmartInventory getInventory(Company company) {
         return SmartInventory.builder()
                 .id("memberList")
-                .provider(new AccountListGui(company, members))
+                .provider(new AccountListGui(company))
                 .manager(inventoryManager)
                 .size(5, 9)
                 .title(company.getName() + " accounts")
@@ -44,6 +42,7 @@ public class AccountListGui implements InventoryProvider {
 
     @Override
     public void init(Player player, InventoryContents contents) {
+        Collection<AccountLink> links = company.getAccounts();
         contents.fillRow(0, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
         contents.fillRow(4, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
         contents.set(0,0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.getName())));
@@ -54,11 +53,11 @@ public class AccountListGui implements InventoryProvider {
 
         Pagination pagination = contents.pagination();
 
-        ClickableItem[] items = new ClickableItem[list.size()];
+        ClickableItem[] items = new ClickableItem[links.size()];
 
 
         int i = 0;
-        for (AccountLink link : company.getAccounts()) {
+        for (AccountLink link : links) {
             Account account = link.getAccount();
             Material displayMaterial;
             ClickableItem item = null;
@@ -86,9 +85,9 @@ public class AccountListGui implements InventoryProvider {
 
 
         contents.set(4, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
-                e -> getInventory(company, list).open(player, pagination.previous().getPage())));
+                e -> getInventory(company).open(player, pagination.previous().getPage())));
         contents.set(4, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
-                e -> getInventory(company, list).open(player, pagination.next().getPage())));
+                e -> getInventory(company).open(player, pagination.next().getPage())));
 
     }
 

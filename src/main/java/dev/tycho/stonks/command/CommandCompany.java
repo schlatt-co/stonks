@@ -1056,7 +1056,7 @@ public class CommandCompany implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "That company doesn't exist!");
                             return null;
                         }
-                        return AccountListGui.getInventory(company, databaseManager.getAccountLinkDao().getAccounts(company));
+                        return AccountListGui.getInventory(company);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
