@@ -33,7 +33,7 @@ public class ItemInfoHelper {
 
     public static ItemStack accountDisplayItem(AccountLink link, String... extraLore) {
 
-        ReturningAccountVisitor visitor = new ReturningAccountVisitor() {
+        ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<ItemStack>() {
             @Override
             public void visit(CompanyAccount a) {
                 List<String> lore = new ArrayList<>();
@@ -56,7 +56,7 @@ public class ItemInfoHelper {
             }
         };
         link.getAccount().accept(visitor);
-        return (ItemStack) visitor.getRecentVal();
+        return visitor.getRecentVal();
     }
 
 }

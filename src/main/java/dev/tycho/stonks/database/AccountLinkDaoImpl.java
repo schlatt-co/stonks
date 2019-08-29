@@ -68,7 +68,7 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
     public AccountLink getAccountLink(Account account) {
         QueryBuilder<AccountLink, Integer> queryBuilder = queryBuilder();
         try {
-            ReturningAccountVisitor v = new ReturningAccountVisitor() {
+            ReturningAccountVisitor<String> v = new ReturningAccountVisitor<String>() {
                 @Override
                 public void visit(CompanyAccount a) {
                     val = "companyAccount_id";
@@ -80,7 +80,7 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
                 }
             };
             account.accept(v);
-            queryBuilder.where().eq((String)v.getRecentVal(), account.getId());
+            queryBuilder.where().eq(v.getRecentVal(), account.getId());
             return queryBuilder.queryForFirst();
         } catch (SQLException e) {
             e.printStackTrace();

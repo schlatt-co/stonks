@@ -1,10 +1,10 @@
 package dev.tycho.stonks.model.accountvisitors;
 
-//todo make this into a generic class
-public abstract class ReturningAccountVisitor implements IAccountVisitor {
-    protected Object val;
 
-    public Object getRecentVal() {
+public abstract class ReturningAccountVisitor<T> implements IAccountVisitor {
+    protected T val;
+
+    public T getRecentVal() {
         return val;
     }
 }
