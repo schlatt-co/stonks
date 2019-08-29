@@ -27,7 +27,7 @@ public class ItemInfoHelper {
     }
 
     public static ItemStack accountDisplayItem(AccountLink link) {
-        return accountDisplayItem(link, null);
+        return accountDisplayItem(link, new String[]{});
     }
 
 
@@ -40,7 +40,7 @@ public class ItemInfoHelper {
                 lore.add("ID: " + ChatColor.YELLOW + link.getId());
                 lore.add("Balance: " + ChatColor.GREEN + " $" + a.getTotalBalance());
                 lore.add(ChatColor.ITALIC + "Company Account");
-                if (extraLore != null) lore.addAll(Arrays.asList(extraLore));
+                if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
                 val = Util.item(Material.DIAMOND, a.getName(), lore);
             }
 
@@ -51,7 +51,7 @@ public class ItemInfoHelper {
                 lore.add("Total Balance: $" + ChatColor.GREEN + a.getTotalBalance());
                 lore.add("Holdings: " + ChatColor.YELLOW + a.getHoldings().size());
                 lore.add(ChatColor.ITALIC + "Holdings Account");
-                if (extraLore != null) lore.addAll(Arrays.asList(extraLore));
+                if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
                 val = Util.item(Material.GOLD_INGOT, a.getName(), lore);
             }
         };

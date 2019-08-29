@@ -61,7 +61,7 @@ public class AccountLink {
         return (companyAccount != null) ? companyAccount : holdingsAccount;
     }
 
-    public AccountType getAccountType() {
+    private AccountType getAccountType() {
         return (companyAccount != null) ? AccountType.CompanyAccount : AccountType.HoldingsAccount;
     }
 

@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 
 import java.sql.SQLException;
@@ -25,40 +26,6 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
             } else {
                 return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public List<Account> getAccounts(Company company) {
-        QueryBuilder<AccountLink, Integer> queryBuilder = queryBuilder();
-        try {
-            queryBuilder.where().eq("company_id", company.getId());
-            List<AccountLink> accountLinks = queryBuilder.query();
-            List<Account> accounts = new ArrayList<>();
-            accountLinks.forEach((ao)->accounts.add(ao.getAccount()));
-            return accounts;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-
-
-    public List<CompanyAccount> getCompanyAccounts(Company company) {
-        QueryBuilder<AccountLink, Integer> queryBuilder = queryBuilder();
-        try {
-            queryBuilder.where().eq("company_id", company.getId());
-            List<AccountLink> accountLinks = queryBuilder.query();
-            List<CompanyAccount> accounts = new ArrayList<>();
-            accountLinks.forEach((ao)-> {
-                if (ao.getAccountType() == AccountType.CompanyAccount)
-                    accounts.add((CompanyAccount)ao.getAccount());
-                    });
-            return accounts;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

@@ -56,7 +56,8 @@ public class ShopManager extends SpigotModule {
                 UUID companyUuid = link.getCompany().getId();
 
                 //If the sign is a sell sign don't allow holdings accounts
-                if (priceLine.toLowerCase().contains("s") && link.getAccountType() == AccountType.HoldingsAccount) {
+                //todo turn this into a visitor and remove the need for getAccountType
+                if (priceLine.toLowerCase().contains("s") && link.getAccount() instanceof HoldingsAccount) {
                     event.setOutcome(PreShopCreationEvent.CreationOutcome.INVALID_PRICE);
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot create a sell sign for a holdings account"
                     + "\n" + link.getAccount().getName() +" (id " + link.getId() + ") is a holdings account");

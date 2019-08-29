@@ -274,7 +274,7 @@ public class CompanyCommand implements CommandExecutor {
                     try {
                         AccountLink link = null;
                         link = databaseManager.getAccountLinkDao().queryForId(accountId);
-                        if (!link.getAccountType().equals(AccountType.HoldingsAccount)) {
+                        if (!(link.getAccount() instanceof HoldingsAccount)) {
                             player.sendMessage(ChatColor.RED + "You can only view holdings for holdingsaccounts.");
                             return null;
                         }
@@ -297,8 +297,7 @@ public class CompanyCommand implements CommandExecutor {
                         if (link != null) {
                             //We have a valid account
                             //First make sure the account is a holdings account
-                            //todo turn this into a visitor, try and avoid casts
-                            if (link.getAccountType() == AccountType.HoldingsAccount) {
+                            if (link.getAccount() instanceof HoldingsAccount) {
                                 HoldingsAccount account = (HoldingsAccount) link.getAccount();
                                 Member member = link.getCompany().getMember(player);
                                 //Is the player a member of that company
@@ -437,8 +436,7 @@ public class CompanyCommand implements CommandExecutor {
                             //We have a valid account
                             Member member = link.getCompany().getMember(player);
                             //First make sure the account is a holdings account
-                            //todo turn this into a visitor, try and avoid casts
-                            if (link.getAccountType() == AccountType.HoldingsAccount) {
+                            if (link.getAccount() instanceof HoldingsAccount) {
                                 HoldingsAccount account = (HoldingsAccount) link.getAccount();
                                 //Is the player a member of that company
                                 if (member != null) {

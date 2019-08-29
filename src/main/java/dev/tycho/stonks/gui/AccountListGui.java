@@ -1,9 +1,8 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.Account;
-import dev.tycho.stonks.model.AccountLink;
-import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -59,22 +58,22 @@ public class AccountListGui implements InventoryProvider {
         int i = 0;
         for (AccountLink link : links) {
             Account account = link.getAccount();
-            ClickableItem item = null;
-            switch (link.getAccountType()) {
-                case CompanyAccount:
-                    item = ClickableItem.empty(
+            ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<>() {
+                @Override
+                public void visit(CompanyAccount a) {
+                    val = ClickableItem.empty(
                             ItemInfoHelper.accountDisplayItem(link));
-                    break;
-                case HoldingsAccount:
-                    item = ClickableItem.of(
+                }
+
+                @Override
+                public void visit(HoldingsAccount a) {
+                    val = ClickableItem.of(
                             ItemInfoHelper.accountDisplayItem(link, ChatColor.DARK_PURPLE + "Click to see holdings"),
                             e -> player.performCommand("stonks holdinginfo " + link.getId()));
-                    break;
-                default:
-                    break;
-            }
-
-            items[i] = item;
+                }
+            };
+            account.accept(visitor);
+            items[i] = visitor.getRecentVal();
             i++;
         }
 
