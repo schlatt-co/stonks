@@ -204,9 +204,8 @@ public class CompanyCommand implements CommandExecutor {
             case "pay": {
                 if (args.length > 1) {
                     double amount = Double.parseDouble(args[1]);
-                    //get all companies where we are a manager
-                    List<Company> list = databaseManager.getCompanyDao()
-                            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+                    //get all companies
+                    List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
                     new CompanySelectorGui.Builder()
                             .companies(list)
                             .title("Select a company to pay")

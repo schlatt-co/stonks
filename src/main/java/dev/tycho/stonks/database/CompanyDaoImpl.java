@@ -36,10 +36,15 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         return companyList.get(0);
     }
 
-    public List<Company> getAllCompanies() throws SQLException {
+    public List<Company> getAllCompanies() {
         QueryBuilder<Company, UUID> queryBuilder = queryBuilder();
         queryBuilder.orderBy("name", true);
-        return queryBuilder.query();
+        try {
+            return queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) {
