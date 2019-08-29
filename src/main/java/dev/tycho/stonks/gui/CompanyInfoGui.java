@@ -35,7 +35,7 @@ public class CompanyInfoGui implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "Companylist"), e -> player.performCommand("stonks list")));
+        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "Company List"), e -> player.performCommand("stonks list")));
 
         contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
         contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> player.performCommand("stonks members " + company.getName())));

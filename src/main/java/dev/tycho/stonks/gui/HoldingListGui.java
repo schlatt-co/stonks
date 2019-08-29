@@ -60,7 +60,10 @@ public class HoldingListGui implements InventoryProvider {
         int i = 0;
         for(Holding holding : holdings) {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(holding.getPlayer());
-            ClickableItem item = ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Balance: €" + holding.getBalance(), ChatColor.RED + "Right click to remove holding."), e -> {
+            ClickableItem item = ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer,
+                    ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "£" + holding.getBalance(),
+                    ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.getShare(),
+                    ChatColor.RED + "Right click to remove holding."), e -> {
                 if(e.getClick().isRightClick()) {
                     player.performCommand("stonks removeholding " + link.getId() + " " + offlinePlayer.getName());
                 }

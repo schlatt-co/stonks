@@ -17,5 +17,5 @@ public interface CompanyDao extends Dao<Company, UUID> {
 
     public List<Company> getAllCompanies() throws  SQLException;
 
-    public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) throws SQLException;
+    public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery);
 }

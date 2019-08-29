@@ -80,7 +80,6 @@ public class AccountLinkDaoImpl extends BaseDaoImpl<AccountLink, Integer> {
                 }
             };
             account.accept(v);
-            System.out.println((String)v.getRecentVal());
             queryBuilder.where().eq((String)v.getRecentVal(), account.getId());
             return queryBuilder.queryForFirst();
         } catch (SQLException e) {

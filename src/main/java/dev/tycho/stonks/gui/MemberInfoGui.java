@@ -41,7 +41,7 @@ public class MemberInfoGui implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "back to memberlist"), e -> player.performCommand("stonks members " + member.getCompany().getName())));
+        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "Back to member list"), e -> player.performCommand("stonks members " + member.getCompany().getName())));
 
         contents.set(0, 4, ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " + member.getRole().toString())));
 

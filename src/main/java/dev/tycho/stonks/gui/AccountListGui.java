@@ -64,10 +64,12 @@ public class AccountListGui implements InventoryProvider {
             switch (link.getAccountType()) {
                 case HoldingsAccount:
                     displayMaterial = Material.GOLD_INGOT;
-                    item = ClickableItem.of(Util.item(Material.GOLD_INGOT, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()), e -> player.performCommand("stonks holdinginfo " + link.getId()));
+                    item = ClickableItem.of(Util.item(Material.GOLD_INGOT, account.getName(),
+                            "ID: " + ChatColor.YELLOW + link.getId(), "Balance: €" + account.getTotalBalance(), ChatColor.DARK_PURPLE + "Click to see holdings"), e -> player.performCommand("stonks holdinginfo " + link.getId()));
                     break;
                 case CompanyAccount:
-                    item = ClickableItem.empty(Util.item(Material.DIAMOND, account.getName(), "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()));
+                    item = ClickableItem.empty(Util.item(Material.DIAMOND, account.getName(),
+                            "ID: " + ChatColor.YELLOW + link.getId(), "Balance: €" + account.getTotalBalance()));
                     break;
                 default:
                     displayMaterial = Material.IRON_INGOT;

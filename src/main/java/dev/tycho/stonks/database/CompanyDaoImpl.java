@@ -11,10 +11,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements CompanyDao{
+public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements CompanyDao {
     public CompanyDaoImpl(ConnectionSource connectionSource) throws SQLException {
         super(connectionSource, Company.class);
     }
@@ -35,23 +36,29 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         return companyList.get(0);
     }
 
-    public List<Company> getAllCompanies() throws  SQLException {
+    public List<Company> getAllCompanies() throws SQLException {
         QueryBuilder<Company, UUID> queryBuilder = queryBuilder();
         queryBuilder.orderBy("name", true);
         return queryBuilder.query();
     }
 
-    public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) throws SQLException  {
+    public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) {
 
         Where<Member, UUID> where = memberQuery.where();
-        where.and(
-                where.or(
-                        where.eq("role", Role.CEO),
-                        where.eq("role", Role.CEO)),
-                where.eq("uuid", player.getUniqueId()));
-        QueryBuilder<Company, UUID> companyQuery = queryBuilder();
-        // join with the order query
-        return companyQuery.join(memberQuery).query();
+        try {
+            where.and(
+                    where.or(
+                            where.eq("role", Role.CEO),
+                            where.eq("role", Role.CEO)),
+                    where.eq("uuid", player.getUniqueId()));
+
+            QueryBuilder<Company, UUID> companyQuery = queryBuilder();
+            // join with the order query
+            return companyQuery.join(memberQuery).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 
