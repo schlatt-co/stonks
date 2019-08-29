@@ -47,7 +47,7 @@ public class CompanyListGui implements InventoryProvider {
 
         for (int i = 0; i < list.size(); i++) {
             Company company = list.get(i);
-            ClickableItem item = ClickableItem.of(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName(), "Total value: " + company.getTotalValue()),
+            ClickableItem item = ClickableItem.of(ItemInfoHelper.companyDisplayItem(company),
                     e -> {
                         CompanyInfoGui.getInventory(company).open(player);
                         player.performCommand("stonks info " + company.getName());

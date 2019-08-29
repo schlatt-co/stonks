@@ -62,7 +62,7 @@ public class CompanySelectorGui implements InventoryProvider {
 
         for (int i = 0; i < companies.size(); i++) {
             Company company = companies.get(i);
-            ClickableItem item = ClickableItem.of(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName(), "Total value: " + company.getTotalValue()),
+            ClickableItem item = ClickableItem.of(ItemInfoHelper.companyDisplayItem(company),
                     e -> {
                         inventory.close(player);
                         onCompanySelected.accept(company);

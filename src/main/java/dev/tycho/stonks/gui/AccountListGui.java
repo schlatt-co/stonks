@@ -45,10 +45,10 @@ public class AccountListGui implements InventoryProvider {
         Collection<AccountLink> links = company.getAccounts();
         contents.fillRow(0, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
         contents.fillRow(4, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-        contents.set(0,0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.getName())));
+        contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.getName())));
 
         contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
-        contents.set(4, 1, ClickableItem.empty(Util.item(Material.CHEST, ChatColor.AQUA + "Chestshop how-to", "To use a company account instead of your personal balance", "to manage a chestshop", "put '#ACCOUNTIDHERE'", "on the first line instead of your username.", "The rest is the same.", "You can get the id from an account on this page.")));
+//        contents.set(4, 1, ClickableItem.empty(Util.item(Material.CHEST, ChatColor.AQUA + "Chestshop how-to", "To use a company account instead of your personal balance", "to manage a chestshop", "put '#ACCOUNTIDHERE'", "on the first line instead of your username.", "The rest is the same.", "You can get the id from an account on this page.")));
 
 
         Pagination pagination = contents.pagination();
@@ -59,20 +59,18 @@ public class AccountListGui implements InventoryProvider {
         int i = 0;
         for (AccountLink link : links) {
             Account account = link.getAccount();
-            Material displayMaterial;
             ClickableItem item = null;
             switch (link.getAccountType()) {
-                case HoldingsAccount:
-                    displayMaterial = Material.GOLD_INGOT;
-                    item = ClickableItem.of(Util.item(Material.GOLD_INGOT, account.getName(),
-                            "ID: " + ChatColor.YELLOW + link.getId(), "Balance: €" + account.getTotalBalance(), ChatColor.DARK_PURPLE + "Click to see holdings"), e -> player.performCommand("stonks holdinginfo " + link.getId()));
-                    break;
                 case CompanyAccount:
-                    item = ClickableItem.empty(Util.item(Material.DIAMOND, account.getName(),
-                            "ID: " + ChatColor.YELLOW + link.getId(), "Balance: €" + account.getTotalBalance()));
+                    item = ClickableItem.empty(
+                            ItemInfoHelper.accountDisplayItem(link));
+                    break;
+                case HoldingsAccount:
+                    item = ClickableItem.of(
+                            ItemInfoHelper.accountDisplayItem(link, ChatColor.DARK_PURPLE + "Click to see holdings"),
+                            e -> player.performCommand("stonks holdinginfo " + link.getId()));
                     break;
                 default:
-                    displayMaterial = Material.IRON_INGOT;
                     break;
             }
 

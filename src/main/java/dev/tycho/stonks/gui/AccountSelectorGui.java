@@ -71,24 +71,7 @@ public class AccountSelectorGui implements InventoryProvider {
         int i = 0;
         for (AccountLink link : company.getAccounts()) {
             Account account = link.getAccount();
-            ClickableItem item = null;
-
-            //Get an item to display
-            ReturningAccountVisitor visitor = new ReturningAccountVisitor() {
-                @Override
-                public void visit(CompanyAccount a) {
-                    val = Material.DIAMOND;
-                }
-
-                @Override
-                public void visit(HoldingsAccount a) {
-                    val = Material.GOLD_INGOT;
-                }
-            };
-            account.accept(visitor);
-            //Create an item that triggers the onAccountSelected consumer
-            item = ClickableItem.of(Util.item((Material)visitor.getRecentVal(), account.getName(),
-                    "ID: " + link.getId(), "Balance: €" + account.getTotalBalance()),
+            ClickableItem item = ClickableItem.of(ItemInfoHelper.accountDisplayItem(link),
                     e -> {
                         inventory.close(player);
                         onAccountSelected.accept(link);
