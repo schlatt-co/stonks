@@ -28,7 +28,7 @@ public abstract class SpigotModule implements Listener {
     log("Disabled");
   }
 
-  @SuppressWarnings({"ConstantConditions", "SameParameterValue"})
+  @SuppressWarnings({"SameParameterValue"})
   final void addCommand(String name, CommandExecutor commandExecutor) {
     plugin.getCommand(name).setExecutor(commandExecutor);
   }

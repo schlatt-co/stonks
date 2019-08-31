@@ -1,10 +1,8 @@
 package dev.tycho.stonks.util;
 
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -26,7 +24,6 @@ public class Util {
   public static ItemStack item(Material material, String name, List<String> lore) {
     ItemStack itemStack = new ItemStack(material);
     ItemMeta itemMeta = itemStack.getItemMeta();
-    //noinspection ConstantConditions
     itemMeta.setDisplayName(ChatColor.RESET + name);
     List<String> lores = new ArrayList<>();
     for (String curLore : lore) {
@@ -44,7 +41,7 @@ public class Util {
     return playerHead(name, player, Arrays.asList(lore));
   }
 
-  public static ItemStack playerHead(String name, OfflinePlayer player, List<String> lore) {
+  private static ItemStack playerHead(String name, OfflinePlayer player, List<String> lore) {
     ItemStack head = new ItemStack(Material.PLAYER_HEAD);
     SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
     skullMeta.setOwningPlayer(player);
