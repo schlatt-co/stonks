@@ -83,7 +83,7 @@ public class ShopManager extends SpigotModule {
         if (!accountLine.startsWith("#")) {
             return;
         }
-        int accountId = 0;
+        int accountId;
         if (accountLine.substring(1).matches("\\d+")) {
             accountId = Integer.parseInt(accountLine.substring(1));
         } else if (accountLine.contains("-")) {

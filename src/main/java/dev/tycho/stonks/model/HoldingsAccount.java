@@ -20,7 +20,7 @@ public class HoldingsAccount extends Account {
         super(name);
     }
 
-    public double getTotalShare() {
+    private double getTotalShare() {
         double total = 0;
         for (Holding h : holdings) {
             total += h.getShare();
@@ -46,13 +46,8 @@ public class HoldingsAccount extends Account {
         this.holdings.add(holding);
     }
 
-    public boolean removeHolding(Holding holding) {
-        if (holdings.contains(holding)) {
-            holdings.remove(holding);
-            return true;
-        } else {
-            return false;
-        }
+    public void removeHolding(Holding holding) {
+        holdings.remove(holding);
     }
 
 

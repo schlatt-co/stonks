@@ -1,12 +1,6 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.SignChangeEvent;
-
-import java.util.Objects;
 
 public class SignManager extends SpigotModule {
     public SignManager(Stonks plugin) {

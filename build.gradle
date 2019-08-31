@@ -1,12 +1,13 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
-    id 'java'
-    id 'idea'
 }
+
+apply plugin: 'java'
+apply plugin: 'idea'
 
 repositories {
     mavenCentral()
-    jcenter()
+    jcenter { url "http://jcenter.bintray.com/" }
     maven { url 'https://jitpack.io' }
     maven { url "https://papermc.io/repo/repository/maven-public/" }
     maven { url 'https://repo.codemc.org/repository/maven-public' }
@@ -21,7 +22,7 @@ dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.14.4-R0.1-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compileOnly "com.github.schlatt-co:ChestShop-3:14264df428"
+    compileOnly "com.github.schlatt-co:ChestShop-3:-SNAPSHOT"
     compileOnly "net.ess3:EssentialsX:2.17.0"
     compile "com.j256.ormlite:ormlite-core:5.1"
     compile "com.j256.ormlite:ormlite-jdbc:5.1"

@@ -33,8 +33,9 @@ public class CompanyAccount extends Account {
         visitor.visit(this);
     }
 
-    public CompanyAccount(){};
-    public CompanyAccount(String name) {
+    public CompanyAccount(){}
+
+  public CompanyAccount(String name) {
         super(name);
     }
 

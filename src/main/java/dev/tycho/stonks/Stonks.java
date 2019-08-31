@@ -7,7 +7,6 @@ import dev.tycho.stonks.command.TabCompleterCompany;
 import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,23 +30,18 @@ public class Stonks extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    this.saveDefaultConfig();
     if(getConfig().getString("mysql.database").equals("YOUR-DATABASE")) {
-      Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[" + this.getName() + "] It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
+      Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
-
     taskChainFactory = BukkitTaskChainFactory.create(this);
 
     loadedModules.add(new DatabaseManager(this));
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
-    loadedModules.add(new SignManager(this));
-
-
-
+//    loadedModules.add(new SignManager(this));
 
     if(!setupEconomy()) { return; }
 
@@ -56,6 +50,7 @@ public class Stonks extends JavaPlugin {
     }
 
     getCommand("company").setTabCompleter(new TabCompleterCompany());
+    Bukkit.getLogger().info("Loaded!");
   }
 
   @Override

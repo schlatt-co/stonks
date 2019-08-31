@@ -23,7 +23,7 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
     @Override
     public boolean companyExists(String name) throws SQLException {
         QueryBuilder<Company, UUID> queryBuilder = queryBuilder();
-        List list;
+        List<Company> list;
         queryBuilder.where().eq("name", name);
         list = queryBuilder.query();
         return list.size() > 0;
@@ -47,6 +47,7 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) {
 
         Where<Member, UUID> where = memberQuery.where();
