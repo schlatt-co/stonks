@@ -75,10 +75,7 @@ public class Member {
     }
 
     public Boolean hasManagamentPermission() {
-        if(this.role.equals(Role.CEO) || this.role.equals(Role.Manager)) {
-            return true;
-        }
-        return false;
+      return this.role.equals(Role.CEO) || this.role.equals(Role.Manager);
     }
 
     public void setRole(Role role) {

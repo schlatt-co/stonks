@@ -46,9 +46,6 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new GuiManager(this));
     loadedModules.add(new SignManager(this));
 
-
-
-
     if(!setupEconomy()) { return; }
 
     for (SpigotModule module : loadedModules) {
