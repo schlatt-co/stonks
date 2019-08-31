@@ -22,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -115,7 +114,7 @@ public class CompanyCommand implements CommandExecutor {
           new AccountTypeSelectorGui.Builder()
               .title("Select an account type")
               .typeSelected(type -> {
-                    List<Company> list = new ArrayList<>();
+                    List<Company> list;
                     //Get all the accounts the player is a manager of
                     list = databaseManager.getCompanyDao()
                         .getAllCompaniesWhereManager(player,
@@ -183,9 +182,7 @@ public class CompanyCommand implements CommandExecutor {
                   new AccountSelectorGui.Builder()
                       .company(company)
                       .title("Select an account to withdraw from")
-                      .accountSelected(l -> {
-                        withdrawFromAccount(amount, l.getId(), player);
-                      })
+                      .accountSelected(l -> withdrawFromAccount(amount, l.getId(), player))
                       .open(player)))
               .open(player);
         } else {
@@ -213,9 +210,7 @@ public class CompanyCommand implements CommandExecutor {
                   new AccountSelectorGui.Builder()
                       .company(company)
                       .title("Select which account to pay")
-                      .accountSelected(l -> {
-                        payAccount(amount, l.getId(), player);
-                      })
+                      .accountSelected(l -> payAccount(amount, l.getId(), player))
                       .open(player)))
               .open(player);
         } else {
@@ -272,7 +267,7 @@ public class CompanyCommand implements CommandExecutor {
     Stonks.newChain()
         .asyncFirst(() -> {
           try {
-            AccountLink link = null;
+            AccountLink link;
             link = databaseManager.getAccountLinkDao().queryForId(accountId);
             if (!(link.getAccount() instanceof HoldingsAccount)) {
               player.sendMessage(ChatColor.RED + "You can only view holdings for holdingsaccounts.");
@@ -351,7 +346,7 @@ public class CompanyCommand implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
           }
         })
-        .sync(() -> player.closeInventory())
+        .sync(player::closeInventory)
         .execute();
   }
 
@@ -369,7 +364,7 @@ public class CompanyCommand implements CommandExecutor {
           //Now see if the player to promote exists
           Player playerToChange = ess.getUser(playerName).getBase();
           if (playerToChange != null) {
-            Company company = null;
+            Company company;
             try {
               company = databaseManager.getCompanyDao().getCompany(companyName);
             } catch (SQLException e) {
@@ -701,14 +696,11 @@ public class CompanyCommand implements CommandExecutor {
             }
             databaseManager.getMemberDao().deleteMember(memberToKick);
             player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
-            return;
           } catch (SQLException e) {
             e.printStackTrace();
           }
         })
-        .sync(() -> {
-          player.performCommand("stonks members " + companyName);
-        })
+        .sync(() -> player.performCommand("stonks members " + companyName))
         .execute();
   }
 
@@ -802,7 +794,7 @@ public class CompanyCommand implements CommandExecutor {
     }
     Stonks.newChain()
         .async(() -> {
-          Company company = null;
+          Company company;
           try {
             company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
@@ -913,6 +905,7 @@ public class CompanyCommand implements CommandExecutor {
     return true;
   }
 
+  @SuppressWarnings("SameParameterValue")
   private void openCompanyList(Player player, OrderBy orderBy) {
     player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
     Stonks.newChain()
@@ -948,6 +941,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
+  @SuppressWarnings("unused")
   private enum OrderBy {
     NAMEASC, NAMEDESC, COMPANYVALUE
   }
