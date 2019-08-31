@@ -31,13 +31,11 @@ public class Stonks extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    this.saveDefaultConfig();
     if(getConfig().getString("mysql.database").equals("YOUR-DATABASE")) {
-      Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[" + this.getName() + "] It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
+      Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
-
     taskChainFactory = BukkitTaskChainFactory.create(this);
 
     loadedModules.add(new DatabaseManager(this));
@@ -53,6 +51,7 @@ public class Stonks extends JavaPlugin {
     }
 
     getCommand("company").setTabCompleter(new TabCompleterCompany());
+    Bukkit.getLogger().info("Loaded!");
   }
 
   @Override
