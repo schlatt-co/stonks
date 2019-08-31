@@ -22,15 +22,10 @@ public class TabCompleterCompany implements TabCompleter {
       "invite",
       "createaccount",
       "createholding",
-      "removeholding",
       "withdraw",
       "setlogo",
       "pay",
-      "setrole",
-      "memberinfo",
-      "kickmember",
-      "fees",
-      "holdinginfo");
+      "fees");
   private static final List<String> RATIOS = Arrays.asList(
       "0.5",
       "1",
