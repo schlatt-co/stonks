@@ -102,12 +102,19 @@ public class CompanyCommand implements CommandExecutor {
                 return true;
             }
             case "invite": {
-                if (args.length > 2) {
-                    return invitePlayerToCompany(args[1], args[2], player);
+                if (args.length > 1) {
+                    String playerToInvite = args[1];
+                    List<Company> list = databaseManager.getCompanyDao()
+                            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+                    new CompanySelectorGui.Builder()
+                            .companies(list)
+                            .title("Select a company to invite " + playerToInvite + " to")
+                            .companySelected((company ->  invitePlayerToCompany(playerToInvite, company.getName(), player)))
+                            .open(player);
                 } else {
-                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player> <company>");
-                    return true;
+                    player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
                 }
+                return true;
             }
             case "createaccount": { //stonks createaccount <account_name>
                 if (args.length > 1) {
