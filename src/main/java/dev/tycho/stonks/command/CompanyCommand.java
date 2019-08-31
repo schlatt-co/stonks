@@ -244,9 +244,9 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "fees": {
         player.sendMessage(ChatColor.GOLD + "----------------");
-        player.sendMessage(ChatColor.AQUA + "Company creation: €" + plugin.getConfig().getDouble("fees.companycreation"));
-        player.sendMessage(ChatColor.AQUA + "CompanyAccount creation: €" + plugin.getConfig().getDouble("fees.companyaccountcreation"));
-        player.sendMessage(ChatColor.AQUA + "HoldingsAccount creation: €" + plugin.getConfig().getDouble("fees.holdingsaccountcreation"));
+        player.sendMessage(ChatColor.AQUA + "Company creation: $" + plugin.getConfig().getDouble("fees.companycreation"));
+        player.sendMessage(ChatColor.AQUA + "CompanyAccount creation: $" + plugin.getConfig().getDouble("fees.companyaccountcreation"));
+        player.sendMessage(ChatColor.AQUA + "HoldingsAccount creation: $" + plugin.getConfig().getDouble("fees.holdingsaccountcreation"));
         player.sendMessage(ChatColor.GOLD + "----------------");
         return true;
       }
@@ -259,7 +259,7 @@ public class CompanyCommand implements CommandExecutor {
         return true;
       }
     }
-    MessageManager.sendHelpMessage(player);
+    MessageManager.sendHelpMessage(player, label);
     return true;
   }
 
@@ -285,6 +285,7 @@ public class CompanyCommand implements CommandExecutor {
   }
 
   private void removeHolding(Player player, int accountId, String playerName) {
+    //noinspection Convert2MethodRef
     Stonks.newChain()
         .async(() -> {
           try {
@@ -346,7 +347,7 @@ public class CompanyCommand implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
           }
         })
-        .sync(player::closeInventory)
+        .sync(() -> player.closeInventory())
         .execute();
   }
 
