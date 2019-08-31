@@ -22,11 +22,8 @@ public class Stonks extends JavaPlugin {
   public static <T> TaskChain<T> newChain() {
     return taskChainFactory.newChain();
   }
-  public static <T> TaskChain<T> newSharedChain(String name) {
-    return taskChainFactory.newSharedChain(name);
-  }
-
-  //public static List<Company> companies = new ArrayList<>();
+//  Here for maybe future use
+//  public static <T> TaskChain<T> newSharedChain(String name) { return taskChainFactory.newSharedChain(name); }
 
   @Override
   public void onEnable() {
