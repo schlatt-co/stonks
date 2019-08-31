@@ -6,12 +6,11 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
-import dev.tycho.stonks.database.*;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.CompanyCommand;
+import dev.tycho.stonks.database.*;
 import dev.tycho.stonks.logging.Transaction;
 import dev.tycho.stonks.model.*;
-import dev.tycho.stonks.database.AccountLinkDaoImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -21,130 +20,127 @@ import java.util.UUID;
 
 public class DatabaseManager extends SpigotModule {
 
-    public DatabaseManager(Stonks plugin) {
-        super("databaseManager", plugin);
+  public DatabaseManager(Stonks plugin) {
+    super("databaseManager", plugin);
+  }
+
+  private JdbcConnectionSource connectionSource = null;
+
+  private CompanyDao companyDao = null;
+  private MemberDao memberDao = null;
+  private CompanyAccountDao companyAccountDao = null;
+  private AccountLinkDaoImpl accountlinkDao = null;
+  private HoldingDaoImpl holdingDao = null;
+  private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
+  private Dao<Transaction, Integer> transactionDao = null;
+
+  @Override
+  public void enable() {
+    System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "ERROR");
+
+    String host = plugin.getConfig().getString("mysql.host");
+    String port = plugin.getConfig().getString("mysql.port");
+    String database = plugin.getConfig().getString("mysql.database");
+    String username = plugin.getConfig().getString("mysql.username");
+    String password = plugin.getConfig().getString("mysql.password");
+    String useSsl = plugin.getConfig().getString("mysql.ssl");
+
+    String databaseUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=" + useSsl;
+
+    try {
+      connectionSource = new JdbcConnectionSource(databaseUrl, username, password);
+      companyDao = DaoManager.createDao(connectionSource, Company.class);
+      memberDao = DaoManager.createDao(connectionSource, Member.class);
+      companyAccountDao = new CompanyAccountDaoImpl(connectionSource);
+      accountlinkDao = new AccountLinkDaoImpl(connectionSource);
+      holdingDao = DaoManager.createDao(connectionSource, Holding.class);
+      holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
+      transactionDao = DaoManager.createDao(connectionSource, Transaction.class);
+
+      TableUtils.createTableIfNotExists(connectionSource, Company.class);
+      TableUtils.createTableIfNotExists(connectionSource, Member.class);
+      TableUtils.createTableIfNotExists(connectionSource, AccountLink.class);
+      TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
+      TableUtils.createTableIfNotExists(connectionSource, Holding.class);
+      TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
+      TableUtils.createTableIfNotExists(connectionSource, Transaction.class);
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
+  }
 
-    private JdbcConnectionSource connectionSource = null;
+  @Override
+  public void addCommands() {
+    addCommand("company", new CompanyCommand(this, plugin));
+  }
 
-    private CompanyDao companyDao = null;
-    private MemberDao memberDao = null;
-    private CompanyAccountDao companyAccountDao = null;
-    private AccountLinkDaoImpl accountlinkDao = null;
-    private HoldingDaoImpl holdingDao = null;
-    private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
-    private Dao<Transaction, Integer> transactionDao = null;
-
-    @Override
-    public void enable() {
-        synchronized (this) {
-            System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "ERROR");
-
-            String host = plugin.getConfig().getString("mysql.host");
-            String port = plugin.getConfig().getString("mysql.port");
-            String database = plugin.getConfig().getString("mysql.database");
-            String username = plugin.getConfig().getString("mysql.username");
-            String password = plugin.getConfig().getString("mysql.password");
-            String useSsl = plugin.getConfig().getString("mysql.ssl");
-
-            String databaseUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=" + useSsl;
-
-            try {
-                connectionSource = new JdbcConnectionSource(databaseUrl, username, password);
-                companyDao = DaoManager.createDao(connectionSource, Company.class);
-                memberDao = DaoManager.createDao(connectionSource, Member.class);
-                companyAccountDao = new CompanyAccountDaoImpl(connectionSource);
-                accountlinkDao = new AccountLinkDaoImpl(connectionSource);
-                holdingDao = DaoManager.createDao(connectionSource, Holding.class);
-                holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
-                transactionDao = DaoManager.createDao(connectionSource, Transaction.class);
-
-                TableUtils.createTableIfNotExists(connectionSource, Company.class);
-                TableUtils.createTableIfNotExists(connectionSource, Member.class);
-                TableUtils.createTableIfNotExists(connectionSource, AccountLink.class);
-                TableUtils.createTableIfNotExists(connectionSource, CompanyAccount.class);
-                TableUtils.createTableIfNotExists(connectionSource, Holding.class);
-                TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
-                TableUtils.createTableIfNotExists(connectionSource, Transaction.class);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+  @Override
+  public void disable() {
+    try {
+      connectionSource.close();
+    } catch (IOException ignored) {
     }
+  }
 
-    @Override
-    public void addCommands() {
-        addCommand("company", new CompanyCommand(this, plugin));
+  public CompanyDao getCompanyDao() {
+    return companyDao;
+  }
+
+  public MemberDao getMemberDao() {
+    return memberDao;
+  }
+
+  public AccountLinkDaoImpl getAccountLinkDao() {
+    return accountlinkDao;
+  }
+
+  public CompanyAccountDao getCompanyAccountDao() {
+    return companyAccountDao;
+  }
+
+  public Dao<HoldingsAccount, Integer> getHoldingAccountDao() {
+    return holdingAccountDao;
+  }
+
+  public HoldingDao getHoldingDao() {
+    return holdingDao;
+  }
+
+  public Dao<Transaction, Integer> getTransactionDao() {
+    return transactionDao;
+  }
+
+  //TODO move this method to a better place
+  public Account getAccountWithUUID(UUID uuid) {
+    try {
+      //Try company account first as those are the most common
+      QueryBuilder<CompanyAccount, Integer> queryBuilder = getCompanyAccountDao().queryBuilder();
+      queryBuilder.where().eq("uuid", uuid);
+      CompanyAccount companyAccount = queryBuilder.queryForFirst();
+      //If no company account was found try and find a holdings account
+      if (companyAccount == null) {
+        QueryBuilder<HoldingsAccount, Integer> queryBuilder2 = getHoldingAccountDao().queryBuilder();
+        queryBuilder2.where().eq("uuid", uuid);
+        //This will either return a result or null
+        //If it is null there are no accounts with this match
+        return queryBuilder2.queryForFirst();
+      } else {
+        return companyAccount;
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
     }
+  }
 
-    @Override
-    public void disable() {
-        try {
-            connectionSource.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+  //TODO move this too
+  public void logTransaction(Transaction transaction) {
+    try {
+      getTransactionDao().create(transaction);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      Bukkit.broadcastMessage(ChatColor.RED + "SQL Exception creating a log ");
     }
-
-    public CompanyDao getCompanyDao() {
-        return companyDao;
-    }
-
-    public MemberDao getMemberDao() {
-        return memberDao;
-    }
-
-    public AccountLinkDaoImpl getAccountLinkDao() {
-        return accountlinkDao;
-    }
-
-    public CompanyAccountDao getCompanyAccountDao() {
-        return companyAccountDao;
-    }
-
-    public Dao<HoldingsAccount, Integer> getHoldingAccountDao() {
-        return holdingAccountDao;
-    }
-
-    public HoldingDao getHoldingDao() {
-        return holdingDao;
-    }
-
-    public Dao<Transaction, Integer> getTransactionDao() {
-        return transactionDao;
-    }
-
-    //TODO move this method to a better place
-    public Account getAccountWithUUID(UUID uuid) {
-        try {
-            //Try company account first as those are the most common
-            QueryBuilder<CompanyAccount, Integer> queryBuilder = getCompanyAccountDao().queryBuilder();
-            queryBuilder.where().eq("uuid", uuid);
-            CompanyAccount companyAccount = queryBuilder.queryForFirst();
-            //If no company account was found try and find a holdings account
-            if (companyAccount == null) {
-                QueryBuilder<HoldingsAccount, Integer> queryBuilder2 = getHoldingAccountDao().queryBuilder();
-                queryBuilder2.where().eq("uuid", uuid);
-                //This will either return a result or null
-                //If it is null there are no accounts with this match
-                return queryBuilder2.queryForFirst();
-            } else {
-                return companyAccount;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    //TODO move this too
-    public void logTransaction(Transaction transaction) {
-        try {
-            getTransactionDao().create(transaction);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Bukkit.broadcastMessage(ChatColor.RED + "SQL Exception creating a log ");
-        }
-    }
+  }
 }

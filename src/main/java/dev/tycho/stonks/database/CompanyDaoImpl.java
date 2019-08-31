@@ -47,6 +47,7 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery) {
 
         Where<Member, UUID> where = memberQuery.where();
