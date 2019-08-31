@@ -12,7 +12,7 @@ import java.util.List;
 public class TabCompleterCompany implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> suggestions = List.of("create",
+        return List.of("create",
                 "invites",
                 "list",
                 "info",
@@ -32,6 +32,5 @@ public class TabCompleterCompany implements TabCompleter {
                 "kickmember",
                 "fees",
                 "holdinginfo");
-        return suggestions;
     }
 }
