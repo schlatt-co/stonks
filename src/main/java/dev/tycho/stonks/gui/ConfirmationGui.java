@@ -10,7 +10,6 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
-import fr.minuskube.inv.content.SlotIterator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -18,18 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class AccountTypeSelectorGui implements InventoryProvider {
+public class ConfirmationGui implements InventoryProvider {
 
     public static DatabaseManager databaseManager;
     public static InventoryManager inventoryManager;
 
     private SmartInventory inventory;
-    private Consumer<AccountType> onTypeSelected;
+    private Consumer<Boolean> onSelection;
 
-    public AccountTypeSelectorGui(Consumer<AccountType> onTypeSelected, String title, Player player) {
-        this.onTypeSelected = onTypeSelected;
+    //turn this consumer into two consumers.
+    public ConfirmationGui(Consumer<Boolean> onSelection, String title, Player player) {
+        this.onSelection = onSelection;
         this.inventory = SmartInventory.builder()
-                .id("CompanySelectorGui")
+                .id("ConfirmationGui")
                 .provider(this)
                 .manager(inventoryManager)
                 .size(3, 9)
@@ -43,15 +43,15 @@ public class AccountTypeSelectorGui implements InventoryProvider {
         Pagination pagination = contents.pagination();
 
 
-        contents.set(1,3, ClickableItem.of(Util.item(Material.DIAMOND, "Company Account"),
+        contents.set(1,3, ClickableItem.of(Util.item(Material.GREEN_WOOL, "YES"),
                 e -> {
                     inventory.close(player);
-                    onTypeSelected.accept(AccountType.CompanyAccount);
+                    onSelection.accept(true);
                 }));
-        contents.set(1,5, ClickableItem.of(Util.item(Material.GOLD_INGOT, "Holdings Account"),
+        contents.set(1,5, ClickableItem.of(Util.item(Material.RED_WOOL, "NO"),
                 e -> {
                     inventory.close(player);
-                    onTypeSelected.accept(AccountType.HoldingsAccount);
+                    onSelection.accept(false);
                 }));
     }
 
@@ -62,21 +62,21 @@ public class AccountTypeSelectorGui implements InventoryProvider {
 
     public static class Builder {
         private String title = "";
-        private Consumer<AccountType> onTypeSelected;
+        private Consumer<Boolean> onSelected;
 
         public Builder() {
 
         }
-        public AccountTypeSelectorGui.Builder typeSelected(Consumer<AccountType> onTypeSelected) {
-            this.onTypeSelected = onTypeSelected;
+        public ConfirmationGui.Builder typeSelected(Consumer<Boolean> onSelected) {
+            this.onSelected = onSelected;
             return this;
         }
-        public AccountTypeSelectorGui.Builder title(String title) {
+        public ConfirmationGui.Builder title(String title) {
             this.title = title;
             return this;
         }
-        public AccountTypeSelectorGui open(Player player) {
-            return new AccountTypeSelectorGui(onTypeSelected, title, player);
+        public ConfirmationGui open(Player player) {
+            return new ConfirmationGui(onSelected, title, player);
         }
     }
 

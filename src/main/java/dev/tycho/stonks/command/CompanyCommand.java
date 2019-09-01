@@ -73,7 +73,13 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
-          createCompany(player, args[1]);
+          double fee = plugin.getConfig().getDouble("fees.companycreation");
+          new ConfirmationGui.Builder()
+              .title(ChatColor.BOLD +"Accept $" + fee + " creation fee?")
+              .typeSelected(b -> {
+                if (b) createCompany(player, args[1]);
+              })
+              .open(player);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " create <company>");
         }
@@ -141,14 +147,21 @@ public class CompanyCommand implements CommandExecutor {
                         .title("Select a company")
                         .companies(list)
                         .companySelected(company -> {
-                          switch (type) {
-                            case HoldingsAccount:
-                              createHoldingsAccount(player, company.getName(), newName);
-                              break;
-                            case CompanyAccount:
-                              createCompanyAccount(player, company.getName(), newName);
-                              break;
-                          }
+                          double fee = plugin.getConfig().getDouble("fees.accountcreation");
+                          new ConfirmationGui.Builder()
+                              .title(ChatColor.BOLD + "Accept $" + fee + " creation fee?")
+                              .typeSelected(b -> {
+                                if (b) switch (type) {
+                                  case HoldingsAccount:
+                                    createHoldingsAccount(player, company.getName(), newName);
+                                    break;
+                                  case CompanyAccount:
+                                    createCompanyAccount(player, company.getName(), newName);
+                                    break;
+                                }
+                              })
+                              .open(player);
+
                         })
                         .open(player);
                   }
@@ -610,8 +623,7 @@ public class CompanyCommand implements CommandExecutor {
   }
 
   //turn createcompany and createholdings account into one method
-  private void createCompanyAccount(Player player, String companyName, String accountName)
-  {
+  private void createCompanyAccount(Player player, String companyName, String accountName) {
     if (!player.isOp() && playerAccountCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId())) < ACCOUNT_CREATION_COOLDOWN) {
       player.sendMessage(ChatColor.RED + "You cannot make an account for another " +
           Util.convertString(ACCOUNT_CREATION_COOLDOWN - (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId()))));
@@ -884,7 +896,7 @@ public class CompanyCommand implements CommandExecutor {
 
   private void createCompany(Player player, String companyName) {
     //Prevent the player from spamming companies
-    if (!player.isOp() &&playerCompanyCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
+    if (!player.isOp() && playerCompanyCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
       player.sendMessage(ChatColor.RED + "You cannot make a company for another " +
           Util.convertString(COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId()))));
       return;
