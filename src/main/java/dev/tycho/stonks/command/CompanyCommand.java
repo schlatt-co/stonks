@@ -205,7 +205,6 @@ public class CompanyCommand implements CommandExecutor {
                   .title("Select company logo to change")
                   .companySelected((company ->  setLogo(player, company.getName())))
                   .open(player);
-        setLogo(player, args[1]);
         return true;
       }
       case "pay": {
