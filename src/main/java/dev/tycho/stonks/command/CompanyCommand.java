@@ -62,7 +62,7 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
-          companyCreate(args[1], player);
+          companyCreate(player, args[1]);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " create <company>");
         }
@@ -108,7 +108,7 @@ public class CompanyCommand implements CommandExecutor {
                 new CompanySelectorGui.Builder()
                         .companies(list)
                         .title("Select a company to invite " + playerToInvite + " to")
-                        .companySelected((company ->  invitePlayerToCompany(playerToInvite, company.getName(), player)))
+                        .companySelected((company ->  invitePlayerToCompany(player, company.getName(), playerToInvite)))
                         .open(player);
             } else {
                 player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
@@ -189,7 +189,7 @@ public class CompanyCommand implements CommandExecutor {
                   new AccountSelectorGui.Builder()
                       .company(company)
                       .title("Select an account to withdraw from")
-                      .accountSelected(l -> withdrawFromAccount(amount, l.getId(), player))
+                      .accountSelected(l -> withdrawFromAccount(player, amount, l.getId()))
                       .open(player)))
               .open(player);
         } else {
@@ -198,10 +198,13 @@ public class CompanyCommand implements CommandExecutor {
         return true;
       }
       case "setlogo": {
-        if (args.length < 2) {
-          player.sendMessage(ChatColor.RED + "Please specify a company!");
-          return true;
-        }
+          List<Company> list = databaseManager.getCompanyDao()
+                  .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+          new CompanySelectorGui.Builder()
+                  .companies(list)
+                  .title("Select company logo to change")
+                  .companySelected((company ->  setLogo(player, company.getName())))
+                  .open(player);
         setLogo(player, args[1]);
         return true;
       }
@@ -217,7 +220,7 @@ public class CompanyCommand implements CommandExecutor {
                   new AccountSelectorGui.Builder()
                       .company(company)
                       .title("Select which account to pay")
-                      .accountSelected(l -> payAccount(amount, l.getId(), player))
+                      .accountSelected(l -> payAccount(player, l.getId(), amount))
                       .open(player)))
               .open(player);
         } else {
@@ -238,7 +241,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " memberinfo <player> <company>");
           return true;
         }
-        openMemberInfo(args[1], args[2], player);
+        openMemberInfo(player, args[2], args[1]);
         return true;
       }
       case "kickmember": {
@@ -246,7 +249,7 @@ public class CompanyCommand implements CommandExecutor {
           player.performCommand(ChatColor.RED + "Correct usage: /" + label + " kickmember <player> <company>");
           return true;
         }
-        kickMember(args[1], args[2], player);
+        kickMember(player, args[2], args[1]);
         return true;
       }
       case "fees": {
@@ -486,7 +489,7 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
-  private void withdrawFromAccount(double amount, int accountId, Player player) {
+  private void withdrawFromAccount(Player player, double amount, int accountId) {
     Stonks.newChain()
         .async(() -> {
           try {
@@ -665,7 +668,7 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
-  private void kickMember(String memberName, String companyName, Player player) {
+  private void kickMember(Player player, String companyName, String memberName) {
     Stonks.newChain()
         .async(() -> {
           try {
@@ -712,7 +715,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void openMemberInfo(String memberName, String companyName, Player player) {
+  private void openMemberInfo(Player player, String companyName, String memberName) {
     Stonks.newChain()
         .asyncFirst(() -> {
           try {
@@ -740,7 +743,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void payAccount(double amount, int accountId, Player sender) {
+  private void payAccount(Player sender, int accountId, double amount) {
     Stonks.newChain()
         .async(() -> {
           AccountLink accountLink = null;
@@ -823,7 +826,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void companyCreate(String companyName, Player player) {
+  private void companyCreate(Player player, String companyName) {
     Stonks.newChain()
         .async(() -> {
           if (companyName.length() > 32) {
@@ -865,7 +868,7 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
-  private boolean invitePlayerToCompany(String playerToInvite, String companyName, Player player) {
+  private void invitePlayerToCompany(Player player, String companyName, String playerToInvite) {
     Stonks.newChain()
         .async(() -> {
           try {
@@ -910,7 +913,6 @@ public class CompanyCommand implements CommandExecutor {
             e.printStackTrace();
           }
         }).execute();
-    return true;
   }
 
   @SuppressWarnings("SameParameterValue")
@@ -930,16 +932,8 @@ public class CompanyCommand implements CommandExecutor {
                 companyQueryBuilder.orderBy("name", false);
                 break;
               }
-//                          case COMPANYVALUE: {
-//                              QueryBuilder<CompanyAccount, Integer> accountQueryBuilder = databaseManager.getCompanyAccountDao().queryBuilder();
-//                              companyQueryBuilder.leftJoin(accountQueryBuilder);
-//                              companyQueryBuilder.orderBy("companyaccount.balance", false);
-//                          }
             }
             list = companyQueryBuilder.query();
-            for (Company company : list) {
-              company.calculateTotalValue();
-            }
           } catch (SQLException e) {
             e.printStackTrace();
           }

@@ -33,8 +33,6 @@ public class Company {
     @DatabaseField
     private String logoMaterial;
 
-    private double totalValue;
-
     public Company() {
 
     }
@@ -72,7 +70,12 @@ public class Company {
         return null;
     }
 
-    public double getTotalValue() {
+    public double getTotalValue()
+    {
+        double totalValue = 0;
+        for(AccountLink accountLink : accounts) {
+            totalValue += accountLink.getAccount().getTotalBalance();
+        }
         return totalValue;
     }
 
@@ -94,15 +97,6 @@ public class Company {
             }
         }
         return false;
-    }
-
-    public void calculateTotalValue(){
-        double totalValue = 0;
-        for(AccountLink accountLink : accounts) {
-            totalValue += accountLink.getAccount().getTotalBalance();
-        }
-        this.totalValue = totalValue;
-
     }
 
     public void setLogoMaterial(String logoMaterial) {
