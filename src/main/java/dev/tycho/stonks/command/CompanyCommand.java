@@ -11,6 +11,7 @@ import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
 import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,11 +38,20 @@ public class CompanyCommand implements CommandExecutor {
   private JavaPlugin plugin;
   private Essentials ess;
 
+  private final long COMPANY_CREATION_COOLDOWN;
+  private final long ACCOUNT_CREATION_COOLDOWN;
+
+  private HashMap<UUID, Long> playerCompanyCooldown = new HashMap<>();
+  private HashMap<UUID, Long> playerAccountCooldown = new HashMap<>();
+
   public CompanyCommand(DatabaseManager databaseManager, Stonks plugin) {
     this.databaseManager = databaseManager;
     this.plugin = plugin;
     this.ess = (Essentials) plugin.getServer().getPluginManager().getPlugin("Essentials");
     this.guiManager = (GuiManager) plugin.getModule("guiManager");
+
+    COMPANY_CREATION_COOLDOWN = plugin.getConfig().getLong("cooldowns.companycreation");
+    ACCOUNT_CREATION_COOLDOWN = plugin.getConfig().getLong("cooldowns.accountcreation");
   }
 
   @Override
@@ -62,7 +73,7 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
-          companyCreate(player, args[1]);
+          createCompany(player, args[1]);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " create <company>");
         }
@@ -100,21 +111,21 @@ public class CompanyCommand implements CommandExecutor {
         openCompanyAccounts(player, args[1]);
         return true;
       }
-        case "invite": {
-            if (args.length > 1) {
-                String playerToInvite = args[1];
-                List<Company> list = databaseManager.getCompanyDao()
-                        .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
-                new CompanySelectorGui.Builder()
-                        .companies(list)
-                        .title("Select a company to invite " + playerToInvite + " to")
-                        .companySelected((company ->  invitePlayerToCompany(player, company.getName(), playerToInvite)))
-                        .open(player);
-            } else {
-                player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
-            }
-            return true;
+      case "invite": {
+        if (args.length > 1) {
+          String playerToInvite = args[1];
+          List<Company> list = databaseManager.getCompanyDao()
+              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+          new CompanySelectorGui.Builder()
+              .companies(list)
+              .title("Select a company to invite " + playerToInvite + " to")
+              .companySelected((company -> invitePlayerToCompany(player, company.getName(), playerToInvite)))
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
         }
+        return true;
+      }
       case "createaccount": { //stonks createaccount <account_name>
         if (args.length > 1) {
           String newName = args[1];
@@ -198,13 +209,13 @@ public class CompanyCommand implements CommandExecutor {
         return true;
       }
       case "setlogo": {
-          List<Company> list = databaseManager.getCompanyDao()
-                  .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
-          new CompanySelectorGui.Builder()
-                  .companies(list)
-                  .title("Select company logo to change")
-                  .companySelected((company ->  setLogo(player, company.getName())))
-                  .open(player);
+        List<Company> list = databaseManager.getCompanyDao()
+            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+        new CompanySelectorGui.Builder()
+            .companies(list)
+            .title("Select company logo to change")
+            .companySelected((company -> setLogo(player, company.getName())))
+            .open(player);
         return true;
       }
       case "pay": {
@@ -279,24 +290,24 @@ public class CompanyCommand implements CommandExecutor {
   private void showTopCompanies(Player player) {
     player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
     Stonks.newChain()
-            .async(() -> {
-              List<Company> list = null;
-              try {
-                QueryBuilder<Company, UUID> companyQueryBuilder = databaseManager.getCompanyDao().queryBuilder();
-                list = companyQueryBuilder.query();
-                list.sort((c1, c2) -> (int) (c2.getTotalValue() - c1.getTotalValue()));
+        .async(() -> {
+          List<Company> list = null;
+          try {
+            QueryBuilder<Company, UUID> companyQueryBuilder = databaseManager.getCompanyDao().queryBuilder();
+            list = companyQueryBuilder.query();
+            list.sort((c1, c2) -> (int) (c2.getTotalValue() - c1.getTotalValue()));
 
-                player.sendMessage(ChatColor.AQUA + "--------------------");
-                for(int i = 0; i < Math.min(10, list.size()); i++) {
-                  Company company = list.get(i);
-                  player.sendMessage(ChatColor.GOLD + String.valueOf(i+1) + " - " + company.getName() + ": " + ChatColor.GREEN + "€" + company.getTotalValue());
-                }
-                player.sendMessage(ChatColor.AQUA + "--------------------");
-              } catch (SQLException e) {
-                e.printStackTrace();
-              }
-            })
-            .execute();
+            player.sendMessage(ChatColor.AQUA + "--------------------");
+            for (int i = 0; i < Math.min(10, list.size()); i++) {
+              Company company = list.get(i);
+              player.sendMessage(ChatColor.GOLD + String.valueOf(i + 1) + " - " + company.getName() + ": " + ChatColor.GREEN + "€" + company.getTotalValue());
+            }
+            player.sendMessage(ChatColor.AQUA + "--------------------");
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        })
+        .execute();
   }
 
   private void openHoldingAccountInfo(Player player, int accountId) {
@@ -598,7 +609,14 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
-  private void createCompanyAccount(Player player, String companyName, String accountName) {
+  //turn createcompany and createholdings account into one method
+  private void createCompanyAccount(Player player, String companyName, String accountName)
+  {
+    if (!player.isOp() && playerAccountCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId())) < ACCOUNT_CREATION_COOLDOWN) {
+      player.sendMessage(ChatColor.RED + "You cannot make an account for another " +
+          Util.convertString(ACCOUNT_CREATION_COOLDOWN - (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId()))));
+      return;
+    }
     Stonks.newChain()
         .async(() -> {
           try {
@@ -623,6 +641,9 @@ public class CompanyCommand implements CommandExecutor {
                     databaseManager.getAccountLinkDao().create(link);
 
                     player.sendMessage(ChatColor.GREEN + "Company account '" + accountName + "' added to '" + companyName + "' !");
+
+                    playerAccountCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+
                   } else {
                     player.sendMessage(ChatColor.RED + "You don't have the correct permissions within your company to create an account");
                     player.sendMessage("Ask your manager to promote you to a manager to do this");
@@ -645,6 +666,13 @@ public class CompanyCommand implements CommandExecutor {
   }
 
   private void createHoldingsAccount(Player player, String companyName, String accountName) {
+
+    if (!player.isOp() && playerAccountCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId())) < ACCOUNT_CREATION_COOLDOWN) {
+      player.sendMessage(ChatColor.RED + "You cannot make an account for another " +
+          Util.convertString(ACCOUNT_CREATION_COOLDOWN - (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId()))));
+      return;
+    }
+
     Stonks.newChain()
         .async(() -> {
           try {
@@ -673,6 +701,8 @@ public class CompanyCommand implements CommandExecutor {
                     databaseManager.getHoldingDao().create(holding);
 
                     player.sendMessage(ChatColor.GREEN + "Holdings account '" + accountName + "' added to '" + companyName + "' !");
+
+                    playerAccountCooldown.put(player.getUniqueId(), System.currentTimeMillis());
                   } else {
                     player.sendMessage(ChatColor.RED + "You don't have the correct permissions within your company to create an account");
                     player.sendMessage("Ask your manager to promote you to a manager to do this");
@@ -852,7 +882,13 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void companyCreate(Player player, String companyName) {
+  private void createCompany(Player player, String companyName) {
+    //Prevent the player from spamming companies
+    if (!player.isOp() &&playerCompanyCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
+      player.sendMessage(ChatColor.RED + "You cannot make a company for another " +
+          Util.convertString(COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId()))));
+      return;
+    }
     Stonks.newChain()
         .async(() -> {
           if (companyName.length() > 32) {
@@ -884,7 +920,7 @@ public class CompanyCommand implements CommandExecutor {
             newCompany.getMembers().add(creator);
 
             player.sendMessage(ChatColor.GREEN + "Company with name: \"" + companyName + "\" created successfully!");
-
+            playerCompanyCooldown.put(player.getUniqueId(), System.currentTimeMillis());
             Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + ChatColor.GREEN + " just founded a new company - " + newCompany.getName() + "!");
 
           } catch (SQLException e) {

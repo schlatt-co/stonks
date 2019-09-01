@@ -10,3 +10,7 @@ fees:
   companycreation: 10000
   companyaccountcreation: 1000
   holdingsaccountcreation: 1000
+
+cooldowns:
+  companycreation: 600000
+  accountcreation: 300000
