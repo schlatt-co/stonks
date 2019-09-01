@@ -20,6 +20,7 @@ public class TabCompleterCompany implements TabCompleter {
       "members",
       "accounts",
       "invite",
+      "top",
       "createaccount",
       "createholding",
       "withdraw",

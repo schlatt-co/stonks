@@ -267,9 +267,36 @@ public class CompanyCommand implements CommandExecutor {
         openHoldingAccountInfo(player, Integer.parseInt(args[1]));
         return true;
       }
+      case "top": {
+        showTopCompanies(player);
+        return true;
+      }
     }
     MessageManager.sendHelpMessage(player, label);
     return true;
+  }
+
+  private void showTopCompanies(Player player) {
+    player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
+    Stonks.newChain()
+            .async(() -> {
+              List<Company> list = null;
+              try {
+                QueryBuilder<Company, UUID> companyQueryBuilder = databaseManager.getCompanyDao().queryBuilder();
+                list = companyQueryBuilder.query();
+                list.sort((c1, c2) -> (int) (c2.getTotalValue() - c1.getTotalValue()));
+
+                player.sendMessage(ChatColor.AQUA + "--------------------");
+                for(int i = 0; i < Math.min(10, list.size()); i++) {
+                  Company company = list.get(i);
+                  player.sendMessage(ChatColor.GOLD + String.valueOf(i+1) + " - " + company.getName() + ": " + ChatColor.GREEN + "€" + company.getTotalValue());
+                }
+                player.sendMessage(ChatColor.AQUA + "--------------------");
+              } catch (SQLException e) {
+                e.printStackTrace();
+              }
+            })
+            .execute();
   }
 
   private void openHoldingAccountInfo(Player player, int accountId) {
