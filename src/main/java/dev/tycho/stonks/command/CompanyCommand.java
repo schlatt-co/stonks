@@ -118,7 +118,7 @@ public class CompanyCommand implements CommandExecutor {
               .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
           new CompanySelectorGui.Builder()
               .companies(list)
-              .title("Select a company to invite " + playerToInvite + " to")
+              .title("Select a company to invite to")
               .companySelected((company -> invitePlayerToCompany(player, company.getName(), playerToInvite)))
               .open(player);
         } else {
