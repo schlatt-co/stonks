@@ -20,10 +20,8 @@ public class MessageManager extends SpigotModule {
 
   public static void sendHelpMessage(Player player, String label) {
     player.sendMessage(ChatColor.AQUA + "--------------------");
-    player.sendMessage(ChatColor.GOLD + "/" + label + " create <company> - Create a company with the specified name.");
-    player.sendMessage(ChatColor.GOLD + "/" + label + " list - A list with all companies and their total value.");
-    player.sendMessage(ChatColor.GOLD + "/" + label + " invite <player> <company> - Invite a player to your company.");
-    player.sendMessage(ChatColor.GOLD + "/" + label + " invites - View your invites.");
+    player.sendMessage(ChatColor.GOLD + "To view all commands and more info about the plugin please go to:");
+    player.sendMessage(ChatColor.GOLD + "https://stonks.tycho.dev/");
     player.sendMessage(ChatColor.AQUA + "--------------------");
   }
 
