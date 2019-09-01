@@ -73,11 +73,16 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
+          StringBuilder newName = new StringBuilder();
+          for (int i = 1; i < args.length; i++) {
+            if (i > 1) newName.append(" ");
+            newName.append(args[i]);
+          }
           double fee = plugin.getConfig().getDouble("fees.companycreation");
           new ConfirmationGui.Builder()
               .title(ChatColor.BOLD +"Accept $" + fee + " creation fee?")
               .typeSelected(b -> {
-                if (b) createCompany(player, args[1]);
+                if (b) createCompany(player, newName.toString());
               })
               .open(player);
         } else {
@@ -134,7 +139,11 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "createaccount": { //stonks createaccount <account_name>
         if (args.length > 1) {
-          String newName = args[1];
+          StringBuilder newName = new StringBuilder();
+          for (int i = 1; i < args.length; i++) {
+            if (i > 1) newName.append(" ");
+            newName.append(args[i]);
+          }
           new AccountTypeSelectorGui.Builder()
               .title("Select an account type")
               .typeSelected(type -> {
@@ -153,10 +162,10 @@ public class CompanyCommand implements CommandExecutor {
                               .typeSelected(b -> {
                                 if (b) switch (type) {
                                   case HoldingsAccount:
-                                    createHoldingsAccount(player, company.getName(), newName);
+                                    createHoldingsAccount(player, company.getName(), newName.toString());
                                     break;
                                   case CompanyAccount:
-                                    createCompanyAccount(player, company.getName(), newName);
+                                    createCompanyAccount(player, company.getName(), newName.toString());
                                     break;
                                 }
                               })
