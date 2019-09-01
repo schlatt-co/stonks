@@ -18,10 +18,10 @@ public class Company {
     @DatabaseField(generatedId = true)
     private UUID id;
 
-    @DatabaseField(unique = true)
+    @DatabaseField()
     private String name;
 
-    @DatabaseField(unique = true)
+    @DatabaseField()
     private String shopName;
 
     @ForeignCollectionField(eager = true)
