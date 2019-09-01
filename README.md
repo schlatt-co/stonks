@@ -1,6 +1,3 @@
-# stonks
-Jschlatt sub server company management plugin
-
-
-maven appreciation society
+# Stonks
+Company plugin for the jschlatt subscriber server 
 
