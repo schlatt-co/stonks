@@ -48,7 +48,7 @@ public class ItemInfoHelper {
             public void visit(HoldingsAccount a) {
                 List<String> lore = new ArrayList<>();
                 lore.add("ID: " + ChatColor.YELLOW + link.getId());
-                lore.add("Total Balance: $" + ChatColor.GREEN + a.getTotalBalance());
+                lore.add("Total Balance: " + ChatColor.GREEN + "$" +  a.getTotalBalance());
                 lore.add("Holdings: " + ChatColor.YELLOW + a.getHoldings().size());
                 lore.add(ChatColor.ITALIC + "Holdings Account");
                 if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
