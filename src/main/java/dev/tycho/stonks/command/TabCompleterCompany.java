@@ -16,6 +16,7 @@ public class TabCompleterCompany implements TabCompleter {
   private static final List<String> SUBCOMMANDS = Arrays.asList(
       "invites",
       "list",
+      "create",
       "info",
       "members",
       "accounts",
