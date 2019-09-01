@@ -63,6 +63,7 @@ public class HoldingsAccount extends Account {
     @Override
     public double getTotalBalance() {
         double total = 0;
+
         for (Holding h : holdings) {
             total += h.getBalance();
         }
