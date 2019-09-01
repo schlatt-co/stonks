@@ -50,7 +50,7 @@ public class MemberInfoGui implements InventoryProvider {
         contents.set(1, 1, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Set role to manager"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.Manager.toString())));
         contents.set(1, 0, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand("stonks setrole " + offlinePlayer.getName() + " " + member.getCompany().getName() + " " + Role.CEO.toString())));
 
-        contents.set(1, 8, ClickableItem.of(Util.item(Material.BARRIER, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + member.getCompany().getName())));
+        contents.set(1, 8, ClickableItem.of(Util.item(Material.FIRE, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + member.getCompany().getName())));
     }
 
     @Override

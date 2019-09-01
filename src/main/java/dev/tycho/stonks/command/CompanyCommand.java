@@ -187,7 +187,7 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "withdraw": { // /comp withdraw <amount> <accountid>
+      case "withdraw": { // /comp withdraw <amount>
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
           //get all companies where we are a manager
@@ -204,7 +204,7 @@ public class CompanyCommand implements CommandExecutor {
                       .open(player)))
               .open(player);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " withdraw <amount> <accountid>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " withdraw <amount>");
         }
         return true;
       }
