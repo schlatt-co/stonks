@@ -311,6 +311,35 @@ public class CompanyCommand implements CommandExecutor {
         showTopCompanies(player);
         return true;
       }
+      //Hidden commands
+      case "rename": {
+        if (args.length > 1) {
+          if (player.isOp() || player.hasPermission("trevor.mod")) {
+            StringBuilder newName = new StringBuilder();
+            for (int i = 1; i < args.length; i++) {
+              if (i > 1) newName.append(" ");
+              newName.append(args[i]);
+            }
+            new CompanySelectorGui.Builder()
+                .title("Select company to rename")
+                .companies(databaseManager.getCompanyDao().getAllCompanies())
+                .companySelected(company -> {
+                  new ConfirmationGui.Builder()
+                      .title("Rename " + company.getName() + "?")
+                      .onChoiceMade(c -> {
+                        if (c) renameCompany(player, company.getName(), newName.toString());
+                      })
+                      .open(player);
+                })
+                .open(player);
+          } else {
+            player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " rename <new name>");
+          }
+        } else {
+          player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
+        }
+        return true;
+      }
     }
     MessageManager.sendHelpMessage(player, label);
     return true;
@@ -348,6 +377,44 @@ public class CompanyCommand implements CommandExecutor {
         })
         .execute();
   }
+
+  private void renameCompany(Player player, String companyName, String newCompanyName) {
+    Stonks.newChain()
+        .async(() -> {
+          if (companyName.length() > 32) {
+            player.sendMessage(ChatColor.RED + "A company name can't be longer than 32 characters!");
+            return;
+          }
+          Company company;
+          try {
+            company = databaseManager.getCompanyDao().getCompany(companyName);
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+            return;
+          }
+          //Find the company they are making the changes in
+          if (company != null) {
+            if (player.hasPermission("trevor.mod") || player.isOp()) {
+              company.setName(newCompanyName);
+              try {
+                databaseManager.getCompanyDao().update(company);
+                player.sendMessage(ChatColor.GREEN + "Company name updated");
+              } catch (SQLException e) {
+                player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+                e.printStackTrace();
+              }
+            } else {
+              player.sendMessage(ChatColor.RED + "You do not have the required permissions to change a company name");
+            }
+
+
+          } else {
+            player.sendMessage(ChatColor.RED + "Company does not exist");
+          }
+        }).execute();
+  }
+
 
   private void openHoldingAccountInfo(Player player, int accountId) {
     Stonks.newChain()
