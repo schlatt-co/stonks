@@ -14,6 +14,7 @@ import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -252,12 +254,43 @@ public class CompanyCommand implements CommandExecutor {
           new CompanySelectorGui.Builder()
               .companies(list)
               .title("Select a company to pay")
-              .companySelected((company ->
-                  new AccountSelectorGui.Builder()
-                      .company(company)
-                      .title("Select which account to pay")
-                      .accountSelected(l -> payAccount(player, l.getId(), amount))
-                      .open(player)))
+              .companySelected((company -> {
+                //Cache the next screen
+                AccountSelectorGui.Builder accountSelectorScreen =
+                    new AccountSelectorGui.Builder()
+                    .company(company)
+                    .title("Select which account to pay")
+                    .accountSelected(l -> payAccount(player, l.getId(), amount));
+                List<String> info = new ArrayList<>();
+                info.add("You are trying to pay an unverified company!");
+                info.add("Unverified companies might be pretending to be ");
+                info.add("someone else's company");
+                info.add("Make sure you are paying the correct company");
+                info.add("(e.g. by checking the CEO is who you expect)");
+                info.add("To get a company verified, ask a moderator.");
+                info.add("");
+                info.add(ChatColor.GOLD + "The CEO of this company is ");
+                String ceoName = "[error lol]";
+                for (Member m : company.getMembers()) {
+                  if (m.getRole().equals(CEO)){
+                    OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
+                    if (p != null) ceoName = p.getName();
+                  }
+                }
+                info.add(ChatColor.GOLD + ceoName);
+                if (!company.isVerified()) {
+                  new ConfirmationGui.Builder()
+                      .title(company.getName() + " is unverified")
+                      .info(info)
+                      .onChoiceMade(
+                          c-> {
+                            if (c) accountSelectorScreen.open(player);
+                          }
+                      ).open(player);
+                } else {
+                  accountSelectorScreen.open(player);
+                }
+              }))
               .open(player);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " pay <amount>");
@@ -312,29 +345,63 @@ public class CompanyCommand implements CommandExecutor {
         return true;
       }
       //Hidden commands
-      case "rename": {
+      case "rename": { // stonks rename <new name>
         if (args.length > 1) {
           if (player.isOp() || player.hasPermission("trevor.mod")) {
-            StringBuilder newName = new StringBuilder();
-            for (int i = 1; i < args.length; i++) {
-              if (i > 1) newName.append(" ");
-              newName.append(args[i]);
-            }
+            String newName = concatArgsWithSpaces(1, args);
             new CompanySelectorGui.Builder()
                 .title("Select company to rename")
                 .companies(databaseManager.getCompanyDao().getAllCompanies())
                 .companySelected(company -> {
                   new ConfirmationGui.Builder()
-                      .title("Rename " + company.getName() + "?")
+                      .title("Rename " + company.getName() + " to" + newName + "?")
                       .onChoiceMade(c -> {
-                        if (c) renameCompany(player, company.getName(), newName.toString());
+                        if (c) renameCompany(player, company.getName(), newName);
                       })
                       .open(player);
                 })
                 .open(player);
           } else {
-            player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " rename <new name>");
+            player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
           }
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " rename <new name>");
+        }
+        return true;
+      }
+      case "verify": {
+        if (player.isOp() || player.hasPermission("trevor.mod")) {
+          new CompanySelectorGui.Builder()
+              .title("Select company to verify")
+              .companies(databaseManager.getCompanyDao().getAllCompanies())
+              .companySelected(company -> {
+                new ConfirmationGui.Builder()
+                    .title("Verify " + company.getName() + "?")
+                    .onChoiceMade(c -> {
+                      if (c) changeVerification(player, company.getName(), true);
+                    })
+                    .open(player);
+              })
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
+        }
+        return true;
+      }
+      case "unverify": {
+        if (player.isOp() || player.hasPermission("trevor.mod")) {
+          new CompanySelectorGui.Builder()
+              .title("Select company to unverify")
+              .companies(databaseManager.getCompanyDao().getAllCompanies())
+              .companySelected(company -> {
+                new ConfirmationGui.Builder()
+                    .title("Unverify " + company.getName() + "?")
+                    .onChoiceMade(c -> {
+                      if (c) changeVerification(player, company.getName(), false);
+                    })
+                    .open(player);
+              })
+              .open(player);
         } else {
           player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
         }
@@ -381,7 +448,7 @@ public class CompanyCommand implements CommandExecutor {
   private void renameCompany(Player player, String companyName, String newCompanyName) {
     Stonks.newChain()
         .async(() -> {
-          if (companyName.length() > 32) {
+          if (newCompanyName.length() > 32) {
             player.sendMessage(ChatColor.RED + "A company name can't be longer than 32 characters!");
             return;
           }
@@ -415,6 +482,38 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
+  private void changeVerification(Player player, String companyName, boolean newVerification) {
+    Stonks.newChain()
+        .async(() -> {
+          Company company;
+          try {
+            company = databaseManager.getCompanyDao().getCompany(companyName);
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+            return;
+          }
+          //Find the company they are making the changes in
+          if (company != null) {
+            if (player.hasPermission("trevor.mod") || player.isOp()) {
+              company.setVerified(newVerification);
+              try {
+                databaseManager.getCompanyDao().update(company);
+                player.sendMessage(ChatColor.GREEN + "Company verification updated");
+              } catch (SQLException e) {
+                player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+                e.printStackTrace();
+              }
+            } else {
+              player.sendMessage(ChatColor.RED + "You do not have the required permissions to change verification");
+            }
+
+
+          } else {
+            player.sendMessage(ChatColor.RED + "Company does not exist");
+          }
+        }).execute();
+  }
 
   private void openHoldingAccountInfo(Player player, int accountId) {
     Stonks.newChain()

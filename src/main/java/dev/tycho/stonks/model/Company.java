@@ -33,6 +33,9 @@ public class Company {
     @DatabaseField
     private String logoMaterial;
 
+    @DatabaseField
+    private Boolean verified;
+
     public Company() {
 
     }
@@ -41,6 +44,14 @@ public class Company {
         this.name = name;
         this.shopName = shopName;
         this.logoMaterial = Material.EMERALD.name();
+        //Companies default to unverified
+        this.verified = false;
+    }
+
+    public Boolean isVerified() {return verified;}
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
     }
 
     public UUID getId() {

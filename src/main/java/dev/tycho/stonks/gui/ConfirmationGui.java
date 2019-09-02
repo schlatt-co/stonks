@@ -24,10 +24,12 @@ public class ConfirmationGui implements InventoryProvider {
 
     private SmartInventory inventory;
     private Consumer<Boolean> onSelection;
+    private List<String> info;
 
     //turn this consumer into two consumers.
-    public ConfirmationGui(Consumer<Boolean> onSelection, String title, Player player) {
+    public ConfirmationGui(Consumer<Boolean> onSelection, String title, List<String> info, Player player) {
         this.onSelection = onSelection;
+        this.info = info;
         this.inventory = SmartInventory.builder()
                 .id("ConfirmationGui")
                 .provider(this)
@@ -53,6 +55,10 @@ public class ConfirmationGui implements InventoryProvider {
                     inventory.close(player);
                     onSelection.accept(false);
                 }));
+
+        if (info.size() > 0) {
+            contents.set(0,0, ClickableItem.empty(Util.item(Material.PAPER, info.get(0), info.subList(1, info.size()))));
+        }
     }
 
     @Override
@@ -61,7 +67,8 @@ public class ConfirmationGui implements InventoryProvider {
     }
 
     public static class Builder {
-        private String title = "";
+        private String title = "Confirm";
+        private List<String> info = new ArrayList<>();
         private Consumer<Boolean> onSelected;
 
         public Builder() {
@@ -75,8 +82,12 @@ public class ConfirmationGui implements InventoryProvider {
             this.title = title;
             return this;
         }
+        public ConfirmationGui.Builder info(List<String> info) {
+            this.info = info;
+            return this;
+        }
         public ConfirmationGui open(Player player) {
-            return new ConfirmationGui(onSelected, title, player);
+            return new ConfirmationGui(onSelected, title, info, player);
         }
     }
 
