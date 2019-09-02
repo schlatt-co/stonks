@@ -47,6 +47,10 @@ public class Company {
         return id;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -68,6 +72,14 @@ public class Company {
             }
         }
         return null;
+    }
+
+    public int getNumAcceptedMembers() {
+        int m = 0;
+        for(Member member : members) {
+            if (member.getAcceptedInvite()) m++;
+        }
+        return m;
     }
 
     public double getTotalValue()

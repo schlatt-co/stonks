@@ -3,25 +3,20 @@ package dev.tycho.stonks.gui;
 import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.util.Util;
-import fr.minuskube.inv.ClickableItem;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ItemInfoHelper {
     public static ItemStack companyDisplayItem(Company company) {
         return Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName(),
                 "",
                 "Total value: " + ChatColor.GREEN + "$" + company.getTotalValue(),
-                "Members: " + company.getMembers().size(),
+                "Members: " + company.getNumAcceptedMembers(),
                 "Accounts: " + company.getAccounts().size()
         );
     }
