@@ -407,6 +407,85 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
+      case "unhide": {
+        if (player.isOp() || player.hasPermission("trevor.mod")) {
+          List<Company> companies = new ArrayList<>();
+          QueryBuilder<Company, UUID> queryBuilder = databaseManager.getCompanyDao().queryBuilder();
+          queryBuilder.orderBy("name", true);
+          try {
+            queryBuilder.where().eq("hidden", true);
+            companies = queryBuilder.query();
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+
+          new CompanySelectorGui.Builder()
+              .title("Select company to unhide")
+              .companies(companies)
+              .companySelected(company -> {
+                new ConfirmationGui.Builder()
+                    .title("Unhide " + company.getName() + "?")
+                    .onChoiceMade(c -> {
+                      if (c) changeHidden(player, company.getName(), false);
+                    })
+                    .open(player);
+              })
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
+        }
+        return true;
+      }
+      case "hide": {
+        if (player.isOp() || player.hasPermission("trevor.mod")) {
+          List<Company> companies = new ArrayList<>();
+          QueryBuilder<Company, UUID> queryBuilder = databaseManager.getCompanyDao().queryBuilder();
+          queryBuilder.orderBy("name", true);
+          try {
+            queryBuilder.where().eq("hidden", false);
+            companies = queryBuilder.query();
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+
+          new CompanySelectorGui.Builder()
+              .title("Select company to hide")
+              .companies(companies)
+              .companySelected(company -> {
+                new ConfirmationGui.Builder()
+                    .title("Hide " + company.getName() + "?")
+                    .onChoiceMade(c -> {
+                      if (c) changeHidden(player, company.getName(), true);
+                    })
+                    .open(player);
+              })
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
+        }
+        return true;
+      }
+      case "listhidden" : {
+        if (player.isOp() || player.hasPermission("trevor.mod")) {
+          Stonks.newChain()
+              .asyncFirst(() -> {
+                List<Company> companies = new ArrayList<>();
+                QueryBuilder<Company, UUID> queryBuilder = databaseManager.getCompanyDao().queryBuilder();
+                queryBuilder.orderBy("name", true);
+                try {
+                  queryBuilder.where().eq("hidden", true);
+                  companies = queryBuilder.query();
+                } catch (SQLException e) {
+                  e.printStackTrace();
+                }
+                return CompanyListGui.getInventory(companies);
+              }).sync((result) -> result.open(player))
+                  .execute();
+        } else {
+          player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
+        }
+        return true;
+      }
     }
     MessageManager.sendHelpMessage(player, label);
     return true;
@@ -420,7 +499,6 @@ public class CompanyCommand implements CommandExecutor {
     }
     return concat.toString();
   }
-
 
   private void showTopCompanies(Player player) {
     player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
@@ -476,6 +554,37 @@ public class CompanyCommand implements CommandExecutor {
             }
 
 
+          } else {
+            player.sendMessage(ChatColor.RED + "Company does not exist");
+          }
+        }).execute();
+  }
+
+  private void changeHidden(Player player, String companyName, boolean newHidden) {
+    Stonks.newChain()
+        .async(() -> {
+          Company company;
+          try {
+            company = databaseManager.getCompanyDao().getCompany(companyName);
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+            return;
+          }
+          //Find the company they are making the changes in
+          if (company != null) {
+            if (player.hasPermission("trevor.mod") || player.isOp()) {
+              company.setHidden(newHidden);
+              try {
+                databaseManager.getCompanyDao().update(company);
+                player.sendMessage(ChatColor.GREEN + "Company " + ((company.isHidden())? "hidden" : "un-hidden"));
+              } catch (SQLException e) {
+                player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
+                e.printStackTrace();
+              }
+            } else {
+              player.sendMessage(ChatColor.RED + "You do not have the required permissions to change verification");
+            }
           } else {
             player.sendMessage(ChatColor.RED + "Company does not exist");
           }
@@ -1183,7 +1292,6 @@ public class CompanyCommand implements CommandExecutor {
 
   @SuppressWarnings("SameParameterValue")
   private void openCompanyList(Player player, OrderBy orderBy) {
-    player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
     Stonks.newChain()
         .asyncFirst(() -> {
           List<Company> list = null;
@@ -1200,6 +1308,15 @@ public class CompanyCommand implements CommandExecutor {
               }
             }
             list = companyQueryBuilder.query();
+
+            //remove hidden companies from the list if a player is not a member
+            //todo move this into a query
+            for (int i = list.size() - 1; i >= 0; i--) {
+              if (list.get(i).isHidden() && list.get(i).getMember(player) == null) {
+                list.remove(i);
+              }
+            }
+
           } catch (SQLException e) {
             e.printStackTrace();
           }
