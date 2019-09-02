@@ -73,16 +73,12 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
-          StringBuilder newName = new StringBuilder();
-          for (int i = 1; i < args.length; i++) {
-            if (i > 1) newName.append(" ");
-            newName.append(args[i]);
-          }
+          String newName = concatArgsWithSpaces(1, args);
           double fee = plugin.getConfig().getDouble("fees.companycreation");
           new ConfirmationGui.Builder()
-              .title(ChatColor.BOLD +"Accept $" + fee + " creation fee?")
-              .typeSelected(b -> {
-                if (b) createCompany(player, newName.toString());
+              .title(ChatColor.BOLD + "Accept $" + fee + " creation fee?")
+              .onChoiceMade(b -> {
+                if (b) createCompany(player, newName);
               })
               .open(player);
         } else {
@@ -103,7 +99,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyInfo(player, args[1]);
+        openCompanyInfo(player, concatArgsWithSpaces(1, args));
         return true;
       }
       case "members": {
@@ -111,7 +107,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyMembers(player, args[1]);
+        openCompanyMembers(player, concatArgsWithSpaces(1, args));
         return true;
       }
       case "accounts": {
@@ -119,7 +115,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyAccounts(player, args[1]);
+        openCompanyAccounts(player, concatArgsWithSpaces(1, args));
         return true;
       }
       case "invite": {
@@ -139,11 +135,7 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "createaccount": { //stonks createaccount <account_name>
         if (args.length > 1) {
-          StringBuilder newName = new StringBuilder();
-          for (int i = 1; i < args.length; i++) {
-            if (i > 1) newName.append(" ");
-            newName.append(args[i]);
-          }
+          String newName = concatArgsWithSpaces(1, args);
           new AccountTypeSelectorGui.Builder()
               .title("Select an account type")
               .typeSelected(type -> {
@@ -159,13 +151,13 @@ public class CompanyCommand implements CommandExecutor {
                           double fee = plugin.getConfig().getDouble("fees.accountcreation");
                           new ConfirmationGui.Builder()
                               .title(ChatColor.BOLD + "Accept $" + fee + " creation fee?")
-                              .typeSelected(b -> {
+                              .onChoiceMade(b -> {
                                 if (b) switch (type) {
                                   case HoldingsAccount:
-                                    createHoldingsAccount(player, company.getName(), newName.toString());
+                                    createHoldingsAccount(player, company.getName(), newName);
                                     break;
                                   case CompanyAccount:
-                                    createCompanyAccount(player, company.getName(), newName.toString());
+                                    createCompanyAccount(player, company.getName(), newName);
                                     break;
                                 }
                               })
@@ -209,24 +201,36 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "withdraw": { // /comp withdraw <amount>
+//      case "emptyholding": { // /comp emptyholding <accountid> <player_name>
+//        if (args.length > 2) {
+//          removeHolding(player, Integer.parseInt(args[1]), args[2]);
+//        } else {
+//          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " removeholding <accountid> <player_name>");
+//        }
+//        return true;
+//      }
+      case "withdraw": { // /comp withdraw <amount> [optional <accountid> ]
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
-          //get all companies where we are a manager
-          List<Company> list = databaseManager.getCompanyDao()
-              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
-          new CompanySelectorGui.Builder()
-              .companies(list)
-              .title("Select a company to withdraw from")
-              .companySelected((company ->
-                  new AccountSelectorGui.Builder()
-                      .company(company)
-                      .title("Select an account to withdraw from")
-                      .accountSelected(l -> withdrawFromAccount(player, amount, l.getId()))
-                      .open(player)))
-              .open(player);
+          if (args.length > 2) {
+            withdrawFromAccount(player, amount, Integer.parseInt(args[2]));
+          } else {
+            //get all companies where we are a manager
+            List<Company> list = databaseManager.getCompanyDao()
+                .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+            new CompanySelectorGui.Builder()
+                .companies(list)
+                .title("Select a company to withdraw from")
+                .companySelected((company ->
+                    new AccountSelectorGui.Builder()
+                        .company(company)
+                        .title("Select an account to withdraw from")
+                        .accountSelected(l -> withdrawFromAccount(player, amount, l.getId()))
+                        .open(player)))
+                .open(player);
+          }
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " withdraw <amount>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " withdraw <amount> [optional <accountid> ]");
         }
         return true;
       }
@@ -260,28 +264,31 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "setrole": { // /comp setrole <playername> <company> <role>
+      case "setrole": { // /comp setrole <playername> <role> <company>
         if (args.length > 3) {
-          setRole(player, args[1], args[2], args[3]);
+          String compName = concatArgsWithSpaces(3, args);
+          setRole(player, args[1], args[2], compName);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " setrole <player> <company> <role>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " setrole <player> <role> <company>");
         }
         return true;
       }
       case "memberinfo": {
-        if (args.length < 3) {
+        if (args.length > 2) {
+          String compName = concatArgsWithSpaces(2, args);
+          openMemberInfo(player, args[1], compName);
+        } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " memberinfo <player> <company>");
-          return true;
         }
-        openMemberInfo(player, args[2], args[1]);
         return true;
       }
       case "kickmember": {
-        if (args.length < 3) {
+        if (args.length > 2) {
+          String compName = concatArgsWithSpaces(2, args);
+          kickMember(player, args[1], compName);
+        } else {
           player.performCommand(ChatColor.RED + "Correct usage: /" + label + " kickmember <player> <company>");
-          return true;
         }
-        kickMember(player, args[2], args[1]);
         return true;
       }
       case "fees": {
@@ -308,6 +315,16 @@ public class CompanyCommand implements CommandExecutor {
     MessageManager.sendHelpMessage(player, label);
     return true;
   }
+
+  private String concatArgsWithSpaces(int startArg, String[] args) {
+    StringBuilder concat = new StringBuilder();
+    for (int i = startArg; i < args.length; i++) {
+      if (i > startArg) concat.append(" ");
+      concat.append(args[i]);
+    }
+    return concat.toString();
+  }
+
 
   private void showTopCompanies(Player player) {
     player.sendMessage(ChatColor.AQUA + "Fetching company list, one moment...");
@@ -420,7 +437,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void setRole(Player player, String playerName, String companyName, String roleString) {
+  private void setRole(Player player, String playerName, String roleString, String companyName) {
     Stonks.newChain()
         .async(() -> {
           //Try and parse the role
@@ -745,7 +762,7 @@ public class CompanyCommand implements CommandExecutor {
         }).execute();
   }
 
-  private void kickMember(Player player, String companyName, String memberName) {
+  private void kickMember(Player player, String memberName, String companyName) {
     Stonks.newChain()
         .async(() -> {
           try {
@@ -792,7 +809,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void openMemberInfo(Player player, String companyName, String memberName) {
+  private void openMemberInfo(Player player, String memberName, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
           try {

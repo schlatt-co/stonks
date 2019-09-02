@@ -67,7 +67,7 @@ public class ConfirmationGui implements InventoryProvider {
         public Builder() {
 
         }
-        public ConfirmationGui.Builder typeSelected(Consumer<Boolean> onSelected) {
+        public ConfirmationGui.Builder onChoiceMade(Consumer<Boolean> onSelected) {
             this.onSelected = onSelected;
             return this;
         }
