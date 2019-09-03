@@ -55,7 +55,7 @@ public class CompanyDaoImpl extends BaseDaoImpl<Company, UUID> implements Compan
             where.and(
                     where.or(
                             where.eq("role", Role.CEO),
-                            where.eq("role", Role.CEO)),
+                            where.eq("role", Role.Manager)),
                     where.eq("uuid", player.getUniqueId()));
 
             QueryBuilder<Company, UUID> companyQuery = queryBuilder();
