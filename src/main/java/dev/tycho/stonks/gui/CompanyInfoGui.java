@@ -43,7 +43,6 @@ public class CompanyInfoGui implements InventoryProvider {
 
         //If the player is a member of the company with management permissions then we can show an edit option
 
-
     }
 
     @Override

@@ -11,6 +11,7 @@ import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
 import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -215,9 +216,41 @@ public class CompanyCommand implements CommandExecutor {
           if (args.length > 2) {
             withdrawFromAccount(player, amount, Integer.parseInt(args[2]));
           } else {
-            //get all companies where we are a manager
-            List<Company> list = databaseManager.getCompanyDao()
-                .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+            //get all companies
+            List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
+
+            //We need a list of all companies with a withdrawable account for this player
+            //Remove companies where the player is not a manager and doesn't have an account
+            //todo remove this messy logic
+            for (int i = list.size() - 1; i >= 0; i--) {
+              boolean remove = true;
+              Company c = list.get(i);
+              Member m = c.getMember(player);
+              if (m != null && m.hasManagamentPermission()) {
+                //If a manager or ceo
+                remove = false;
+              }
+              //If you are not a manager, or a non-member with a holding then don't remove
+              for (AccountLink a: c.getAccounts()) {
+                //Is there a holding account for the player
+                ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+                  @Override
+                  public void visit(CompanyAccount a) {
+                    val = false;
+                  }
+
+                  @Override
+                  public void visit(HoldingsAccount a) {
+                    if (a.getPlayerHolding(player.getUniqueId()) != null) val = true;
+                  }
+                };
+                a.getAccount().accept(visitor);
+                if (visitor.getRecentVal()) remove = false;
+              }
+              if (remove) list.remove(i);
+            }
+
+
             new CompanySelectorGui.Builder()
                 .companies(list)
                 .title("Select a company to withdraw from")
