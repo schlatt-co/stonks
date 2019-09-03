@@ -41,7 +41,7 @@ public class Util {
     return playerHead(name, player, Arrays.asList(lore));
   }
 
-  private static ItemStack playerHead(String name, OfflinePlayer player, List<String> lore) {
+  public static ItemStack playerHead(String name, OfflinePlayer player, List<String> lore) {
     ItemStack head = new ItemStack(Material.PLAYER_HEAD);
     SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
     skullMeta.setOwningPlayer(player);

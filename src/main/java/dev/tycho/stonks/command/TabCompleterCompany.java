@@ -28,6 +28,13 @@ public class TabCompleterCompany implements TabCompleter {
       "setlogo",
       "pay",
       "fees");
+  private static final List<String> ADMIN_SUBCOMMANDS = Arrays.asList(
+      "hide",
+      "unhide",
+      "listhidden",
+      "verify",
+      "unverify",
+      "rename");
   private static final List<String> RATIOS = Arrays.asList(
       "0.5",
       "1",
@@ -44,6 +51,8 @@ public class TabCompleterCompany implements TabCompleter {
     List<String> completions = new ArrayList<>();
     if (args.length == 1) {
       StringUtil.copyPartialMatches(args[0], SUBCOMMANDS, completions);
+      if (sender.isOp() || sender.hasPermission("trevor.mod"))
+        StringUtil.copyPartialMatches(args[0], ADMIN_SUBCOMMANDS, completions);
     } else if (args.length == 2) {
       if (args[0].equals("createholding") || args[0].equals("invite") || args[0].equals("memberinfo")) {
         List<String> playerNames = new ArrayList<>();
