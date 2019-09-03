@@ -18,7 +18,7 @@ public class ItemInfoHelper {
     if (company.isVerified()) companyDisplayName += "  " + ChatColor.AQUA + "✔";
     return Util.item(Material.getMaterial(company.getLogoMaterial()), companyDisplayName,
         (company.isVerified())? ChatColor.ITALIC + "" + ChatColor.AQUA + "Verified company" : "",
-        "Total value: " + ChatColor.GREEN + "$" + company.getTotalValue(),
+        "Total value: " + ChatColor.GREEN + "$" + Util.commify(company.getTotalValue()),
         "Members: " + company.getNumAcceptedMembers(),
         "Accounts: " + company.getAccounts().size()
     );
@@ -36,7 +36,7 @@ public class ItemInfoHelper {
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();
         lore.add("ID: " + ChatColor.YELLOW + link.getId());
-        lore.add("Balance: " + ChatColor.GREEN + " $" + a.getTotalBalance());
+        lore.add("Balance: " + ChatColor.GREEN + " $" + Util.commify(a.getTotalBalance()));
         lore.add(ChatColor.ITALIC + "Company Account");
         if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
         val = Util.item(Material.DIAMOND, a.getName(), lore);
@@ -46,7 +46,7 @@ public class ItemInfoHelper {
       public void visit(HoldingsAccount a) {
         List<String> lore = new ArrayList<>();
         lore.add("ID: " + ChatColor.YELLOW + link.getId());
-        lore.add("Total Balance: " + ChatColor.GREEN + "$" + a.getTotalBalance());
+        lore.add("Total Balance: " + ChatColor.GREEN + "$" + Util.commify(a.getTotalBalance()));
         lore.add("Holdings: " + ChatColor.YELLOW + a.getHoldings().size());
         lore.add(ChatColor.ITALIC + "Holdings Account");
         if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));

@@ -63,7 +63,7 @@ public class HoldingListGui implements InventoryProvider {
       OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(holding.getPlayer());
 
       List<String> lore = new ArrayList<>();
-      lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "£" + holding.getBalance());
+      lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(holding.getBalance()));
       lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.getShare());
       if (player.getUniqueId().equals(holding.getPlayer()))
         lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");

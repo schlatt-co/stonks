@@ -53,7 +53,7 @@ public class Util {
     return head;
   }
 
-  public static String doubleWithCommas(double val) {
+  public static String commify(double val) {
     return NumberFormat.getInstance(Locale.US).format(val);
   }
 
