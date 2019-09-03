@@ -25,32 +25,19 @@ public class AccountLink {
 
     public AccountLink(Company company, Account account) {
         this.company = company;
-
         //Avoid reflection, determine the type of the account through a visitor
-        final AccountType[] type = new AccountType[1];
         IAccountVisitor visitor = new IAccountVisitor() {
             @Override
             public void visit(CompanyAccount a) {
-                type[0] = AccountType.CompanyAccount;
+                companyAccount = a;
             }
 
             @Override
             public void visit(HoldingsAccount a) {
-                type[0] = AccountType.HoldingsAccount;
+                holdingsAccount = a;
             }
         };
         account.accept(visitor);
-
-        //Only set one of the two account types to a reference
-        //The other will stay null
-        switch (type[0]) {
-            case CompanyAccount:
-                this.companyAccount = (CompanyAccount)account;
-                break;
-            case HoldingsAccount:
-                this.holdingsAccount = (HoldingsAccount)account;
-                break;
-        }
     }
 
     public int getId() {
