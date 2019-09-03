@@ -240,7 +240,7 @@ public class CompanyCommand implements CommandExecutor {
 
                   @Override
                   public void visit(HoldingsAccount a) {
-                    if (a.getPlayerHolding(player.getUniqueId()) != null) val = true;
+                    val = (a.getPlayerHolding(player.getUniqueId()) != null);
                   }
                 };
                 a.getAccount().accept(visitor);
