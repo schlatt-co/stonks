@@ -25,10 +25,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.text.NumberFormat;
+import java.util.*;
 
 import static dev.tycho.stonks.model.Role.*;
 
@@ -546,7 +544,7 @@ public class CompanyCommand implements CommandExecutor {
             player.sendMessage(ChatColor.AQUA + "--------------------");
             for (int i = 0; i < Math.min(10, list.size()); i++) {
               Company company = list.get(i);
-              player.sendMessage(ChatColor.GOLD + String.valueOf(i + 1) + " - " + company.getName() + ": " + ChatColor.GREEN + "€" + company.getTotalValue());
+              player.sendMessage(ChatColor.GOLD + String.valueOf(i + 1) + " - " + company.getName() + ": " + ChatColor.GREEN + "$" + Util.doubleWithCommas(company.getTotalValue()));
             }
             player.sendMessage(ChatColor.AQUA + "--------------------");
           } catch (SQLException e) {

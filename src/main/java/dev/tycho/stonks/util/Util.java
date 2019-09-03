@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,10 @@ public class Util {
     skullMeta.setLore(lores);
     head.setItemMeta(skullMeta);
     return head;
+  }
+
+  public static String doubleWithCommas(double val) {
+    return NumberFormat.getInstance(Locale.US).format(val);
   }
 
   public static String convertString(long time) {
