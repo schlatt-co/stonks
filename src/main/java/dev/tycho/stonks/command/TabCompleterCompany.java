@@ -27,7 +27,8 @@ public class TabCompleterCompany implements TabCompleter {
       "withdraw",
       "setlogo",
       "pay",
-      "fees");
+      "fees",
+      "history");
   private static final List<String> ADMIN_SUBCOMMANDS = Arrays.asList(
       "hide",
       "unhide",

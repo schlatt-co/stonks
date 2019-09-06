@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nonnull;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -55,7 +54,7 @@ public class CompanyCommand implements CommandExecutor {
   }
 
   @Override
-  public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
     if (!(sender instanceof Player)) {
       sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");
@@ -73,7 +72,7 @@ public class CompanyCommand implements CommandExecutor {
     switch (args[0].toLowerCase()) {
       case "create": {
         if (args.length > 1) {
-          String newName = concatArgsWithSpaces(1, args);
+          String newName = concatArgs(1, args);
           double fee = plugin.getConfig().getDouble("fees.companycreation");
           new ConfirmationGui.Builder()
               .title(ChatColor.BOLD + "Accept $" + fee + " creation fee?")
@@ -99,7 +98,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyInfo(player, concatArgsWithSpaces(1, args));
+        openCompanyInfo(player, concatArgs(1, args));
         return true;
       }
       case "members": {
@@ -107,7 +106,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyMembers(player, concatArgsWithSpaces(1, args));
+        openCompanyMembers(player, concatArgs(1, args));
         return true;
       }
       case "accounts": {
@@ -115,7 +114,7 @@ public class CompanyCommand implements CommandExecutor {
           player.sendMessage(ChatColor.RED + "Please specify a company!");
           return true;
         }
-        openCompanyAccounts(player, concatArgsWithSpaces(1, args));
+        openCompanyAccounts(player, concatArgs(1, args));
         return true;
       }
       case "invite": {
@@ -135,7 +134,7 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "createaccount": { //stonks createaccount <account_name>
         if (args.length > 1) {
-          String newName = concatArgsWithSpaces(1, args);
+          String newName = concatArgs(1, args);
           new AccountTypeSelectorGui.Builder()
               .title("Select an account type")
               .typeSelected(type -> {
@@ -230,7 +229,7 @@ public class CompanyCommand implements CommandExecutor {
                 remove = false;
               }
               //If you are not a manager, or a non-member with a holding then don't remove
-              for (AccountLink a: c.getAccounts()) {
+              for (AccountLink a : c.getAccounts()) {
                 //Is there a holding account for the player
                 ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
                   @Override
@@ -279,6 +278,7 @@ public class CompanyCommand implements CommandExecutor {
       case "pay": {
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
+          final String message = (args.length > 2) ? concatArgs(2, args) : "";
           //get all companies
           List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
           new CompanySelectorGui.Builder()
@@ -288,9 +288,9 @@ public class CompanyCommand implements CommandExecutor {
                 //Cache the next screen
                 AccountSelectorGui.Builder accountSelectorScreen =
                     new AccountSelectorGui.Builder()
-                    .company(company)
-                    .title("Select which account to pay")
-                    .accountSelected(l -> payAccount(player, l.getId(), amount));
+                        .company(company)
+                        .title("Select which account to pay")
+                        .accountSelected(l -> payAccount(player, l.getId(), message, amount));
                 List<String> info = new ArrayList<>();
                 info.add("You are trying to pay an unverified company!");
                 info.add("Unverified companies might be pretending to be ");
@@ -302,7 +302,7 @@ public class CompanyCommand implements CommandExecutor {
                 info.add(ChatColor.GOLD + "The CEO of this company is ");
                 String ceoName = "[error lol]";
                 for (Member m : company.getMembers()) {
-                  if (m.getRole().equals(CEO)){
+                  if (m.getRole().equals(CEO)) {
                     OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
                     if (p != null) ceoName = p.getName();
                   }
@@ -313,7 +313,7 @@ public class CompanyCommand implements CommandExecutor {
                       .title(company.getName() + " is unverified")
                       .info(info)
                       .onChoiceMade(
-                          c-> {
+                          c -> {
                             if (c) accountSelectorScreen.open(player);
                           }
                       ).open(player);
@@ -329,7 +329,7 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "setrole": { // /comp setrole <playername> <role> <company>
         if (args.length > 3) {
-          String compName = concatArgsWithSpaces(3, args);
+          String compName = concatArgs(3, args);
           setRole(player, args[1], args[2], compName);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " setrole <player> <role> <company>");
@@ -338,7 +338,7 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "memberinfo": {
         if (args.length > 2) {
-          String compName = concatArgsWithSpaces(2, args);
+          String compName = concatArgs(2, args);
           openMemberInfo(player, args[1], compName);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " memberinfo <player> <company>");
@@ -347,7 +347,7 @@ public class CompanyCommand implements CommandExecutor {
       }
       case "kickmember": {
         if (args.length > 2) {
-          String compName = concatArgsWithSpaces(2, args);
+          String compName = concatArgs(2, args);
           kickMember(player, args[1], compName);
         } else {
           player.performCommand(ChatColor.RED + "Correct usage: /" + label + " kickmember <player> <company>");
@@ -378,7 +378,7 @@ public class CompanyCommand implements CommandExecutor {
       case "rename": { // stonks rename <new name>
         if (args.length > 1) {
           if (player.isOp() || player.hasPermission("trevor.mod")) {
-            String newName = concatArgsWithSpaces(1, args);
+            String newName = concatArgs(1, args);
             new CompanySelectorGui.Builder()
                 .title("Select company to rename")
                 .companies(databaseManager.getCompanyDao().getAllCompanies())
@@ -495,7 +495,7 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "listhidden" : {
+      case "listhidden": {
         if (player.isOp() || player.hasPermission("trevor.mod")) {
           Stonks.newChain()
               .asyncFirst(() -> {
@@ -510,18 +510,102 @@ public class CompanyCommand implements CommandExecutor {
                 }
                 return CompanyListGui.getInventory(companies);
               }).sync((result) -> result.open(player))
-                  .execute();
+              .execute();
         } else {
           player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
         }
         return true;
       }
+      case "history": {
+        if (args.length == 2) {
+          AccountLink link;
+          try {
+            link = databaseManager.getAccountLinkDao().queryForId(Integer.parseInt(args[1]));
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL ERROR");
+            return true;
+          }
+
+          if (link == null) {
+            player.sendMessage(ChatColor.RED + "Account not found");
+            return true;
+          }
+          new TransactionHistoryGui.Builder()
+              .accountLink(link)
+              .title("Transaction History")
+              .open(player);
+          return true;
+        }
+        if (args.length > 3) {
+          if (args[1].equals("-v")) {
+            TransactionHistoryPagination(player, Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+          }
+        } else {
+          List<Company> list = databaseManager.getCompanyDao()
+              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+          new CompanySelectorGui.Builder()
+              .companies(list)
+              .title("Select a company")
+              .companySelected((company ->
+                  new AccountSelectorGui.Builder()
+                      .company(company)
+                      .title("Select an account")
+                      .accountSelected(l -> {
+                        new TransactionHistoryGui.Builder()
+                            .accountLink(l)
+                            .title("Transaction History")
+                            .open(player);
+                      })
+                      .open(player)))
+              .open(player);
+        }
+        return true;
+      }
     }
+
     MessageManager.sendHelpMessage(player, label);
     return true;
   }
 
-  private String concatArgsWithSpaces(int startArg, String[] args) {
+  private void TransactionHistoryPagination(Player player, int accountId, int page) {
+    AccountLink link;
+    try {
+      link = databaseManager.getAccountLinkDao().queryForId(accountId);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL ERROR");
+      return;
+    }
+
+    if (link == null) {
+      player.sendMessage(ChatColor.RED + "Account not found");
+      return;
+    }
+
+    List<Transaction> transactions = databaseManager.getTransactionDao()
+        .getTransactionsForAccount(link, databaseManager.getAccountLinkDao().queryBuilder(), 10, 10 * page);
+    if (transactions.size() == 0) {
+      player.sendMessage("!");
+      player.sendMessage(ChatColor.YELLOW + "==== No more pages ====");
+      return;
+    }
+    int i = 0;
+    player.sendMessage(ChatColor.YELLOW + "==== Page " + page + " ====");
+    for (Transaction transaction : transactions) {
+      StringBuilder s = new StringBuilder((i + page * 10)+ ")");
+      s.append("[" + transaction.getId() + "] ");
+      s.append("$" + transaction.getAmount() + " ");
+      s.append(((transaction.getPayee() != null) ? transaction.getPayee() : "unknown") + " ");
+      if (transaction.getMessage() != null) s.append(transaction.getMessage());
+      player.sendMessage(s.toString());
+      i++;
+    }
+    if (i < 10) player.sendMessage("!");
+  }
+
+
+  private String concatArgs(int startArg, String[] args) {
     StringBuilder concat = new StringBuilder();
     for (int i = startArg; i < args.length; i++) {
       if (i > startArg) concat.append(" ");
@@ -607,7 +691,7 @@ public class CompanyCommand implements CommandExecutor {
               company.setHidden(newHidden);
               try {
                 databaseManager.getCompanyDao().update(company);
-                player.sendMessage(ChatColor.GREEN + "Company " + ((company.isHidden())? "hidden" : "un-hidden"));
+                player.sendMessage(ChatColor.GREEN + "Company " + ((company.isHidden()) ? "hidden" : "un-hidden"));
               } catch (SQLException e) {
                 player.sendMessage(ChatColor.RED + "SQL error tell wheezy");
                 e.printStackTrace();
@@ -895,7 +979,7 @@ public class CompanyCommand implements CommandExecutor {
 
 
                           //Log the transaction
-                          databaseManager.logTransaction(new Transaction(link, player.getUniqueId(), -amount));
+                          databaseManager.logTransaction(new Transaction(link, player.getUniqueId(), null, -amount));
 
                         } catch (SQLException e) {
                           e.printStackTrace();
@@ -1142,7 +1226,7 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  private void payAccount(Player sender, int accountId, double amount) {
+  private void payAccount(Player sender, int accountId, String message, double amount) {
     Stonks.newChain()
         .async(() -> {
           AccountLink accountLink = null;
@@ -1188,7 +1272,7 @@ public class CompanyCommand implements CommandExecutor {
           };
           accountLink.getAccount().accept(visitor);
           //Log the transaction
-          databaseManager.logTransaction(new Transaction(accountLink, sender.getUniqueId(), amount));
+          databaseManager.logTransaction(new Transaction(accountLink, sender.getUniqueId(), message, amount));
           //Tell the user we paid the account
           sender.sendMessage(ChatColor.GREEN + "Paid " + ChatColor.DARK_GREEN + accountLink.getCompany().getName() +
               " (" + accountLink.getAccount().getName() + ")" + ChatColor.GREEN + " $" + Util.commify(amount) + "!");

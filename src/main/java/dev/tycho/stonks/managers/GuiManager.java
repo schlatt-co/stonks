@@ -52,5 +52,7 @@ public class GuiManager extends SpigotModule {
         ConfirmationGui.inventoryManager = inventoryManager;
         ConfirmationGui.databaseManager = databaseManager;
 
+        TransactionHistoryGui.inventoryManager = inventoryManager;
+        TransactionHistoryGui.databaseManager = databaseManager;
     }
 }

@@ -1,10 +1,16 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.logging.Transaction;
+import dev.tycho.stonks.model.AccountLink;
+import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.CompanyAccount;
+import dev.tycho.stonks.model.HoldingsAccount;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -17,7 +23,7 @@ public class ItemInfoHelper {
     String companyDisplayName = company.getName();
     if (company.isVerified()) companyDisplayName += "  " + ChatColor.AQUA + "✔";
     return Util.item(Material.getMaterial(company.getLogoMaterial()), companyDisplayName,
-        (company.isVerified())? ChatColor.ITALIC + "" + ChatColor.AQUA + "Verified company" : "",
+        (company.isVerified()) ? ChatColor.ITALIC + "" + ChatColor.AQUA + "Verified company" : "",
         "Total value: " + ChatColor.GREEN + "$" + Util.commify(company.getTotalValue()),
         "Members: " + company.getNumAcceptedMembers(),
         "Accounts: " + company.getAccounts().size()
@@ -57,4 +63,25 @@ public class ItemInfoHelper {
     return visitor.getRecentVal();
   }
 
+  public static ItemStack transactionDisplayItem(Transaction transaction) {
+    List<String> lore = new ArrayList<>();
+    if (transaction.getPayee() != null) {
+      OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.getPayee());
+      if (p.hasPlayedBefore()) lore.add("Made by " + ChatColor.YELLOW + p.getName());
+    }
+    lore.add("On (EST) " + transaction.getTimestamp().toString());
+    if (transaction.getMessage() != null) {
+      lore.add("Message: ");
+      lore.add(ChatColor.ITALIC + transaction.getMessage());
+    }
+
+    Material itemMaterial = Material.CHEST;
+    if (transaction.getPayee() != null) {
+      itemMaterial = (transaction.getAmount() > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
+    }
+
+    return Util.item(itemMaterial,
+        ((transaction.getAmount() > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.getAmount(),
+        lore);
+  }
 }

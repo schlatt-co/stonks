@@ -32,7 +32,7 @@ public class DatabaseManager extends SpigotModule {
   private AccountLinkDaoImpl accountlinkDao = null;
   private HoldingDaoImpl holdingDao = null;
   private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
-  private Dao<Transaction, Integer> transactionDao = null;
+  private TransactionDaoImpl transactionDao = null;
 
   @Override
   public void enable() {
@@ -55,7 +55,7 @@ public class DatabaseManager extends SpigotModule {
       accountlinkDao = new AccountLinkDaoImpl(connectionSource);
       holdingDao = DaoManager.createDao(connectionSource, Holding.class);
       holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
-      transactionDao = DaoManager.createDao(connectionSource, Transaction.class);
+      transactionDao = new TransactionDaoImpl(connectionSource);
 
       TableUtils.createTableIfNotExists(connectionSource, Company.class);
       TableUtils.createTableIfNotExists(connectionSource, Member.class);
@@ -106,7 +106,7 @@ public class DatabaseManager extends SpigotModule {
     return holdingDao;
   }
 
-  public Dao<Transaction, Integer> getTransactionDao() {
+  public TransactionDaoImpl getTransactionDao() {
     return transactionDao;
   }
 

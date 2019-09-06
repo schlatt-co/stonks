@@ -191,6 +191,8 @@ public class ShopManager extends SpigotModule {
                         //Log the transaction
                         databaseManager.logTransaction(new Transaction(
                                 databaseManager.getAccountLinkDao().getAccountLink(account),
+                                null,
+                                "Shop Buy",
                                 event.getAmountSent().doubleValue()));
                     }).execute();
         }
@@ -213,6 +215,8 @@ public class ShopManager extends SpigotModule {
                                     //Log the transaction
                                     databaseManager.logTransaction(new Transaction(
                                             databaseManager.getAccountLinkDao().getAccountLink(account),
+                                            null,
+                                            "Shop Sell",
                                             -event.getAmountSent().doubleValue()));
                                 }
                                 try {

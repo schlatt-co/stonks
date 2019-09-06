@@ -3,6 +3,7 @@ package dev.tycho.stonks.logging;
 import com.Acrobot.ChestShop.ORMlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
 import dev.tycho.stonks.model.AccountLink;
+import org.bukkit.Material;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -26,18 +27,36 @@ public class Transaction {
     @DatabaseField()
     private Timestamp timestamp;
 
+    @DatabaseField()
+    private String message;
+
     public Transaction() {
     }
-    public Transaction(AccountLink account, double amount ) {
+    public Transaction(AccountLink account, UUID payee, String message, double amount ) {
         this.account = account;
-        this.payee = null;
+        this.payee = payee;
+        this.message = message;
         this.amount = amount;
         this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
     }
-    public Transaction(AccountLink account, UUID payee, double amount ) {
-        this.account = account;
-        this.payee = payee;
-        this.amount = amount;
-        this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+
+    public UUID getPayee() {
+        return payee;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public int getId() {
+        return id;
     }
 }
