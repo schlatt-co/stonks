@@ -279,6 +279,10 @@ public class CompanyCommand implements CommandExecutor {
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
           final String message = (args.length > 2) ? concatArgs(2, args) : "";
+          if (message.length() > 200) {
+            player.sendMessage(ChatColor.RED + "Your message cannot be longer than 200 characters");
+            return true;
+          }
           //get all companies
           List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
           new CompanySelectorGui.Builder()
@@ -323,7 +327,7 @@ public class CompanyCommand implements CommandExecutor {
               }))
               .open(player);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " pay <amount>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " pay <amount> <message>");
         }
         return true;
       }
