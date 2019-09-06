@@ -12,6 +12,7 @@ import dev.tycho.stonks.managers.MessageManager;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -118,6 +119,39 @@ public class CompanyCommand implements CommandExecutor {
           return true;
         }
         openCompanyAccounts(player, concatArgs(1, args));
+        return true;
+      }
+      case "services": {
+        if (args.length < 2) {
+          player.sendMessage(ChatColor.RED + "Please specify a company!");
+          return true;
+        }
+        openCompanyServices(player, concatArgs(1, args));
+        return true;
+      }
+      case "createservice": { // /comp createservice <duration> <cost> <max_subs> <name>
+        if (args.length > 4) {
+          double duration = Double.parseDouble(args[1]);
+          double cost = Double.parseDouble(args[2]);
+          int maxSubs = Integer.parseInt(args[3]);
+          String name = concatArgs(4, args);
+          List<Company> list = databaseManager.getCompanyDao()
+              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+          new CompanySelectorGui.Builder()
+              .companies(list)
+              .title("Select a company")
+              .companySelected(company -> {
+                Service newService = new Service(name, company, duration, cost, maxSubs);
+                try {
+                  databaseManager.getServiceDao().create(newService);
+                } catch (SQLException e) {
+                  e.printStackTrace();
+                }
+              })
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " createholding <player_name> <share>");
+        }
         return true;
       }
       case "invite": {
@@ -573,6 +607,26 @@ public class CompanyCommand implements CommandExecutor {
 
     MessageManager.sendHelpMessage(player, label);
     return true;
+  }
+
+  private void openCompanyServices(Player player, String companyName) {
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          try {
+            Company company = databaseManager.getCompanyDao().getCompany(companyName);
+            if (company == null) {
+              player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+              return null;
+            }
+            return new ServiceListGui(company);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+          return null;
+        })
+        .abortIfNull()
+        .sync(gui->gui.show(player))
+        .execute();
   }
 
   private void TransactionHistoryPagination(Player player, int accountId, int page) {

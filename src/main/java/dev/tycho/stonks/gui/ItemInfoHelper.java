@@ -6,6 +6,7 @@ import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.CompanyAccount;
 import dev.tycho.stonks.model.core.HoldingsAccount;
+import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,4 +85,14 @@ public class ItemInfoHelper {
         ((transaction.getAmount() > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.getAmount(),
         lore);
   }
+
+  public static ItemStack serviceDisplayItem(Service service) {
+    List<String> lore = new ArrayList<>();
+    lore.add("Cost: " + ChatColor.GREEN + "$" + service.getCost());
+    lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() +"/" + service.getMaxSubscriptions());
+    lore.add("Subscription Period: " + service.getDuration() + " days");
+    Material itemMaterial = Material.KNOWLEDGE_BOOK;
+    return Util.item(itemMaterial, service.getName(), lore);
+  }
+
 }
