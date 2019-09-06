@@ -864,6 +864,8 @@ public class CompanyCommand implements CommandExecutor {
                       try {
                         databaseManager.getMemberDao().setRole(memberToChange, newRole);
                         player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
+                        OfflinePlayer p = Bukkit.getOfflinePlayer(memberToChange.getUuid());
+                        if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.YELLOW + "Your rank in the company " + company.getName() + " has changed to " + newRole.toString());
                         if (newRole == CEO) {
                           databaseManager.getMemberDao().setRole(changingMember, Manager);
                           player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
@@ -1190,6 +1192,9 @@ public class CompanyCommand implements CommandExecutor {
             }
             databaseManager.getMemberDao().deleteMember(memberToKick);
             player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
+            Bukkit.broadcastMessage(ChatColor.BOLD + "" +  ChatColor.RED + memberName + " has been fired from " + company.getName() + "!");
+//            OfflinePlayer p = Bukkit.getOfflinePlayer(memberToKick.getUuid());
+//            if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.RED + "You have been fired from " + company.getName() + "!");
           } catch (SQLException e) {
             e.printStackTrace();
           }
