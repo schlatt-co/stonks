@@ -5,7 +5,7 @@ import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
-import dev.tycho.stonks.logging.Transaction;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
@@ -515,8 +515,8 @@ public class CompanyCommand implements CommandExecutor {
                 } catch (SQLException e) {
                   e.printStackTrace();
                 }
-                return CompanyListGui.getInventory(companies);
-              }).sync((result) -> result.open(player))
+                return new CompanyListGui(companies);
+              }).sync((result) -> result.show(player))
               .execute();
         } else {
           player.sendMessage(ChatColor.RED + "You don't have permissions to do this");
@@ -755,14 +755,14 @@ public class CompanyCommand implements CommandExecutor {
               player.sendMessage(ChatColor.RED + "You can only view holdings for holdingsaccounts.");
               return null;
             }
-            return HoldingListGui.getInventory((HoldingsAccount) link.getAccount());
+            return new HoldingListGui((HoldingsAccount) link.getAccount());
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -1446,9 +1446,10 @@ public class CompanyCommand implements CommandExecutor {
           } catch (SQLException e) {
             e.printStackTrace();
           }
-          return CompanyListGui.getInventory(list);
+          return new CompanyListGui(list);
         })
-        .sync((result) -> result.open(player))
+        .abortIfNull()
+        .sync((result) -> (result).show(player))
         .execute();
   }
 
@@ -1473,7 +1474,7 @@ public class CompanyCommand implements CommandExecutor {
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.open(player))
         .execute();
   }
 
@@ -1515,14 +1516,14 @@ public class CompanyCommand implements CommandExecutor {
               player.sendMessage(ChatColor.RED + "That company doesn't exist!");
               return null;
             }
-            return AccountListGui.getInventory(company);
+            return new AccountListGui(company);
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui->gui.show(player))
         .execute();
   }
 
@@ -1530,20 +1531,15 @@ public class CompanyCommand implements CommandExecutor {
     Stonks.newChain()
         .asyncFirst(() -> {
           List<Member> invites;
-          try {
             invites = databaseManager.getMemberDao().getInvites(player);
-          } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-          }
           if (invites == null) {
             player.sendMessage(ChatColor.RED + "You don't have any invites!");
             return null;
           }
-          return InviteListGui.getInventory();
+          return new InviteListGui(player);
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 

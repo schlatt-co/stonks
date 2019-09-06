@@ -13,40 +13,40 @@ import org.bukkit.entity.Player;
 
 public class CompanyInfoGui implements InventoryProvider {
 
-    public static DatabaseManager databaseManager;
-    public static InventoryManager inventoryManager;
+  public static DatabaseManager databaseManager;
+  public static InventoryManager inventoryManager;
 
-    private Company company;
+  private Company company;
 
-    public CompanyInfoGui(Company company) {
-        this.company = company;
-    }
+  public CompanyInfoGui(Company company) {
+    this.company = company;
+  }
 
-    public static SmartInventory getInventory(Company company) {
-        return SmartInventory.builder()
-                .id("companyInfo")
-                .provider(new CompanyInfoGui(company))
-                .manager(inventoryManager)
-                .size(5, 9)
-                .title(company.getName())
-                .build();
-    }
+  public static SmartInventory getInventory(Company company) {
+    return SmartInventory.builder()
+        .id("companyInfo")
+        .provider(new CompanyInfoGui(company))
+        .manager(inventoryManager)
+        .size(5, 9)
+        .title(company.getName())
+        .build();
+  }
 
-    @Override
-    public void init(Player player, InventoryContents contents) {
-        contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-        contents.set(0,0,ClickableItem.of(Util.item(Material.BARRIER, "Company List"), e -> player.performCommand("stonks list")));
+  @Override
+  public void init(Player player, InventoryContents contents) {
+    contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
+    contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Company List"),
+        e -> player.performCommand("stonks list")));
 
-        contents.set(0, 4, ClickableItem.empty(ItemInfoHelper.companyDisplayItem(company)));
-        contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> player.performCommand("stonks members " + company.getName())));
-        contents.set(2, 5, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"), e -> player.performCommand("stonks accounts " + company.getName())));
+    contents.set(0, 4, ClickableItem.empty(ItemInfoHelper.companyDisplayItem(company)));
+    contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"),
+        e -> player.performCommand("stonks members " + company.getName())));
+    contents.set(2, 5, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"),
+        e -> player.performCommand("stonks accounts " + company.getName())));
+  }
 
-        //If the player is a member of the company with management permissions then we can show an edit option
+  @Override
+  public void update(Player player, InventoryContents contents) {
 
-    }
-
-    @Override
-    public void update(Player player, InventoryContents contents) {
-
-    }
+  }
 }

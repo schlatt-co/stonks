@@ -1,4 +1,4 @@
-package dev.tycho.stonks.logging;
+package dev.tycho.stonks.model.logging;
 
 import com.Acrobot.ChestShop.ORMlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
@@ -38,6 +38,7 @@ public class Transaction {
         this.amount = amount;
         this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
     }
+
 
     public UUID getPayee() {
         return payee;

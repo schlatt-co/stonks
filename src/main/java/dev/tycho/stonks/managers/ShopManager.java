@@ -6,7 +6,7 @@ import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.logging.Transaction;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import org.bukkit.ChatColor;

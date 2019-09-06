@@ -1,6 +1,6 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.logging.Transaction;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;

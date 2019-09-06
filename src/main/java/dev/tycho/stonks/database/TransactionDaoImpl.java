@@ -3,7 +3,7 @@ package dev.tycho.stonks.database;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
-import dev.tycho.stonks.logging.Transaction;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.core.AccountLink;
 
 import java.sql.SQLException;

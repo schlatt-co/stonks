@@ -26,9 +26,9 @@ public class MessageManager extends SpigotModule {
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
+  public void onPlayerJoin(PlayerJoinEvent event) {
     List<Member> invites = databaseManager.getMemberDao().getInvites(event.getPlayer());
-    if (invites != null) {
+    if (invites.size() > 0) {
       event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.GREEN + invites.size() + ChatColor.AQUA + " open company invites! Do " + ChatColor.GREEN + "/stonks invites" + ChatColor.AQUA + " to view them.");
     }
   }

@@ -11,6 +11,7 @@ import dev.tycho.stonks.model.core.Role;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,15 +21,21 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
     }
 
     @Override
-    public List<Member> getInvites(Player player) throws SQLException {
+    public List<Member> getInvites(Player player) {
         QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
         List<Member> list;
-        queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
-        list = queryBuilder.query();
+
+        try {
+            queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
+            list = queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
         if(list.size() > 0) {
             return list;
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
