@@ -1,8 +1,10 @@
 package dev.tycho.stonks.gui;
 
 import com.j256.ormlite.dao.ForeignCollection;
-import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.managers.DatabaseManager;
+import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.model.core.Holding;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;

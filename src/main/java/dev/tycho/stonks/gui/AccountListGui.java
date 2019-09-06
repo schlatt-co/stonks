@@ -1,8 +1,8 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -16,7 +16,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.List;
 
 public class AccountListGui implements InventoryProvider {
 

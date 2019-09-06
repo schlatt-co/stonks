@@ -1,11 +1,11 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.logging.Transaction;
-import dev.tycho.stonks.model.AccountLink;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.CompanyAccount;
-import dev.tycho.stonks.model.HoldingsAccount;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

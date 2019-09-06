@@ -5,9 +5,9 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.support.ConnectionSource;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.Member;
-import dev.tycho.stonks.model.Role;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.core.Role;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;

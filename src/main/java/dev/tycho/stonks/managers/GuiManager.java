@@ -1,8 +1,8 @@
 package dev.tycho.stonks.managers;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
 import fr.minuskube.inv.InventoryManager;
-import dev.tycho.stonks.Stonks;
 
 public class GuiManager extends SpigotModule {
 

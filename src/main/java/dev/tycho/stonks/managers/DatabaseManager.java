@@ -10,7 +10,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.CompanyCommand;
 import dev.tycho.stonks.database.*;
 import dev.tycho.stonks.logging.Transaction;
-import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.core.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

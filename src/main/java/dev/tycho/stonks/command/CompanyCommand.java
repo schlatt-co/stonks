@@ -9,9 +9,9 @@ import dev.tycho.stonks.logging.Transaction;
 import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.managers.GuiManager;
 import dev.tycho.stonks.managers.MessageManager;
-import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,9 +24,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-import static dev.tycho.stonks.model.Role.*;
+import static dev.tycho.stonks.model.core.Role.*;
 
 //TODO break this class up into sublcasses
 // its almost 1000 lines long

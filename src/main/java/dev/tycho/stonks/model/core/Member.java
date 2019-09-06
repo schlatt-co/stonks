@@ -1,4 +1,4 @@
-package dev.tycho.stonks.model;
+package dev.tycho.stonks.model.core;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
