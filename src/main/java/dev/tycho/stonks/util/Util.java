@@ -25,6 +25,7 @@ public class Util {
   public static ItemStack item(Material material, String name, List<String> lore) {
     ItemStack itemStack = new ItemStack(material);
     ItemMeta itemMeta = itemStack.getItemMeta();
+    assert itemMeta != null;
     itemMeta.setDisplayName(ChatColor.RESET + name);
     List<String> lores = new ArrayList<>();
     for (String curLore : lore) {
@@ -45,6 +46,7 @@ public class Util {
   public static ItemStack playerHead(String name, OfflinePlayer player, List<String> lore) {
     ItemStack head = new ItemStack(Material.PLAYER_HEAD);
     SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+    assert skullMeta != null;
     skullMeta.setOwningPlayer(player);
     skullMeta.setDisplayName(ChatColor.RESET + name);
     List<String> lores = new ArrayList<>(lore);
