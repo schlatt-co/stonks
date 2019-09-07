@@ -767,30 +767,7 @@ public class CompanyCommand implements CommandExecutor {
               databaseManager.getSubscriptionDao().create(subscription);
               service.getAccount().getAccount().addBalance(service.getCost());
               //Update the account database
-              IAccountVisitor visitor = new IAccountVisitor() {
-                @Override
-                public void visit(CompanyAccount a) {
-                  try {
-                    databaseManager.getCompanyAccountDao().update(a);
-                  } catch (SQLException e) {
-                    e.printStackTrace();
-                    player.sendMessage(ChatColor.RED + "SQL EXCEPTION PAYING ACCOUNT TELL WHEEZY");
-                  }
-                }
-
-                @Override
-                public void visit(HoldingsAccount a) {
-                  try {
-                    //Update the account and holdings
-                    databaseManager.getHoldingAccountDao().update(a);
-                    for (Holding h : a.getHoldings()) databaseManager.getHoldingDao().update(h);
-                  } catch (SQLException e) {
-                    e.printStackTrace();
-                    player.sendMessage(ChatColor.RED + "SQL EXCEPTION PAYING ACCOUNT TELL WHEEZY");
-                  }
-                }
-              };
-              service.getAccount().getAccount().accept(visitor);
+              databaseManager.updateAccount(service.getAccount().getAccount());
 
 
               //Subscription created!
@@ -1516,31 +1493,7 @@ public class CompanyCommand implements CommandExecutor {
           }
 
           accountLink.getAccount().addBalance(amount);
-          IAccountVisitor visitor = new IAccountVisitor() {
-            @Override
-            public void visit(CompanyAccount a) {
-              try {
-                databaseManager.getCompanyAccountDao().update(a);
-              } catch (SQLException e) {
-                sender.sendMessage(ChatColor.RED + "SQL ERRROR PAYING TELL WHEEZYYYYYY PLEASE ");
-                e.printStackTrace();
-              }
-            }
-
-            @Override
-            public void visit(HoldingsAccount a) {
-              try {
-                databaseManager.getHoldingAccountDao().update(a);
-                for (Holding h : a.getHoldings()) {
-                  databaseManager.getHoldingDao().update(h);
-                }
-              } catch (SQLException e) {
-                sender.sendMessage(ChatColor.RED + "SQL ERRROR PAYING TELL WHEEZYYYYYY PLEASE ");
-                e.printStackTrace();
-              }
-            }
-          };
-          accountLink.getAccount().accept(visitor);
+          databaseManager.updateAccount(accountLink.getAccount());
           //Log the transaction
           databaseManager.logTransaction(new Transaction(accountLink, sender.getUniqueId(), message, amount));
           //Tell the user we paid the account
