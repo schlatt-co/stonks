@@ -13,6 +13,7 @@ import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.service.Service;
+import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -129,6 +130,36 @@ public class CompanyCommand implements CommandExecutor {
         openCompanyServices(player, concatArgs(1, args));
         return true;
       }
+      case "serviceinfo": {
+        if (args.length > 1) {
+          try {
+            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
+            if (service == null) {
+              player.sendMessage(ChatColor.RED + "Service id not found");
+              return true;
+            }
+            ServiceInfoGui.getInventory(service).open(player);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
+      case "subscribers": {
+        if (args.length > 1) {
+          try {
+            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
+            new SubscriberListGui(service).show(player);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
       case "createservice": { // /comp createservice <duration> <cost> <max_subs> <name>
         if (args.length > 4) {
           double duration = Double.parseDouble(args[1]);
@@ -141,16 +172,42 @@ public class CompanyCommand implements CommandExecutor {
               .companies(list)
               .title("Select a company")
               .companySelected(company -> {
-                Service newService = new Service(name, company, duration, cost, maxSubs);
-                try {
-                  databaseManager.getServiceDao().create(newService);
-                } catch (SQLException e) {
-                  e.printStackTrace();
-                }
+                new AccountSelectorGui.Builder()
+                    .title("Select the account profits go to")
+                    .company(company)
+                    .accountSelected(
+                        accountLink -> createService(player, duration, cost, maxSubs, name, company, accountLink)
+                    ).open(player);
               })
               .open(player);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " createholding <player_name> <share>");
+        }
+        return true;
+      }
+      case "subscribe": {
+        if (args.length > 1) {
+          List<String> info = new ArrayList<>();
+          info.add("Automatic billing will automatically renew your");
+          info.add("subscription to this service.");
+          info.add("If you choose NO you will have to manually");
+          info.add("resubscribe each duration.");
+          info.add("You can cancel your subscription at any time");
+          int serviceId = Integer.parseInt(args[1]);
+          new ConfirmationGui.Builder().title("Set up automatic billing?")
+              .info(info)
+              .onChoiceMade(c -> subscribeToService(player, serviceId, c)
+              ).open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
+        }
+        return true;
+      }
+      case "unsubscribe": {
+        if (args.length > 1) {
+          unsubscribeFromService(player, Integer.parseInt(args[1]));
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
         }
         return true;
       }
@@ -609,6 +666,152 @@ public class CompanyCommand implements CommandExecutor {
     return true;
   }
 
+  private void unsubscribeFromService(Player player, int id) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(id);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+      return;
+    }
+    if (service == null) {
+      player.sendMessage(ChatColor.RED + "Service id not found");
+      return;
+    }
+
+    Subscription subscription = service.getSubscription(player);
+    if (subscription == null) {
+      player.sendMessage(ChatColor.RED + "You are not subscribed to this service");
+      return;
+    }
+
+    new ConfirmationGui.Builder().title("Unsubscribe from " + service.getName() + "?")
+        .onChoiceMade(c -> {
+          if (!c) return;
+          try {
+            databaseManager.getSubscriptionDao().delete(subscription);
+            player.sendMessage(ChatColor.GREEN + "You have unsubscribed from " + service.getName() +
+                " (from " + service.getCompany().getName() + ")");
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+          }
+        }).open(player);
+
+  }
+
+  private void createService(Player player, double duration, double cost, int maxSubs, String name, Company company, AccountLink account) {
+    //Check for the same name
+    for (Service service : company.getServices()) {
+      if (service.getName().equals(name)) {
+        player.sendMessage(ChatColor.RED + "A service with the same name already exists for this company");
+        return;
+      }
+    }
+
+    if (duration <= 0) {
+      player.sendMessage(ChatColor.RED + "Service duration must be greater than 0");
+      return;
+    }
+
+    if (name.length() > 40) {
+      player.sendMessage(ChatColor.RED + "Service name cannot be longer than 40 characters");
+      return;
+    }
+    Service newService = new Service(name, company, account, duration, cost, maxSubs);
+    try {
+      databaseManager.getServiceDao().create(newService);
+      player.sendMessage(ChatColor.GREEN + "Service created!");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+    }
+  }
+
+  private void subscribeToService(Player player, int serviceId, Boolean autoPay) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(serviceId);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+      return;
+    }
+    if (service == null) {
+      player.sendMessage(ChatColor.RED + "That service id does not exist");
+      return;
+    }
+    if (service.getMaxSubscriptions() > 0 && service.getNumSubscriptions() >= service.getMaxSubscriptions()) {
+      player.sendMessage(ChatColor.RED + "That service has the maximum number of subscriptions");
+      return;
+    }
+
+    if (service.getSubscription(player) != null) {
+      player.sendMessage(ChatColor.RED + "You cannot subscribe to the same service twice");
+      return;
+    }
+
+    new ConfirmationGui.Builder().title("Accept first bill of $" + service.getCost()).onChoiceMade(
+        c -> {
+          if (!c) return;
+          //We can now subscribe to the service
+          //Setup the subscription
+          Subscription subscription = new Subscription(player, service, autoPay);
+          if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
+            player.sendMessage(ChatColor.RED + "Insufficient funds!");
+            return;
+          } else {
+            //Payment success
+            try {
+              databaseManager.getSubscriptionDao().create(subscription);
+              service.getAccount().getAccount().addBalance(service.getCost());
+              //Update the account database
+              IAccountVisitor visitor = new IAccountVisitor() {
+                @Override
+                public void visit(CompanyAccount a) {
+                  try {
+                    databaseManager.getCompanyAccountDao().update(a);
+                  } catch (SQLException e) {
+                    e.printStackTrace();
+                    player.sendMessage(ChatColor.RED + "SQL EXCEPTION PAYING ACCOUNT TELL WHEEZY");
+                  }
+                }
+
+                @Override
+                public void visit(HoldingsAccount a) {
+                  try {
+                    //Update the account and holdings
+                    databaseManager.getHoldingAccountDao().update(a);
+                    for (Holding h : a.getHoldings()) databaseManager.getHoldingDao().update(h);
+                  } catch (SQLException e) {
+                    e.printStackTrace();
+                    player.sendMessage(ChatColor.RED + "SQL EXCEPTION PAYING ACCOUNT TELL WHEEZY");
+                  }
+                }
+              };
+              service.getAccount().getAccount().accept(visitor);
+
+
+              //Subscription created!
+              player.sendMessage(ChatColor.GREEN + "You have subscribed to the service " + service.getName() +
+                  " (provided by " + service.getCompany().getName() + ")");
+              player.sendMessage(ChatColor.GREEN + "This service will expire in " + service.getDuration() + " days");
+              if (autoPay) {
+                player.sendMessage(ChatColor.GREEN + "You have set your subscription to automatically renew, so you don't need to do anything.");
+              } else {
+                player.sendMessage(ChatColor.GREEN + "You have set your subscription to manually renew, so you will need to resubscribe in "
+                    + service.getDuration() + " days time.");
+              }
+            } catch (SQLException e) {
+              e.printStackTrace();
+              player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+            }
+          }
+        }
+    ).open(player);
+  }
+
   private void openCompanyServices(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
@@ -625,7 +828,7 @@ public class CompanyCommand implements CommandExecutor {
           return null;
         })
         .abortIfNull()
-        .sync(gui->gui.show(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -654,7 +857,7 @@ public class CompanyCommand implements CommandExecutor {
     int i = 0;
     player.sendMessage(ChatColor.YELLOW + "==== Page " + page + " ====");
     for (Transaction transaction : transactions) {
-      StringBuilder s = new StringBuilder((i + page * 10)+ ")");
+      StringBuilder s = new StringBuilder((i + page * 10) + ")");
       s.append("[" + transaction.getId() + "] ");
       s.append("$" + transaction.getAmount() + " ");
       s.append(((transaction.getPayee() != null) ? transaction.getPayee() : "unknown") + " ");
@@ -926,7 +1129,8 @@ public class CompanyCommand implements CommandExecutor {
                         databaseManager.getMemberDao().setRole(memberToChange, newRole);
                         player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
                         OfflinePlayer p = Bukkit.getOfflinePlayer(memberToChange.getUuid());
-                        if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.YELLOW + "Your rank in the company " + company.getName() + " has changed to " + newRole.toString());
+                        if (p.isOnline() && p.getPlayer() != null)
+                          p.getPlayer().sendMessage(ChatColor.YELLOW + "Your rank in the company " + company.getName() + " has changed to " + newRole.toString());
                         if (newRole == CEO) {
                           databaseManager.getMemberDao().setRole(changingMember, Manager);
                           player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
@@ -1253,7 +1457,7 @@ public class CompanyCommand implements CommandExecutor {
             }
             databaseManager.getMemberDao().deleteMember(memberToKick);
             player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
-            Bukkit.broadcastMessage(ChatColor.BOLD + "" +  ChatColor.RED + memberName + " has been fired from " + company.getName() + "!");
+            Bukkit.broadcastMessage(ChatColor.BOLD + "" + ChatColor.RED + memberName + " has been fired from " + company.getName() + "!");
 //            OfflinePlayer p = Bukkit.getOfflinePlayer(memberToKick.getUuid());
 //            if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.RED + "You have been fired from " + company.getName() + "!");
           } catch (SQLException e) {
@@ -1549,14 +1753,14 @@ public class CompanyCommand implements CommandExecutor {
             } catch (SQLException e) {
               e.printStackTrace();
             }
-            return MemberListGui.getInventory(company, list);
+            return new MemberListGui(company, list);
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -1577,7 +1781,7 @@ public class CompanyCommand implements CommandExecutor {
           return null;
         })
         .abortIfNull()
-        .sync(gui->gui.show(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -1585,7 +1789,7 @@ public class CompanyCommand implements CommandExecutor {
     Stonks.newChain()
         .asyncFirst(() -> {
           List<Member> invites;
-            invites = databaseManager.getMemberDao().getInvites(player);
+          invites = databaseManager.getMemberDao().getInvites(player);
           if (invites == null) {
             player.sendMessage(ChatColor.RED + "You don't have any invites!");
             return null;

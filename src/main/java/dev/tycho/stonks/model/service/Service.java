@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;
 import org.bukkit.entity.Player;
 
@@ -30,8 +31,11 @@ public class Service {
   @DatabaseField
   private int maxSubscribers;
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, uniqueCombo = true)
+  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
   private Company company;
+
+  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+  private AccountLink account;
 
   @ForeignCollectionField(eager = true)
   private ForeignCollection<Subscription> subscriptions;
@@ -39,9 +43,10 @@ public class Service {
   public Service() {
   }
 
-  public Service(String name, Company company, double duration, double cost, int maxSubscribers) {
+  public Service(String name, Company company, AccountLink account, double duration, double cost, int maxSubscribers) {
     this.name = name;
     this.company = company;
+    this.account = account;
     this.duration = duration;
     this.cost = cost;
     this.maxSubscribers = maxSubscribers;
@@ -51,7 +56,7 @@ public class Service {
   //If none is found then return null
   public Subscription getSubscription(Player player) {
     for (Subscription s : subscriptions) {
-      if (s.getPlayerId() == player.getUniqueId()) return s;
+      if (s.getPlayerId().equals(player.getUniqueId())) return s;
     }
     return null;
   }
@@ -98,8 +103,16 @@ public class Service {
   public Collection<Subscription> getSubscriptions() {
     return subscriptions;
   }
+  public int getNumSubscriptions() {
+    return subscriptions.size();
+  }
+
 
   public Company getCompany() {
     return company;
+  }
+
+  public AccountLink getAccount() {
+    return account;
   }
 }

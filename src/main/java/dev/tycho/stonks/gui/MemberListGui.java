@@ -27,16 +27,6 @@ public class MemberListGui extends CollectionGuiBase<Member> {
         this.company = company;
     }
 
-    public static SmartInventory getInventory(Company company, List<Member> members) {
-        return SmartInventory.builder()
-                .id("memberList")
-                .provider(new MemberListGui(company, members))
-                .manager(inventoryManager)
-                .size(5, 9)
-                .title(company.getName() + " Members")
-                .build();
-    }
-
     @Override
     protected void customInit(Player player, InventoryContents contents) {
         contents.set(0,0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"),

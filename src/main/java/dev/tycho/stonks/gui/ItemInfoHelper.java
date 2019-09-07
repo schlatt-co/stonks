@@ -86,11 +86,13 @@ public class ItemInfoHelper {
         lore);
   }
 
-  public static ItemStack serviceDisplayItem(Service service) {
+  public static ItemStack serviceDisplayItem(Service service, String... extraLore) {
     List<String> lore = new ArrayList<>();
     lore.add("Cost: " + ChatColor.GREEN + "$" + service.getCost());
-    lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() +"/" + service.getMaxSubscriptions());
+    lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() +"/" +
+        ((service.getMaxSubscriptions() > 0)? service.getMaxSubscriptions() : "unlimited"));
     lore.add("Subscription Period: " + service.getDuration() + " days");
+    if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
     Material itemMaterial = Material.KNOWLEDGE_BOOK;
     return Util.item(itemMaterial, service.getName(), lore);
   }

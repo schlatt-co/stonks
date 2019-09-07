@@ -15,7 +15,7 @@ public class Subscription {
   @DatabaseField(generatedId = true)
   private int id;
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, uniqueCombo = true)
+  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
   private Service service;
 
   @DatabaseField

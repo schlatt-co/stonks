@@ -22,32 +22,20 @@ public class GuiManager extends SpigotModule {
         CollectionGuiBase.databaseManager = databaseManager;
         CollectionGuiBase.inventoryManager = inventoryManager;
 
-        InviteListGui.inventoryManager = inventoryManager;
-        InviteListGui.databaseManager = databaseManager;
-
         CompanyInfoGui.inventoryManager = inventoryManager;
         CompanyInfoGui.databaseManager = databaseManager;
 
-        MemberListGui.inventoryManager = inventoryManager;
-        MemberListGui.databaseManager = databaseManager;
+        ServiceInfoGui.inventoryManager = inventoryManager;
+        ServiceInfoGui.databaseManager = databaseManager;
 
         MemberInfoGui.databaseManager = databaseManager;
         MemberInfoGui.inventoryManager = inventoryManager;
 
-
-        CompanySelectorGui.inventoryManager = inventoryManager;
-        CompanySelectorGui.databaseManager = databaseManager;
-
-        AccountSelectorGui.inventoryManager = inventoryManager;
-        AccountSelectorGui.databaseManager = databaseManager;
 
         AccountTypeSelectorGui.inventoryManager = inventoryManager;
         AccountTypeSelectorGui.databaseManager = databaseManager;
 
         ConfirmationGui.inventoryManager = inventoryManager;
         ConfirmationGui.databaseManager = databaseManager;
-
-        TransactionHistoryGui.inventoryManager = inventoryManager;
-        TransactionHistoryGui.databaseManager = databaseManager;
     }
 }
