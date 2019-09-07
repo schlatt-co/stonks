@@ -158,6 +158,10 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
+      case "subscriptions": {
+        new PlayerSubscriptionListGui(player).show(player);
+        return true;
+      }
       case "createservice": { // /comp createservice <duration> <cost> <max_subs> <name>
         if (args.length > 4) {
           double duration = Double.parseDouble(args[1]);
@@ -198,6 +202,14 @@ public class CompanyCommand implements CommandExecutor {
               ).open(player);
         } else {
           player.sendMessage(ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
+        }
+        return true;
+      }
+      case "paysubscription": {
+        if (args.length > 1) {
+          paySubscription(player, Integer.parseInt(args[1]));
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
         }
         return true;
       }
@@ -292,14 +304,6 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-//      case "emptyholding": { // /comp emptyholding <accountid> <player_name>
-//        if (args.length > 2) {
-//          removeHolding(player, Integer.parseInt(args[1]), args[2]);
-//        } else {
-//          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " removeholding <accountid> <player_name>");
-//        }
-//        return true;
-//      }
       case "withdraw": { // /comp withdraw <amount> [optional <accountid> ]
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
@@ -664,6 +668,71 @@ public class CompanyCommand implements CommandExecutor {
     return true;
   }
 
+  private void paySubscription(Player player, int id) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(id);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+      return;
+    }
+    if (service == null) {
+      player.sendMessage(ChatColor.RED + "Service id not found");
+      return;
+    }
+
+    Subscription subscription = service.getSubscription(player);
+    if (subscription == null) {
+      player.sendMessage(ChatColor.RED + "You are not subscribed to this service");
+      return;
+    }
+
+    if (!subscription.isOverdue()) {
+      player.sendMessage(ChatColor.RED + "The subscription is not overdue, you don't need to pay for it");
+      return;
+    }
+
+
+    new ConfirmationGui.Builder().title("Pay bill of $" + service.getCost()).onChoiceMade(
+        c -> {
+          if (!c) return;
+          if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
+            player.sendMessage(ChatColor.RED + "Insufficient funds!");
+            return;
+          } else {
+            //Payment success
+            try {
+              //Update that the subscription is paid
+              subscription.registerPaid();
+              databaseManager.getSubscriptionDao().update(subscription);
+              service.getAccount().getAccount().addBalance(service.getCost());
+              databaseManager.logTransaction(new Transaction(service.getAccount(),
+                  player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
+
+              //Update the account database
+              databaseManager.updateAccount(service.getAccount().getAccount());
+
+              //Subscription created!
+              player.sendMessage(ChatColor.GREEN + "You have resubscribed to the service " + service.getName() +
+                  " (provided by " + service.getCompany().getName() + ")!");
+              player.sendMessage(ChatColor.GREEN + "This service will expire in " + service.getDuration() + " days");
+              if (subscription.isAutoPay()) {
+                player.sendMessage(ChatColor.GREEN + "You have set your subscription to automatically renew, so you don't need to do anything.");
+              } else {
+                player.sendMessage(ChatColor.GREEN + "You have set your subscription to manually renew, so you will need to resubscribe in "
+                    + service.getDuration() + " days time.");
+              }
+            } catch (SQLException e) {
+              e.printStackTrace();
+              player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+            }
+          }
+        }
+    ).open(player);
+
+  }
+
   private void unsubscribeFromService(Player player, int id) {
     Service service;
     try {
@@ -764,6 +833,8 @@ public class CompanyCommand implements CommandExecutor {
             try {
               databaseManager.getSubscriptionDao().create(subscription);
               service.getAccount().getAccount().addBalance(service.getCost());
+              databaseManager.logTransaction(new Transaction(service.getAccount(),
+                  player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
               //Update the account database
               databaseManager.updateAccount(service.getAccount().getAccount());
 

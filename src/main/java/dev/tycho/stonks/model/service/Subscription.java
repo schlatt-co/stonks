@@ -5,9 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 @DatabaseTable(tableName = "subscription")
@@ -38,13 +36,15 @@ public class Subscription {
   }
 
   public boolean isOverdue() {
-    return (getDaysOverdue() > service.getDuration());
+    System.out.println("Days overdue: " + getDaysOverdue());
+    return (getDaysOverdue() > 0);
   }
 
   //Will return negative for a non-overdue date
-  public long getDaysOverdue() {
+  public double getDaysOverdue() {
     long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
-    return (millisDifference / 86400000L);
+    System.out.println("Millis difference: " + millisDifference);
+    return ((double) millisDifference / 86400000) - service.getDuration();
   }
 
 
@@ -73,7 +73,6 @@ public class Subscription {
   public boolean isAutoPay() {
     return autoPay;
   }
-
 
 
 }

@@ -32,7 +32,7 @@ public class DatabaseManager extends SpigotModule {
   private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
   private TransactionDaoImpl transactionDao = null;
   private Dao<Service, Integer> serviceDao = null;
-  private Dao<Subscription, Integer> subscriptionDao = null;
+  private SubscriptionDaoImpl subscriptionDao = null;
 
 
   public DatabaseManager(Stonks plugin) {
@@ -61,7 +61,7 @@ public class DatabaseManager extends SpigotModule {
       holdingDao = DaoManager.createDao(connectionSource, Holding.class);
       holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
       transactionDao = new TransactionDaoImpl(connectionSource);
-      subscriptionDao = DaoManager.createDao(connectionSource, Subscription.class);
+      subscriptionDao = new SubscriptionDaoImpl(connectionSource);
       serviceDao = DaoManager.createDao(connectionSource, Service.class);
 
 
@@ -183,7 +183,7 @@ public class DatabaseManager extends SpigotModule {
     return serviceDao;
   }
 
-  public Dao<Subscription, Integer> getSubscriptionDao() {
+  public SubscriptionDaoImpl getSubscriptionDao() {
     return subscriptionDao;
   }
 }

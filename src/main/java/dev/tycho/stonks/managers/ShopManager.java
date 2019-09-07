@@ -200,7 +200,7 @@ public class ShopManager extends SpigotModule {
 
   @EventHandler
   public void onCurrencySubtract(PreCurrencySubtractEvent event) {
-    dev.tycho.stonks.model.Account account = databaseManager.getAccountWithUUID(event.getSender());
+    dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getSender());
     if (account != null) {
       event.setCancelled(true);
       Stonks.newChain()

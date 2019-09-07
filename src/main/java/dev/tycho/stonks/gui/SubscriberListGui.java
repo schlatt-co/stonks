@@ -10,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
+
 public class SubscriberListGui extends CollectionGuiBase<Subscription> {
 
     private Service service;
@@ -27,11 +29,11 @@ public class SubscriberListGui extends CollectionGuiBase<Subscription> {
 
     @Override
     protected ClickableItem itemProvider(Player player, Subscription obj) {
-        long dayDiff = obj.getDaysOverdue();
+        double dayDiff = obj.getDaysOverdue();
 
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.getPlayerId());
         return ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer,
-            Math.abs(dayDiff) + " days" + ((dayDiff > 0)? "overdue" : " remaining")
+            new DecimalFormat("#.#").format(Math.abs(dayDiff)) + " days " + ((dayDiff > 0)? "overdue" : " remaining")
             ));
     }
 }

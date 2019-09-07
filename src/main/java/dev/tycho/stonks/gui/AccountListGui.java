@@ -4,17 +4,10 @@ import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
-import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.Pagination;
-import fr.minuskube.inv.content.SlotIterator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import java.util.Collection;
-
-public class AccountListGui implements InventoryProvider {
 
 public class AccountListGui extends CollectionGuiBase<AccountLink> {
   private Company company;
