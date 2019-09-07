@@ -88,80 +88,45 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
+      case "invite": {
+        if (args.length > 1) {
+          String playerToInvite = args[1];
+          List<Company> list = databaseManager.getCompanyDao()
+              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+          new CompanySelectorGui.Builder()
+              .companies(list)
+              .title("Select a company to invite to")
+              .companySelected((company -> invitePlayerToCompany(player, company.getName(), playerToInvite)))
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
+        }
+        return true;
+      }
+      case "setlogo": {
+        List<Company> list = databaseManager.getCompanyDao()
+            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
+        new CompanySelectorGui.Builder()
+            .companies(list)
+            .title("Select company logo to change")
+            .companySelected((company -> setLogo(player, company.getName())))
+            .open(player);
+        return true;
+      }
+
       case "invites": {
         openInvitesList(player);
-        return true;
-      }
-      case "list": {
-        openCompanyList(player, OrderBy.NAMEASC);
-        return true;
-      }
-      case "info": {
-        if (args.length < 2) {
-          player.sendMessage(ChatColor.RED + "Please specify a company!");
-          return true;
-        }
-        openCompanyInfo(player, concatArgs(1, args));
-        return true;
-      }
-      case "members": {
-        if (args.length < 2) {
-          player.sendMessage(ChatColor.RED + "Please specify a company!");
-          return true;
-        }
-        openCompanyMembers(player, concatArgs(1, args));
-        return true;
-      }
-      case "accounts": {
-        if (args.length < 2) {
-          player.sendMessage(ChatColor.RED + "Please specify a company!");
-          return true;
-        }
-        openCompanyAccounts(player, concatArgs(1, args));
-        return true;
-      }
-      case "services": {
-        if (args.length < 2) {
-          player.sendMessage(ChatColor.RED + "Please specify a company!");
-          return true;
-        }
-        openCompanyServices(player, concatArgs(1, args));
-        return true;
-      }
-      case "serviceinfo": {
-        if (args.length > 1) {
-          try {
-            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
-            if (service == null) {
-              player.sendMessage(ChatColor.RED + "Service id not found");
-              return true;
-            }
-            ServiceInfoGui.getInventory(service).open(player);
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-        } else {
-          player.sendMessage(ChatColor.RED + "Please specify a service id!");
-        }
-        return true;
-      }
-      case "subscribers": {
-        if (args.length > 1) {
-          try {
-            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
-            new SubscriberListGui(service).show(player);
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-        } else {
-          player.sendMessage(ChatColor.RED + "Please specify a service id!");
-        }
         return true;
       }
       case "subscriptions": {
         new PlayerSubscriptionListGui(player).show(player);
         return true;
       }
+      case "list": {
+        openCompanyList(player, OrderBy.NAMEASC);
+        return true;
+      }
+
       case "createservice": { // /comp createservice <duration> <cost> <max_subs> <name>
         if (args.length > 4) {
           double duration = Double.parseDouble(args[1]);
@@ -183,59 +148,35 @@ public class CompanyCommand implements CommandExecutor {
               })
               .open(player);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " createholding <player_name> <share>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " createservice <duration (days)> <cost> <max_subs (0=unlimited)> <name>");
         }
         return true;
       }
-      case "subscribe": {
+      case "setservicemax": { // /comp setservicemax <max_subs>
         if (args.length > 1) {
-          List<String> info = new ArrayList<>();
-          info.add("Automatic billing will automatically renew your");
-          info.add("subscription to this service.");
-          info.add("If you choose NO you will have to manually");
-          info.add("resubscribe each duration.");
-          info.add("You can cancel your subscription at any time");
-          int serviceId = Integer.parseInt(args[1]);
-          new ConfirmationGui.Builder().title("Set up automatic billing?")
-              .info(info)
-              .onChoiceMade(c -> subscribeToService(player, serviceId, c)
-              ).open(player);
-        } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
-        }
-        return true;
-      }
-      case "paysubscription": {
-        if (args.length > 1) {
-          paySubscription(player, Integer.parseInt(args[1]));
-        } else {
-          player.sendMessage(ChatColor.RED + "Please specify a service id!");
-        }
-        return true;
-      }
-      case "unsubscribe": {
-        if (args.length > 1) {
-          unsubscribeFromService(player, Integer.parseInt(args[1]));
-        } else {
-          player.sendMessage(ChatColor.RED + "Please specify a service id!");
-        }
-        return true;
-      }
-      case "invite": {
-        if (args.length > 1) {
-          String playerToInvite = args[1];
+          int maxSubs = Integer.parseInt(args[1]);
           List<Company> list = databaseManager.getCompanyDao()
               .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
           new CompanySelectorGui.Builder()
               .companies(list)
-              .title("Select a company to invite to")
-              .companySelected((company -> invitePlayerToCompany(player, company.getName(), playerToInvite)))
+              .title("Select a company")
+              .companySelected(company -> {
+                new ServiceSelectorGui.Builder()
+                    .company(company)
+                    .title("Select a service")
+                    .serviceSelected(
+                        service -> {
+                          changeServiceMaxSubs(player, maxSubs, service);
+                        }
+                    ).open(player);
+              })
               .open(player);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /stonks invite <player>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " setservicemax <max_subs (0=unlimited)>");
         }
         return true;
       }
+
       case "createaccount": { //stonks createaccount <account_name>
         if (args.length > 1) {
           String newName = concatArgs(1, args);
@@ -304,6 +245,63 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
+
+      case "pay": {
+        if (args.length > 1) {
+          double amount = Double.parseDouble(args[1]);
+          final String message = (args.length > 2) ? concatArgs(2, args) : "";
+          if (message.length() > 200) {
+            player.sendMessage(ChatColor.RED + "Your message cannot be longer than 200 characters");
+            return true;
+          }
+          //get all companies
+          List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
+          new CompanySelectorGui.Builder()
+              .companies(list)
+              .title("Select a company to pay")
+              .companySelected((company -> {
+                //Cache the next screen
+                AccountSelectorGui.Builder accountSelectorScreen =
+                    new AccountSelectorGui.Builder()
+                        .company(company)
+                        .title("Select which account to pay")
+                        .accountSelected(l -> payAccount(player, l.getId(), message, amount));
+                List<String> info = new ArrayList<>();
+                info.add("You are trying to pay an unverified company!");
+                info.add("Unverified companies might be pretending to be ");
+                info.add("someone else's company");
+                info.add("Make sure you are paying the correct company");
+                info.add("(e.g. by checking the CEO is who you expect)");
+                info.add("To get a company verified, ask a moderator.");
+                info.add("");
+                info.add(ChatColor.GOLD + "The CEO of this company is ");
+                String ceoName = "[error lol]";
+                for (Member m : company.getMembers()) {
+                  if (m.getRole().equals(CEO)) {
+                    OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
+                    if (p != null) ceoName = p.getName();
+                  }
+                }
+                info.add(ChatColor.GOLD + ceoName);
+                if (!company.isVerified()) {
+                  new ConfirmationGui.Builder()
+                      .title(company.getName() + " is unverified")
+                      .info(info)
+                      .onChoiceMade(
+                          c -> {
+                            if (c) accountSelectorScreen.open(player);
+                          }
+                      ).open(player);
+                } else {
+                  accountSelectorScreen.open(player);
+                }
+              }))
+              .open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " pay <amount> <message>");
+        }
+        return true;
+      }
       case "withdraw": { // /comp withdraw <amount> [optional <accountid> ]
         if (args.length > 1) {
           double amount = Double.parseDouble(args[1]);
@@ -361,69 +359,89 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "setlogo": {
-        List<Company> list = databaseManager.getCompanyDao()
-            .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
-        new CompanySelectorGui.Builder()
-            .companies(list)
-            .title("Select company logo to change")
-            .companySelected((company -> setLogo(player, company.getName())))
-            .open(player);
+      case "fees": {
+        player.sendMessage(ChatColor.GOLD + "----------------");
+        player.sendMessage(ChatColor.AQUA + "Company creation: $" + plugin.getConfig().getDouble("fees.companycreation"));
+        player.sendMessage(ChatColor.AQUA + "CompanyAccount creation: $" + plugin.getConfig().getDouble("fees.companyaccountcreation"));
+        player.sendMessage(ChatColor.AQUA + "HoldingsAccount creation: $" + plugin.getConfig().getDouble("fees.holdingsaccountcreation"));
+        player.sendMessage(ChatColor.GOLD + "----------------");
         return true;
       }
-      case "pay": {
-        if (args.length > 1) {
-          double amount = Double.parseDouble(args[1]);
-          final String message = (args.length > 2) ? concatArgs(2, args) : "";
-          if (message.length() > 200) {
-            player.sendMessage(ChatColor.RED + "Your message cannot be longer than 200 characters");
+
+      case "top": {
+        showTopCompanies(player);
+        return true;
+      }
+      case "history": {
+        if (args.length == 2) {
+          AccountLink link;
+          try {
+            link = databaseManager.getAccountLinkDao().queryForId(Integer.parseInt(args[1]));
+          } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "SQL ERROR");
             return true;
           }
-          //get all companies
-          List<Company> list = databaseManager.getCompanyDao().getAllCompanies();
+
+          if (link == null) {
+            player.sendMessage(ChatColor.RED + "Account not found");
+            return true;
+          }
+          new TransactionHistoryGui.Builder()
+              .accountLink(link)
+              .title("Transaction History")
+              .open(player);
+          return true;
+        }
+        if (args.length > 3) {
+          if (args[1].equals("-v")) {
+            TransactionHistoryPagination(player, Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+          }
+        } else {
+          List<Company> list = databaseManager.getCompanyDao()
+              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
           new CompanySelectorGui.Builder()
               .companies(list)
-              .title("Select a company to pay")
-              .companySelected((company -> {
-                //Cache the next screen
-                AccountSelectorGui.Builder accountSelectorScreen =
-                    new AccountSelectorGui.Builder()
-                        .company(company)
-                        .title("Select which account to pay")
-                        .accountSelected(l -> payAccount(player, l.getId(), message, amount));
-                List<String> info = new ArrayList<>();
-                info.add("You are trying to pay an unverified company!");
-                info.add("Unverified companies might be pretending to be ");
-                info.add("someone else's company");
-                info.add("Make sure you are paying the correct company");
-                info.add("(e.g. by checking the CEO is who you expect)");
-                info.add("To get a company verified, ask a moderator.");
-                info.add("");
-                info.add(ChatColor.GOLD + "The CEO of this company is ");
-                String ceoName = "[error lol]";
-                for (Member m : company.getMembers()) {
-                  if (m.getRole().equals(CEO)) {
-                    OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
-                    if (p != null) ceoName = p.getName();
-                  }
-                }
-                info.add(ChatColor.GOLD + ceoName);
-                if (!company.isVerified()) {
-                  new ConfirmationGui.Builder()
-                      .title(company.getName() + " is unverified")
-                      .info(info)
-                      .onChoiceMade(
-                          c -> {
-                            if (c) accountSelectorScreen.open(player);
-                          }
-                      ).open(player);
-                } else {
-                  accountSelectorScreen.open(player);
-                }
-              }))
+              .title("Select a company")
+              .companySelected((company ->
+                  new AccountSelectorGui.Builder()
+                      .company(company)
+                      .title("Select an account")
+                      .accountSelected(l -> {
+                        new TransactionHistoryGui.Builder()
+                            .accountLink(l)
+                            .title("Transaction History")
+                            .open(player);
+                      })
+                      .open(player)))
               .open(player);
+        }
+        return true;
+      }
+
+      //GUI commands
+      case "info": {
+        if (args.length < 2) {
+          player.sendMessage(ChatColor.RED + "Please specify a company!");
+          return true;
+        }
+        openCompanyInfo(player, concatArgs(1, args));
+        return true;
+      }
+      case "members": {
+        if (args.length < 2) {
+          player.sendMessage(ChatColor.RED + "Please specify a company!");
+          return true;
+        }
+        openCompanyMembers(player, concatArgs(1, args));
+        return true;
+      }
+      case "memberinfo": {
+        if (args.length > 2) {
+          String compName = concatArgs(2, args);
+          openMemberInfo(player, args[1], compName);
         } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " pay <amount> <message>");
+          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " memberinfo <player> <company>");
         }
         return true;
       }
@@ -436,15 +454,6 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "memberinfo": {
-        if (args.length > 2) {
-          String compName = concatArgs(2, args);
-          openMemberInfo(player, args[1], compName);
-        } else {
-          player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " memberinfo <player> <company>");
-        }
-        return true;
-      }
       case "kickmember": {
         if (args.length > 2) {
           String compName = concatArgs(2, args);
@@ -454,12 +463,13 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "fees": {
-        player.sendMessage(ChatColor.GOLD + "----------------");
-        player.sendMessage(ChatColor.AQUA + "Company creation: $" + plugin.getConfig().getDouble("fees.companycreation"));
-        player.sendMessage(ChatColor.AQUA + "CompanyAccount creation: $" + plugin.getConfig().getDouble("fees.companyaccountcreation"));
-        player.sendMessage(ChatColor.AQUA + "HoldingsAccount creation: $" + plugin.getConfig().getDouble("fees.holdingsaccountcreation"));
-        player.sendMessage(ChatColor.GOLD + "----------------");
+
+      case "accounts": {
+        if (args.length < 2) {
+          player.sendMessage(ChatColor.RED + "Please specify a company!");
+          return true;
+        }
+        openCompanyAccounts(player, concatArgs(1, args));
         return true;
       }
       case "holdinginfo": {
@@ -470,10 +480,81 @@ public class CompanyCommand implements CommandExecutor {
         openHoldingAccountInfo(player, Integer.parseInt(args[1]));
         return true;
       }
-      case "top": {
-        showTopCompanies(player);
+
+      case "subscribe": {
+        if (args.length > 1) {
+          List<String> info = new ArrayList<>();
+          info.add("Automatic billing will automatically renew your");
+          info.add("subscription to this service.");
+          info.add("If you choose NO you will have to manually");
+          info.add("resubscribe each duration.");
+          info.add("You can cancel your subscription at any time");
+          int serviceId = Integer.parseInt(args[1]);
+          new ConfirmationGui.Builder().title("Set up automatic billing?")
+              .info(info)
+              .onChoiceMade(c -> subscribeToService(player, serviceId, c)
+              ).open(player);
+        } else {
+          player.sendMessage(ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
+        }
         return true;
       }
+      case "unsubscribe": {
+        if (args.length > 1) {
+          unsubscribeFromService(player, Integer.parseInt(args[1]));
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
+      case "services": {
+        if (args.length < 2) {
+          player.sendMessage(ChatColor.RED + "Please specify a company!");
+          return true;
+        }
+        openCompanyServices(player, concatArgs(1, args));
+        return true;
+      }
+      case "serviceinfo": {
+        if (args.length > 1) {
+          try {
+            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
+            if (service == null) {
+              player.sendMessage(ChatColor.RED + "Service id not found");
+              return true;
+            }
+            ServiceInfoGui.getInventory(service).open(player);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
+      case "subscribers": {
+        if (args.length > 1) {
+          try {
+            Service service = databaseManager.getServiceDao().queryForId(Integer.parseInt(args[1]));
+            new SubscriberListGui(service).show(player);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
+      case "paysubscription": {
+        if (args.length > 1) {
+          paySubscription(player, Integer.parseInt(args[1]));
+        } else {
+          player.sendMessage(ChatColor.RED + "Please specify a service id!");
+        }
+        return true;
+      }
+
+
       //Hidden commands
       case "rename": { // stonks rename <new name>
         if (args.length > 1) {
@@ -616,56 +697,32 @@ public class CompanyCommand implements CommandExecutor {
         }
         return true;
       }
-      case "history": {
-        if (args.length == 2) {
-          AccountLink link;
-          try {
-            link = databaseManager.getAccountLinkDao().queryForId(Integer.parseInt(args[1]));
-          } catch (SQLException e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "SQL ERROR");
-            return true;
-          }
-
-          if (link == null) {
-            player.sendMessage(ChatColor.RED + "Account not found");
-            return true;
-          }
-          new TransactionHistoryGui.Builder()
-              .accountLink(link)
-              .title("Transaction History")
-              .open(player);
-          return true;
-        }
-        if (args.length > 3) {
-          if (args[1].equals("-v")) {
-            TransactionHistoryPagination(player, Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-          }
-        } else {
-          List<Company> list = databaseManager.getCompanyDao()
-              .getAllCompaniesWhereManager(player, databaseManager.getMemberDao().queryBuilder());
-          new CompanySelectorGui.Builder()
-              .companies(list)
-              .title("Select a company")
-              .companySelected((company ->
-                  new AccountSelectorGui.Builder()
-                      .company(company)
-                      .title("Select an account")
-                      .accountSelected(l -> {
-                        new TransactionHistoryGui.Builder()
-                            .accountLink(l)
-                            .title("Transaction History")
-                            .open(player);
-                      })
-                      .open(player)))
-              .open(player);
-        }
-        return true;
-      }
     }
 
     MessageManager.sendHelpMessage(player, label);
     return true;
+  }
+
+  private void changeServiceMaxSubs(Player player, int maxSubs, Service service) {
+    Member m = service.getCompany().getMember(player);
+    if (m == null || !m.hasManagamentPermission()) {
+      player.sendMessage(ChatColor.RED + "You don't have management perms for this company");
+      return;
+    }
+
+    if (maxSubs > 0 && maxSubs < service.getNumSubscriptions()) {
+      player.sendMessage(ChatColor.RED + "You can't set the max subscriptions lower than the current number of subscriptions");
+      return;
+    }
+
+    service.setMaxSubscribers(maxSubs);
+    try {
+      databaseManager.getServiceDao().update(service);
+      player.sendMessage(ChatColor.GREEN + "Max subs updated to " + maxSubs + " :)");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL EXCEPTION TELL WHEEZY");
+    }
   }
 
   private void paySubscription(Player player, int id) {
@@ -777,8 +834,8 @@ public class CompanyCommand implements CommandExecutor {
       }
     }
 
-    if (duration <= 0) {
-      player.sendMessage(ChatColor.RED + "Service duration must be greater than 0");
+    if (duration <= 0.5) {
+      player.sendMessage(ChatColor.RED + "Service duration must be greater than 0.5 (12 hours)");
       return;
     }
 

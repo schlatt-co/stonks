@@ -14,21 +14,22 @@ import java.util.List;
 public class TabCompleterCompany implements TabCompleter {
 
   private static final List<String> SUBCOMMANDS = Arrays.asList(
-      "invites",
-      "list",
       "create",
-      "info",
-      "members",
-      "accounts",
       "invite",
-      "top",
+      "setlogo",
+      "invites",
+      "subscriptions",
+      "list",
+      "createservice",
+      "setservicemax",
       "createaccount",
       "createholding",
-      "withdraw",
-      "setlogo",
+      "removeholding",
       "pay",
+      "withdraw",
       "fees",
-      "history");
+      "history",
+      "top");
   private static final List<String> ADMIN_SUBCOMMANDS = Arrays.asList(
       "hide",
       "unhide",
@@ -46,7 +47,17 @@ public class TabCompleterCompany implements TabCompleter {
       "10",
       "1000",
       "10000");
-
+  private static final List<String> DURATIONS = Arrays.asList(
+      "1",
+      "2",
+      "7",
+      "14");
+  private static final List<String> MAX_SUBSCRIBERS = Arrays.asList(
+      "0",
+      "1",
+      "5",
+      "10",
+      "20");
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
     List<String> completions = new ArrayList<>();
@@ -61,10 +72,18 @@ public class TabCompleterCompany implements TabCompleter {
         StringUtil.copyPartialMatches(args[1], playerNames, completions);
       } else if (args[0].equals("pay") || args[0].equals("withdraw")) {
         StringUtil.copyPartialMatches(args[1], AMOUNTS, completions);
+      } else if (args[0].equals("createservice")) {
+        StringUtil.copyPartialMatches(args[1], DURATIONS, completions);
       }
     } else if (args.length == 3) {
       if (args[0].equals("createholding")) {
         StringUtil.copyPartialMatches(args[2], RATIOS, completions);
+      } else if (args[0].equals("createservice")) {
+        StringUtil.copyPartialMatches(args[2], AMOUNTS, completions);
+      }
+    } else if (args.length == 4) {
+      if (args[0].equals("createservice")) {
+        StringUtil.copyPartialMatches(args[3], MAX_SUBSCRIBERS, completions);
       }
     }
     Collections.sort(completions);

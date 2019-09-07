@@ -79,6 +79,9 @@ public class Service {
     return overdue;
   }
 
+  public void setMaxSubscribers(int maxSubscribers) {
+    this.maxSubscribers = maxSubscribers;
+  }
 
   public int getId() {
     return id;
