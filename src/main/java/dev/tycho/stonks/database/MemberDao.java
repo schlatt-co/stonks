@@ -13,11 +13,11 @@ import java.util.UUID;
 public interface MemberDao extends Dao<Member, UUID> {
     List<Member> getInvites(Player player);
 
-    void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException;
+  void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException;
 
-    Member getMember(Player player, Company company) throws SQLException;
+  Member getMember(Player player, Company company) throws SQLException;
 
-    void deleteMember(Member member) throws SQLException;
+  void deleteMember(Member member) throws SQLException;
 
-    void setRole(Member member, Role role) throws SQLException;
+  void setRole(Member member, Role role) throws SQLException;
 }

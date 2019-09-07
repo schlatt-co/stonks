@@ -29,6 +29,16 @@ public class TransactionHistoryGui extends CollectionGuiBase<Transaction> {
     this.accountLink = accountLink;
   }
 
+  private SmartInventory getInventory() {
+    return SmartInventory.builder()
+        .id("AccountSelectorGui")
+        .provider(this)
+        .manager(inventoryManager)
+        .size(5, 9)
+        .title(title)
+        .build();
+  }
+
   @Override
   protected void customInit(Player player, InventoryContents contents) {
     contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to accounts"),

@@ -37,14 +37,12 @@ import static dev.tycho.stonks.model.core.Role.*;
 // its almost 1000 lines long
 public class CompanyCommand implements CommandExecutor {
 
+  private final long COMPANY_CREATION_COOLDOWN;
+  private final long ACCOUNT_CREATION_COOLDOWN;
   private DatabaseManager databaseManager;
   private GuiManager guiManager;
   private JavaPlugin plugin;
   private Essentials ess;
-
-  private final long COMPANY_CREATION_COOLDOWN;
-  private final long ACCOUNT_CREATION_COOLDOWN;
-
   private HashMap<UUID, Long> playerCompanyCooldown = new HashMap<>();
   private HashMap<UUID, Long> playerAccountCooldown = new HashMap<>();
 
@@ -1664,11 +1662,6 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  @SuppressWarnings("unused")
-  private enum OrderBy {
-    NAMEASC, NAMEDESC, COMPANYVALUE
-  }
-
   private void openCompanyInfo(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
@@ -1752,6 +1745,11 @@ public class CompanyCommand implements CommandExecutor {
         .abortIfNull()
         .sync(gui -> gui.show(player))
         .execute();
+  }
+
+  @SuppressWarnings("unused")
+  private enum OrderBy {
+    NAMEASC, NAMEDESC, COMPANYVALUE
   }
 
 }

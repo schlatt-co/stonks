@@ -8,12 +8,12 @@ import dev.tycho.stonks.model.core.Member;
 import java.sql.SQLException;
 
 public class HoldingDaoImpl extends BaseDaoImpl<Holding, Integer> implements HoldingDao {
-    public HoldingDaoImpl(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource, Holding.class);
-    }
+  public HoldingDaoImpl(ConnectionSource connectionSource) throws SQLException {
+    super(connectionSource, Holding.class);
+  }
 
-    @Override
-    public boolean memberHasHoldings(Member member) {
-        return false;
-    }
+  @Override
+  public boolean memberHasHoldings(Member member) {
+    return false;
+  }
 }

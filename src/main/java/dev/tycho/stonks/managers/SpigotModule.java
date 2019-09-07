@@ -6,8 +6,8 @@ import org.bukkit.event.Listener;
 
 public abstract class SpigotModule implements Listener {
 
-  private final String moduleName;
   final Stonks plugin;
+  private final String moduleName;
 
   SpigotModule(String moduleName, Stonks plugin) {
     this.moduleName = moduleName;

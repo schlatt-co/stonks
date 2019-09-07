@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
+public class AccountListGui implements InventoryProvider {
+
 public class AccountListGui extends CollectionGuiBase<AccountLink> {
   private Company company;
 
