@@ -253,7 +253,7 @@ public class ShopManager extends SpigotModule {
     dev.tycho.stonks.model.Account account = databaseManager.getAccountWithUUID(event.getAccount());
     if (account != null) {
       if (account.getTotalBalance() >= event.getAmountSent().doubleValue()) {
-        event.setCancelled(false);
+        event.setHasEnough(true);
       }
       event.setCancelled(true);
     }
