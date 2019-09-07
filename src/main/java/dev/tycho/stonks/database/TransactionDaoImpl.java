@@ -5,7 +5,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import dev.tycho.stonks.logging.Transaction;
 import dev.tycho.stonks.model.AccountLink;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

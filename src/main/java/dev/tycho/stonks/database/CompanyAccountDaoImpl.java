@@ -7,9 +7,9 @@ import dev.tycho.stonks.model.CompanyAccount;
 import java.sql.SQLException;
 
 public class CompanyAccountDaoImpl extends BaseDaoImpl<CompanyAccount, Integer> implements CompanyAccountDao {
-    public CompanyAccountDaoImpl(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource, CompanyAccount.class);
-    }
+  public CompanyAccountDaoImpl(ConnectionSource connectionSource) throws SQLException {
+    super(connectionSource, CompanyAccount.class);
+  }
 
 
 }

@@ -31,16 +31,6 @@ public class TransactionHistoryGui implements InventoryProvider {
 
   private SmartInventory inventory;
 
-  private SmartInventory getInventory() {
-    return SmartInventory.builder()
-        .id("AccountSelectorGui")
-        .provider(this)
-        .manager(inventoryManager)
-        .size(5, 9)
-        .title(title)
-        .build();
-  }
-
   public TransactionHistoryGui(AccountLink accountLink, String title, Player player, boolean verbose) {
     this.accountLink = accountLink;
     this.verbose = verbose;
@@ -49,6 +39,16 @@ public class TransactionHistoryGui implements InventoryProvider {
     this.transactions = databaseManager.getTransactionDao()
         .getTransactionsForAccount(accountLink, databaseManager.getAccountLinkDao().queryBuilder(), 100, 0);
     inventory.open(player);
+  }
+
+  private SmartInventory getInventory() {
+    return SmartInventory.builder()
+        .id("AccountSelectorGui")
+        .provider(this)
+        .manager(inventoryManager)
+        .size(5, 9)
+        .title(title)
+        .build();
   }
 
   @Override
@@ -109,6 +109,7 @@ public class TransactionHistoryGui implements InventoryProvider {
       this.accountLink = accountLink;
       return this;
     }
+
     public TransactionHistoryGui.Builder title(String title) {
       this.title = title;
       return this;

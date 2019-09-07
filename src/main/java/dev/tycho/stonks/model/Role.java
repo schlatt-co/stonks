@@ -1,5 +1,5 @@
 package dev.tycho.stonks.model;
 
 public enum Role {
-    CEO, Manager, Employee, Intern
+  CEO, Manager, Employee, Intern
 }

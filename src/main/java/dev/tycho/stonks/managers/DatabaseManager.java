@@ -20,12 +20,7 @@ import java.util.UUID;
 
 public class DatabaseManager extends SpigotModule {
 
-  public DatabaseManager(Stonks plugin) {
-    super("databaseManager", plugin);
-  }
-
   private JdbcConnectionSource connectionSource = null;
-
   private CompanyDao companyDao = null;
   private MemberDao memberDao = null;
   private CompanyAccountDao companyAccountDao = null;
@@ -33,6 +28,9 @@ public class DatabaseManager extends SpigotModule {
   private HoldingDaoImpl holdingDao = null;
   private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
   private TransactionDaoImpl transactionDao = null;
+  public DatabaseManager(Stonks plugin) {
+    super("databaseManager", plugin);
+  }
 
   @Override
   public void enable() {

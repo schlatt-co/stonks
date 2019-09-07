@@ -4,5 +4,5 @@ import fr.minuskube.inv.SmartInventory;
 
 public interface Callbacks {
 
-    void onQueryDone(SmartInventory inventory);
+  void onQueryDone(SmartInventory inventory);
 }

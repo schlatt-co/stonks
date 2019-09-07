@@ -24,7 +24,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import static dev.tycho.stonks.model.Role.*;
 
@@ -32,14 +35,12 @@ import static dev.tycho.stonks.model.Role.*;
 // its almost 1000 lines long
 public class CompanyCommand implements CommandExecutor {
 
+  private final long COMPANY_CREATION_COOLDOWN;
+  private final long ACCOUNT_CREATION_COOLDOWN;
   private DatabaseManager databaseManager;
   private GuiManager guiManager;
   private JavaPlugin plugin;
   private Essentials ess;
-
-  private final long COMPANY_CREATION_COOLDOWN;
-  private final long ACCOUNT_CREATION_COOLDOWN;
-
   private HashMap<UUID, Long> playerCompanyCooldown = new HashMap<>();
   private HashMap<UUID, Long> playerAccountCooldown = new HashMap<>();
 
@@ -597,7 +598,7 @@ public class CompanyCommand implements CommandExecutor {
     int i = 0;
     player.sendMessage(ChatColor.YELLOW + "==== Page " + page + " ====");
     for (Transaction transaction : transactions) {
-      StringBuilder s = new StringBuilder((i + page * 10)+ ")");
+      StringBuilder s = new StringBuilder((i + page * 10) + ")");
       s.append("[" + transaction.getId() + "] ");
       s.append("$" + transaction.getAmount() + " ");
       s.append(((transaction.getPayee() != null) ? transaction.getPayee() : "unknown") + " ");
@@ -869,7 +870,8 @@ public class CompanyCommand implements CommandExecutor {
                         databaseManager.getMemberDao().setRole(memberToChange, newRole);
                         player.sendMessage(ChatColor.GREEN + "Success! " + playerName + " now has role " + roleString);
                         OfflinePlayer p = Bukkit.getOfflinePlayer(memberToChange.getUuid());
-                        if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.YELLOW + "Your rank in the company " + company.getName() + " has changed to " + newRole.toString());
+                        if (p.isOnline() && p.getPlayer() != null)
+                          p.getPlayer().sendMessage(ChatColor.YELLOW + "Your rank in the company " + company.getName() + " has changed to " + newRole.toString());
                         if (newRole == CEO) {
                           databaseManager.getMemberDao().setRole(changingMember, Manager);
                           player.sendMessage(ChatColor.GREEN + "You promoted " + playerName +
@@ -1196,7 +1198,7 @@ public class CompanyCommand implements CommandExecutor {
             }
             databaseManager.getMemberDao().deleteMember(memberToKick);
             player.sendMessage(ChatColor.GREEN + "Member has been kicked successfully");
-            Bukkit.broadcastMessage(ChatColor.BOLD + "" +  ChatColor.RED + memberName + " has been fired from " + company.getName() + "!");
+            Bukkit.broadcastMessage(ChatColor.BOLD + "" + ChatColor.RED + memberName + " has been fired from " + company.getName() + "!");
 //            OfflinePlayer p = Bukkit.getOfflinePlayer(memberToKick.getUuid());
 //            if (p.isOnline() && p.getPlayer() != null) p.getPlayer().sendMessage(ChatColor.RED + "You have been fired from " + company.getName() + "!");
           } catch (SQLException e) {
@@ -1449,11 +1451,6 @@ public class CompanyCommand implements CommandExecutor {
         .execute();
   }
 
-  @SuppressWarnings("unused")
-  private enum OrderBy {
-    NAMEASC, NAMEDESC, COMPANYVALUE
-  }
-
   private void openCompanyInfo(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
@@ -1542,6 +1539,11 @@ public class CompanyCommand implements CommandExecutor {
         .abortIfNull()
         .sync((result) -> result.open(player))
         .execute();
+  }
+
+  @SuppressWarnings("unused")
+  private enum OrderBy {
+    NAMEASC, NAMEDESC, COMPANYVALUE
   }
 
 }

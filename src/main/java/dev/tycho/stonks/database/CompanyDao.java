@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CompanyDao extends Dao<Company, UUID> {
-    boolean companyExists(String name) throws SQLException;
+  boolean companyExists(String name) throws SQLException;
 
-    Company getCompany(String name) throws SQLException;
+  Company getCompany(String name) throws SQLException;
 
-    List<Company> getAllCompanies();
+  List<Company> getAllCompanies();
 
-    List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery);
+  List<Company> getAllCompaniesWhereManager(Player player, QueryBuilder<Member, UUID> memberQuery);
 }

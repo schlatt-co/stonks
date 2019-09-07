@@ -5,5 +5,5 @@ import dev.tycho.stonks.model.Holding;
 import dev.tycho.stonks.model.Member;
 
 public interface HoldingDao extends Dao<Holding, Integer> {
-    boolean memberHasHoldings(Member member);
+  boolean memberHasHoldings(Member member);
 }

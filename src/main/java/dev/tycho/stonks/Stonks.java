@@ -15,10 +15,10 @@ import java.util.List;
 
 public class Stonks extends JavaPlugin {
 
-  private List<SpigotModule> loadedModules = new ArrayList<>();
   public static Economy economy = null;
-
   private static TaskChainFactory taskChainFactory;
+  private List<SpigotModule> loadedModules = new ArrayList<>();
+
   public static <T> TaskChain<T> newChain() {
     return taskChainFactory.newChain();
   }
@@ -27,7 +27,7 @@ public class Stonks extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if(getConfig().getString("mysql.database").equals("YOUR-DATABASE")) {
+    if (getConfig().getString("mysql.database").equals("YOUR-DATABASE")) {
       Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
@@ -40,7 +40,9 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new GuiManager(this));
 //    loadedModules.add(new SignManager(this));
 
-    if(!setupEconomy()) { return; }
+    if (!setupEconomy()) {
+      return;
+    }
 
     for (SpigotModule module : loadedModules) {
       module.onEnable();
@@ -58,16 +60,15 @@ public class Stonks extends JavaPlugin {
   }
 
   public SpigotModule getModule(String name) {
-    for(SpigotModule module : loadedModules) {
-      if(module.getModuleName().equals(name)) {
+    for (SpigotModule module : loadedModules) {
+      if (module.getModuleName().equals(name)) {
         return module;
       }
     }
     return null;
   }
 
-  private boolean setupEconomy()
-  {
+  private boolean setupEconomy() {
     RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
     if (economyProvider != null) {
       economy = economyProvider.getProvider();

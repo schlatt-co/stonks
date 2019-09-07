@@ -3,9 +3,9 @@ package dev.tycho.stonks.managers;
 import dev.tycho.stonks.Stonks;
 
 public class SignManager extends SpigotModule {
-    public SignManager(Stonks plugin) {
-        super("signManager", plugin);
-    }
+  public SignManager(Stonks plugin) {
+    super("signManager", plugin);
+  }
 
 //    @EventHandler
 //    public void onSignCreation(SignChangeEvent event) {

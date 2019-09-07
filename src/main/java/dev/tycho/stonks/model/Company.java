@@ -72,12 +72,12 @@ public class Company {
     return id;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getShopName() {
@@ -86,6 +86,10 @@ public class Company {
 
   public String getLogoMaterial() {
     return logoMaterial;
+  }
+
+  public void setLogoMaterial(String logoMaterial) {
+    this.logoMaterial = logoMaterial;
   }
 
   public ForeignCollection<Member> getMembers() {
@@ -135,9 +139,5 @@ public class Company {
       }
     }
     return false;
-  }
-
-  public void setLogoMaterial(String logoMaterial) {
-    this.logoMaterial = logoMaterial;
   }
 }

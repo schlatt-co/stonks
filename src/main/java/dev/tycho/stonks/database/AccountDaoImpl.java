@@ -8,13 +8,13 @@ import dev.tycho.stonks.model.CompanyAccount;
 import java.sql.SQLException;
 
 public class AccountDaoImpl extends BaseDaoImpl<CompanyAccount, Integer> {
-    public AccountDaoImpl(ConnectionSource connectionSource) throws SQLException {
-        super(connectionSource, CompanyAccount.class);
-    }
+  public AccountDaoImpl(ConnectionSource connectionSource) throws SQLException {
+    super(connectionSource, CompanyAccount.class);
+  }
 
-    public double getBalance(Account account) {
-        return account.getTotalBalance();
-    }
+  public double getBalance(Account account) {
+    return account.getTotalBalance();
+  }
 
 
 }
