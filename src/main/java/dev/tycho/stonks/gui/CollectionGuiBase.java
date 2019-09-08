@@ -41,7 +41,7 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
     inventory.close(player);
   }
 
-  protected SmartInventory getInventory() {
+  public SmartInventory getInventory() {
     return inventory;
   }
 

@@ -4,7 +4,7 @@ import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;

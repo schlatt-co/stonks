@@ -5,7 +5,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -38,8 +38,8 @@ public class ListHiddenCommandSub extends CommandSub {
           } catch (SQLException e) {
             e.printStackTrace();
           }
-          return CompanyListGui.getInventory(companies);
-        }).sync((result) -> result.open(player))
+          return new CompanyListGui(companies);
+        }).sync(gui -> gui.show(player))
         .execute();
   }
 }

@@ -5,7 +5,7 @@ import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

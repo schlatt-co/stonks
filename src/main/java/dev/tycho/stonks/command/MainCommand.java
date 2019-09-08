@@ -35,5 +35,15 @@ public class MainCommand extends CommandBase {
     addSubCommand("unverify", new UnVerifyCommandSub());
     addSubCommand("verify", new VerifyCommandSub());
     addSubCommand("withdraw", new WithdrawCommandSub());
+
+    addSubCommand("createservice", new CreateServiceCommandSub());
+    addSubCommand("paysubscription", new PaySubscriptionCommandSub());
+    addSubCommand("serviceinfo", new ServiceInfoCommandSub());
+    addSubCommand("services", new ServicesCommandSub());
+    addSubCommand("setservicemax", new SetServiceMaxCommandSub());
+    addSubCommand("subscribe", new SubscribeCommandSub());
+    addSubCommand("subscribers", new SubscribersCommandSub());
+    addSubCommand("subscriptions", new SubscriptionsCommandSub());
+    addSubCommand("unsubscribe", new UnsubscribeCommandSub());
   }
 }
