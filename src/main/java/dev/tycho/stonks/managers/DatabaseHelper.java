@@ -997,6 +997,13 @@ public class DatabaseHelper extends SpigotModule {
       sendMessage(player, "Service name cannot be longer than 40 characters");
       return;
     }
+
+    //Only verified companies can create services
+    if (!company.isVerified()) {
+      sendMessage(player, "Your company must be verified before you can create a service. Ask a moderator to consider verifying your company.");
+      return;
+    }
+
     Service newService = new Service(name, company, account, duration, cost, maxSubs);
     try {
       databaseManager.getServiceDao().create(newService);
