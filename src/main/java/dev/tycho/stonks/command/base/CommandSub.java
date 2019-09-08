@@ -49,4 +49,8 @@ public abstract class CommandSub {
     Bukkit.getOnlinePlayers().forEach(o -> playerNames.add(o.getName()));
     return copyPartialMatches(search, playerNames);
   }
+
+  String getPermission() {
+    return permission;
+  }
 }

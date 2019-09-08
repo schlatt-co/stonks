@@ -7,7 +7,7 @@ import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.CompanyCommand;
+import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.database.*;
 import dev.tycho.stonks.logging.Transaction;
 import dev.tycho.stonks.model.*;
@@ -65,11 +65,15 @@ public class DatabaseManager extends SpigotModule {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+
+    new DatabaseHelper(plugin, this);
   }
 
   @Override
   public void addCommands() {
-    addCommand("company", new CompanyCommand(this, plugin));
+    MainCommand command = new MainCommand();
+    addCommand("company", command);
+    plugin.getCommand("company").setTabCompleter(command);
   }
 
   @Override
@@ -96,7 +100,7 @@ public class DatabaseManager extends SpigotModule {
     return companyAccountDao;
   }
 
-  public Dao<HoldingsAccount, Integer> getHoldingAccountDao() {
+  Dao<HoldingsAccount, Integer> getHoldingAccountDao() {
     return holdingAccountDao;
   }
 
@@ -109,7 +113,7 @@ public class DatabaseManager extends SpigotModule {
   }
 
   //TODO move this method to a better place
-  public Account getAccountWithUUID(UUID uuid) {
+  Account getAccountWithUUID(UUID uuid) {
     try {
       //Try company account first as those are the most common
       QueryBuilder<CompanyAccount, Integer> queryBuilder = getCompanyAccountDao().queryBuilder();
@@ -133,7 +137,7 @@ public class DatabaseManager extends SpigotModule {
   }
 
   //TODO move this too
-  public void logTransaction(Transaction transaction) {
+  void logTransaction(Transaction transaction) {
     try {
       getTransactionDao().create(transaction);
     } catch (SQLException e) {

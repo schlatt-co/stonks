@@ -34,7 +34,12 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
     if (args.length == 0) {
       subCommands.get("default").onCommand(player, label, args);
-    } else if (!subCommands.containsKey(args[0])) {
+    } else if (subCommands.containsKey(args[0])) {
+      CommandSub sub = subCommands.get(args[0]);
+      if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {
+        sendMessage(player, "You have insufficient permissions to execute this command!");
+        return true;
+      }
       subCommands.get(args[0]).onCommand(player, label, args);
     } else {
       sendMessage(sender, "Unknown sub-command! Do " + ChatColor.YELLOW + "/" + label + " help" + ChatColor.GREEN + " for help.");
@@ -56,7 +61,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     return completions;
   }
 
-  public void addSubCommand(String name, CommandSub commandSub) {
+  protected void addSubCommand(String name, CommandSub commandSub) {
     subCommands.put(name, commandSub);
   }
 
