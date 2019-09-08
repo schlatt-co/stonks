@@ -1,10 +1,18 @@
 package dev.tycho.stonks.command.company;
 
+import com.j256.ormlite.stmt.QueryBuilder;
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.gui.CompanyListGui;
+import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.model.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ListHiddenCommandSub extends CommandSub {
 
@@ -19,6 +27,19 @@ public class ListHiddenCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    //todo logic
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          List<Company> companies = new ArrayList<>();
+          QueryBuilder<Company, UUID> queryBuilder = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().queryBuilder();
+          queryBuilder.orderBy("name", true);
+          try {
+            queryBuilder.where().eq("hidden", true);
+            companies = queryBuilder.query();
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+          return CompanyListGui.getInventory(companies);
+        }).sync((result) -> result.open(player))
+        .execute();
   }
 }
