@@ -12,6 +12,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class SubscribersCommandSub extends CommandSub {
+
+  public SubscribersCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;

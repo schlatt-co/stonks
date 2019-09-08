@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscribeCommandSub extends CommandSub {
+
+  public SubscribeCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;

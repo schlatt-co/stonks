@@ -11,6 +11,10 @@ import java.util.List;
 
 public class HoldingInfoCommandSub extends CommandSub {
 
+  public HoldingInfoCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;

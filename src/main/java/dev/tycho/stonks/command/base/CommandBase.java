@@ -51,7 +51,13 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
     List<String> completions = new ArrayList<>();
     if (args.length == 1) {
-      StringUtil.copyPartialMatches(args[0], subCommands.keySet(), completions);
+      List<String> cmds = new ArrayList<>();
+      for (Map.Entry<String, CommandSub> subCmd : subCommands.entrySet()) {
+        if (subCmd.getValue().isAutoComplete() && (subCmd.getValue().getPermission() == null || sender.hasPermission(subCmd.getValue().getPermission()))) {
+          cmds.add(subCmd.getKey());
+        }
+      }
+      StringUtil.copyPartialMatches(args[0], cmds, completions);
     } else if (args.length > 1 && subCommands.containsKey(args[0])) {
       List<String> result = subCommands.get(args[0]).onTabComplete(sender, alias, args);
       if (result != null) {

@@ -14,12 +14,23 @@ public abstract class CommandSub {
 
   private final String permission;
 
+  private final boolean autoComplete;
+
   public CommandSub() {
-    this(null);
+    this(null, true);
+  }
+
+  public CommandSub(boolean autoComplete) {
+    this(null, autoComplete);
   }
 
   public CommandSub(String permission) {
+    this(permission, true);
+  }
+
+  public CommandSub(String permission, boolean autoComplete) {
     this.permission = permission;
+    this.autoComplete = autoComplete;
   }
 
   public abstract List<String> onTabComplete(CommandSender sender, String alias, String[] args);
@@ -30,6 +41,7 @@ public abstract class CommandSub {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   protected boolean validateDouble(String text) {
     return Pattern.matches("([0-9]*)\\.?([0-9]*)?", text);
   }
@@ -57,5 +69,9 @@ public abstract class CommandSub {
 
   String getPermission() {
     return permission;
+  }
+
+  boolean isAutoComplete() {
+    return autoComplete;
   }
 }
