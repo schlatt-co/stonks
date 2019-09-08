@@ -16,10 +16,15 @@ public class ServicesCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length > 1) {
-      DatabaseHelper.getInstance().openCompanyServices(player, concatArgs(1, args));
-    } else {
-      player.sendMessage(ChatColor.RED + "Please specify a company!");
+    if (args.length < 2){
+      sendMessage(player, ChatColor.RED + "Please specify a company!");
+      return;
     }
+    if (!validateDouble(args[1])) {
+      sendMessage(player, ChatColor.RED + "Id must be a number");
+      return;
+    }
+    DatabaseHelper.getInstance().openCompanyServices(player, concatArgs(1, args));
+
   }
 }

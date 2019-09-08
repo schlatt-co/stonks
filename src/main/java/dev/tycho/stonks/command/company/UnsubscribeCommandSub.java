@@ -16,10 +16,14 @@ public class UnsubscribeCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length > 1) {
-      DatabaseHelper.getInstance().unsubscribeFromService(player, Integer.parseInt(args[1]));
-    } else {
-      player.sendMessage(ChatColor.RED + "Please specify a service id!");
+    if (args.length < 2) {
+      sendMessage(player, ChatColor.RED + "Please specify a service id!");
+      return;
     }
+    if (!validateDouble(args[1])) {
+      sendMessage(player, ChatColor.RED + "Id must be a number");
+      return;
+    }
+    DatabaseHelper.getInstance().unsubscribeFromService(player, Integer.parseInt(args[1]));
   }
 }

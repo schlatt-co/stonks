@@ -18,20 +18,24 @@ public class SubscribeCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length > 1) {
-      List<String> info = new ArrayList<>();
-      info.add("Automatic billing will automatically renew your");
-      info.add("subscription to this service.");
-      info.add("If you choose NO you will have to manually");
-      info.add("resubscribe each duration.");
-      info.add("You can cancel your subscription at any time");
-      int serviceId = Integer.parseInt(args[1]);
-      new ConfirmationGui.Builder().title("Set up automatic billing?")
-          .info(info)
-          .onChoiceMade(c -> DatabaseHelper.getInstance().subscribeToService(player, serviceId, c)
-          ).open(player);
-    } else {
-      player.sendMessage(ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
+    if (args.length < 2) {
+      sendMessage(player, ChatColor.RED + "Correct usage: /stonks subscribe <service_id>");
+      return;
     }
+    if (!validateDouble(args[1])) {
+      sendMessage(player, ChatColor.RED + "service_id must be a number");
+      return;
+    }
+    List<String> info = new ArrayList<>();
+    info.add("Automatic billing will automatically renew your");
+    info.add("subscription to this service.");
+    info.add("If you choose NO you will have to manually");
+    info.add("resubscribe each duration.");
+    info.add("You can cancel your subscription at any time");
+    int serviceId = Integer.parseInt(args[1]);
+    new ConfirmationGui.Builder().title("Set up automatic billing?")
+        .info(info)
+        .onChoiceMade(c -> DatabaseHelper.getInstance().subscribeToService(player, serviceId, c)
+        ).open(player);
   }
 }

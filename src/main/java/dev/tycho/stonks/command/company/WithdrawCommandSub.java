@@ -4,8 +4,8 @@ import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 public class WithdrawCommandSub extends CommandSub {
 
@@ -39,7 +38,7 @@ public class WithdrawCommandSub extends CommandSub {
       return;
     }
 
-    if (!Pattern.matches("([0-9]*)\\.?([0-9]*)?", args[1])) {
+    if (!validateDouble(args[1])) {
       sendMessage(player, "Invalid amount!");
       return;
     }

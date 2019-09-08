@@ -19,19 +19,23 @@ public class ServiceInfoCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length > 1) {
-      try {
-        Service service = DatabaseHelper.getInstance().getDatabaseManager().getServiceDao().queryForId(Integer.parseInt(args[1]));
-        if (service == null) {
-          player.sendMessage(ChatColor.RED + "Service id not found");
-          return;
-        }
-        ServiceInfoGui.getInventory(service).open(player);
-      } catch (SQLException e) {
-        e.printStackTrace();
+    if (args.length < 2) {
+      sendMessage(player, ChatColor.RED + "Please specify a service id!");
+      return;
+    }
+    if (!validateDouble(args[1])) {
+      sendMessage(player, ChatColor.RED + "Id must be a number");
+      return;
+    }
+    try {
+      Service service = DatabaseHelper.getInstance().getDatabaseManager().getServiceDao().queryForId(Integer.parseInt(args[1]));
+      if (service == null) {
+        player.sendMessage(ChatColor.RED + "Service id not found");
+        return;
       }
-    } else {
-      player.sendMessage(ChatColor.RED + "Please specify a service id!");
+      ServiceInfoGui.getInventory(service).open(player);
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
   }
 }

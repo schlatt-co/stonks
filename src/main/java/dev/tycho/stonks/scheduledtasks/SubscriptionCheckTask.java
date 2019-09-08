@@ -8,6 +8,7 @@ import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
@@ -48,14 +49,14 @@ public class SubscriptionCheckTask implements Runnable {
       System.out.println("Auto billing " + player.getName() + " $" + service.getCost() + " for service id " + service.getId());
       //Subscription is overdue and we must renew it
       if (onlinePlayer != null)
-        onlinePlayer.sendMessage(ChatColor.YELLOW + "Your subscription for " + service.getName() + " has ended." + ChatColor.GREEN + " Automatically renewing it now.....");
+        sendMessage(onlinePlayer, ChatColor.YELLOW + "Your subscription for " + service.getName() + " has ended." + ChatColor.GREEN + " Automatically renewing it now.....");
 
       //Try and charge them the amount due
       if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
         //Player does not have enough money
         System.out.println("(failed - they didn't have enough money)");
         if (onlinePlayer != null)
-          onlinePlayer.sendMessage(ChatColor.RED + "Failed to renew. You don't have enough money, please get more then manually resubscribe");
+          sendMessage(onlinePlayer, ChatColor.RED + "Failed to renew. You don't have enough money, please get more then manually resubscribe");
       } else {
         //Payment success
         //Update that the subscription is paid
@@ -73,7 +74,7 @@ public class SubscriptionCheckTask implements Runnable {
               player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
 
           if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(ChatColor.GREEN +
+            sendMessage(onlinePlayer, ChatColor.GREEN +
                 "Success! Your subscription will be auto-renewed again in " + ChatColor.YELLOW + service.getDuration()
                 + ChatColor.GREEN + " days time. You can cancel at any time by doing /stonks subscriptions");
           } else {
@@ -98,9 +99,8 @@ public class SubscriptionCheckTask implements Runnable {
         try {
           DatabaseHelper.getInstance().getDatabaseManager().getSubscriptionDao().delete(subscription);
           Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mail send " +
-              player.getName() + " Your subscription to " + service.getName() + " has been cancelled since you didn't pay it in over " + service.getDuration()
-              + " days. This is because " + (subscription.isAutoPay() ? " you did not have enough money to automatically pay it." : " you did not manually renew it.")
-              + " You can resubscribe at any time by finding the service in /stonks.");
+              player.getName() + " Your subscription to " + service.getName() + " has been cancelled since you did not pay: " +
+              (subscription.isAutoPay() ? " you did not have enough money to automatically pay it." : " you did not manually renew it."));
         } catch (SQLException e) {
           e.printStackTrace();
           System.out.println("Failed to delete subscription");
@@ -108,5 +108,9 @@ public class SubscriptionCheckTask implements Runnable {
       }
 
     }
+  }
+
+  private void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }

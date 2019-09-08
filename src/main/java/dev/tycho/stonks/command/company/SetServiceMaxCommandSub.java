@@ -20,26 +20,30 @@ public class SetServiceMaxCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length > 1) {
-      int maxSubs = Integer.parseInt(args[1]);
-      List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
-          .getAllCompaniesWhereManager(player, DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
-      new CompanySelectorGui.Builder()
-          .companies(list)
-          .title("Select a company")
-          .companySelected(company -> {
-            new ServiceSelectorGui.Builder()
-                .company(company)
-                .title("Select a service")
-                .serviceSelected(
-                    service -> {
-                      DatabaseHelper.getInstance().changeServiceMaxSubs(player, maxSubs, service);
-                    }
-                ).open(player);
-          })
-          .open(player);
-    } else {
-      player.sendMessage(ChatColor.RED + "Correct usage: /" + alias + " setservicemax <max_subs (0=unlimited)>");
+    if (args.length < 2) {
+      sendMessage(player, ChatColor.RED + "Correct usage: /" + alias + " setservicemax <max_subs (0=unlimited)>");
+      return;
     }
+    if (!validateDouble(args[1])) {
+      sendMessage(player, ChatColor.RED + "Id must be a number");
+      return;
+    }
+    int maxSubs = Integer.parseInt(args[1]);
+    List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
+        .getAllCompaniesWhereManager(player, DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
+    new CompanySelectorGui.Builder()
+        .companies(list)
+        .title("Select a company")
+        .companySelected(company -> {
+          new ServiceSelectorGui.Builder()
+              .company(company)
+              .title("Select a service")
+              .serviceSelected(
+                  service -> {
+                    DatabaseHelper.getInstance().changeServiceMaxSubs(player, maxSubs, service);
+                  }
+              ).open(player);
+        })
+        .open(player);
   }
 }
