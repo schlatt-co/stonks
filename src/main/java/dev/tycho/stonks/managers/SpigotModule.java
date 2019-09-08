@@ -1,7 +1,9 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 
 public abstract class SpigotModule implements Listener {
@@ -45,8 +47,12 @@ public abstract class SpigotModule implements Listener {
 
   }
 
-  void log(String message) {
+  private void log(String message) {
     System.out.println("[Stonks] " + moduleName + "> " + message);
+  }
+
+  protected final void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 
   public String getModuleName() {
