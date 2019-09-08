@@ -873,6 +873,42 @@ public class DatabaseHelper extends SpigotModule {
         }).execute();
   }
 
+  public void transactionHistoryPagination(Player player, int accountId, int page) {
+    AccountLink link;
+    try {
+      link = databaseManager.getAccountLinkDao().queryForId(accountId);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      player.sendMessage(ChatColor.RED + "SQL ERROR");
+      return;
+    }
+
+    if (link == null) {
+      player.sendMessage(ChatColor.RED + "Account not found");
+      return;
+    }
+
+    List<Transaction> transactions = databaseManager.getTransactionDao()
+        .getTransactionsForAccount(link, databaseManager.getAccountLinkDao().queryBuilder(), 10, 10 * page);
+    if (transactions.size() == 0) {
+      player.sendMessage("!");
+      player.sendMessage(ChatColor.YELLOW + "==== No more pages ====");
+      return;
+    }
+    int i = 0;
+    player.sendMessage(ChatColor.YELLOW + "==== Page " + page + " ====");
+    for (Transaction transaction : transactions) {
+      StringBuilder s = new StringBuilder((i + page * 10) + ")");
+      s.append("[").append(transaction.getId()).append("] ");
+      s.append("$").append(transaction.getAmount()).append(" ");
+      s.append((transaction.getPayee() != null) ? transaction.getPayee() : "unknown").append(" ");
+      if (transaction.getMessage() != null) s.append(transaction.getMessage());
+      player.sendMessage(s.toString());
+      i++;
+    }
+    if (i < 10) player.sendMessage("!");
+  }
+
   public DatabaseManager getDatabaseManager() {
     return databaseManager;
   }
