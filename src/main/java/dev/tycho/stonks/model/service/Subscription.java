@@ -36,14 +36,12 @@ public class Subscription {
   }
 
   public boolean isOverdue() {
-    System.out.println("Days overdue: " + getDaysOverdue());
     return (getDaysOverdue() > 0);
   }
 
   //Will return negative for a non-overdue date
   public double getDaysOverdue() {
     long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
-    System.out.println("Millis difference: " + millisDifference);
     return ((double) millisDifference / 86400000) - service.getDuration();
   }
 

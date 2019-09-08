@@ -37,7 +37,6 @@ public class MessageManager extends SpigotModule {
     int numOverdue = 0;
     for (Subscription s : subscriptions) {
       if (s.isOverdue()) numOverdue++;
-      System.out.println(s.getService().getName());
     }
 
     if (numOverdue > 0) {

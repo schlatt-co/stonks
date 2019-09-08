@@ -149,7 +149,7 @@ public class DatabaseManager extends SpigotModule {
   }
 
   //TODO move this too
-  void logTransaction(Transaction transaction) {
+  public void logTransaction(Transaction transaction) {
     try {
       getTransactionDao().create(transaction);
     } catch (SQLException e) {
