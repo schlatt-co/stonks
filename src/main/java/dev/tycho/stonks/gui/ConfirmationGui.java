@@ -40,9 +40,6 @@ public class ConfirmationGui implements InventoryProvider {
 
   @Override
   public void init(Player player, InventoryContents contents) {
-    Pagination pagination = contents.pagination();
-
-
     contents.set(1, 3, ClickableItem.of(Util.item(Material.GREEN_WOOL, "YES"),
         e -> {
           inventory.close(player);
@@ -67,7 +64,7 @@ public class ConfirmationGui implements InventoryProvider {
   public static class Builder {
     private String title = "Confirm";
     private List<String> info = new ArrayList<>();
-    private Consumer<Boolean> onSelected;
+    private Consumer<Boolean> onSelected = e->{};
 
     public Builder() {
 

@@ -1,7 +1,7 @@
 package dev.tycho.stonks.model.accountvisitors;
 
-import dev.tycho.stonks.model.CompanyAccount;
-import dev.tycho.stonks.model.HoldingsAccount;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 
 public interface IAccountVisitor {
   void visit(CompanyAccount a);

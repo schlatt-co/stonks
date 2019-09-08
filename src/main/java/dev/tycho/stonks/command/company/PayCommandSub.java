@@ -5,8 +5,8 @@ import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.Member;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static dev.tycho.stonks.model.Role.CEO;
+import static dev.tycho.stonks.model.core.Role.CEO;
 
 public class PayCommandSub extends CommandSub {
 

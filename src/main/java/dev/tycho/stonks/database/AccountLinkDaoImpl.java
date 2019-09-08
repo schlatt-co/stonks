@@ -3,8 +3,8 @@ package dev.tycho.stonks.database;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
-import dev.tycho.stonks.model.*;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.*;
 
 import java.sql.SQLException;
 

@@ -5,12 +5,13 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.support.ConnectionSource;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.Member;
-import dev.tycho.stonks.model.Role;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.core.Role;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,17 +20,23 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
     super(connectionSource, Member.class);
   }
 
-  @Override
-  public List<Member> getInvites(Player player) throws SQLException {
-    QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
-    List<Member> list;
-    queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
-    list = queryBuilder.query();
-    if (list.size() > 0) {
-      return list;
+    @Override
+    public List<Member> getInvites(Player player) {
+        QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
+        List<Member> list;
+
+        try {
+            queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
+            list = queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        if(list.size() > 0) {
+            return list;
+        }
+        return new ArrayList<>();
     }
-    return null;
-  }
 
   @Override
   public void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException {

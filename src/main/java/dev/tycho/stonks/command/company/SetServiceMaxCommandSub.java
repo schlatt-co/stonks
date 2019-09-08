@@ -1,54 +1,50 @@
 package dev.tycho.stonks.command.company;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.gui.ServiceSelectorGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class CreateHoldingCommandSub extends CommandSub {
-
-  private static final List<String> RATIOS = Arrays.asList(
-      "0.5",
-      "1",
-      "1.5",
-      "3");
+public class SetServiceMaxCommandSub extends CommandSub {
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    if (args.length == 2) {
-      return matchPlayerName(args[1]);
-    } else if (args.length == 3) {
-      return copyPartialMatches(args[2], RATIOS);
-    }
     return null;
   }
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 3) {
-      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " createholding <player> <share>");
+    if (args.length < 2) {
+      sendMessage(player, "Correct usage:" + ChatColor.YELLOW +  "/" + alias + " setservicemax <max_subs (0=unlimited)>");
       return;
     }
-
-    double share = Double.parseDouble(args[2]);
+    if (!StringUtils.isNumeric(args[1])) {
+      sendMessage(player, "Correct usage:" + ChatColor.YELLOW +  "/" + alias + " setservicemax <max_subs (0=unlimited)>");
+      return;
+    }
+    int maxSubs = Integer.parseInt(args[1]);
     List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
         .getAllCompaniesWhereManager(player, DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
     new CompanySelectorGui.Builder()
         .companies(list)
         .title("Select a company")
-        .companySelected((company ->
-            new AccountSelectorGui.Builder()
-                .company(company)
-                .title("Select an account")
-                .accountSelected(l -> DatabaseHelper.getInstance().createHolding(player, l.getId(), args[1], share))
-                .open(player)))
+        .companySelected(company -> {
+          new ServiceSelectorGui.Builder()
+              .company(company)
+              .title("Select a service")
+              .serviceSelected(
+                  service -> {
+                    DatabaseHelper.getInstance().changeServiceMaxSubs(player, maxSubs, service);
+                  }
+              ).open(player);
+        })
         .open(player);
   }
 }

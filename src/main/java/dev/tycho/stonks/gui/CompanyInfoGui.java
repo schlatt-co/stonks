@@ -1,7 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.Company;
+import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -35,13 +35,17 @@ public class CompanyInfoGui implements InventoryProvider {
   @Override
   public void init(Player player, InventoryContents contents) {
     contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-    contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Company List"), e -> player.performCommand("stonks list")));
-
+    contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Company List"),
+        e -> player.performCommand("stonks list")));
     contents.set(0, 4, ClickableItem.empty(ItemInfoHelper.companyDisplayItem(company)));
-    contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"), e -> player.performCommand("stonks members " + company.getName())));
-    contents.set(2, 5, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"), e -> player.performCommand("stonks accounts " + company.getName())));
 
-    //If the player is a member of the company with management permissions then we can show an edit option
+
+    contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"),
+        e -> player.performCommand("stonks members " + company.getName())));
+    contents.set(2, 4, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"),
+        e -> player.performCommand("stonks accounts " + company.getName())));
+    contents.set(2, 5, ClickableItem.of(Util.item(Material.BOOKSHELF, "Services"),
+        e -> player.performCommand("stonks services " + company.getName())));
 
   }
 

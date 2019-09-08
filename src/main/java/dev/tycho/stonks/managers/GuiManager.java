@@ -16,43 +16,26 @@ public class GuiManager extends SpigotModule {
     databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
   }
 
-  //TODO turn these into singletons
-  @Override
-  public void enable() {
-    InviteListGui.inventoryManager = inventoryManager;
-    InviteListGui.databaseManager = databaseManager;
-
-    CompanyListGui.inventoryManager = inventoryManager;
-    CompanyListGui.databaseManager = databaseManager;
+    //TODO turn these into singletons
+    @Override
+    public void enable() {
+        CollectionGuiBase.databaseManager = databaseManager;
+        CollectionGuiBase.inventoryManager = inventoryManager;
 
     CompanyInfoGui.inventoryManager = inventoryManager;
     CompanyInfoGui.databaseManager = databaseManager;
 
-    MemberListGui.inventoryManager = inventoryManager;
-    MemberListGui.databaseManager = databaseManager;
-
-    AccountListGui.inventoryManager = inventoryManager;
-    AccountListGui.databaseManager = databaseManager;
+    ServiceInfoGui.inventoryManager = inventoryManager;
+    ServiceInfoGui.databaseManager = databaseManager;
 
     MemberInfoGui.databaseManager = databaseManager;
     MemberInfoGui.inventoryManager = inventoryManager;
 
-    HoldingListGui.databaseManager = databaseManager;
-    HoldingListGui.inventoryManager = inventoryManager;
-
-    CompanySelectorGui.inventoryManager = inventoryManager;
-    CompanySelectorGui.databaseManager = databaseManager;
-
-    AccountSelectorGui.inventoryManager = inventoryManager;
-    AccountSelectorGui.databaseManager = databaseManager;
 
     AccountTypeSelectorGui.inventoryManager = inventoryManager;
     AccountTypeSelectorGui.databaseManager = databaseManager;
 
-    ConfirmationGui.inventoryManager = inventoryManager;
-    ConfirmationGui.databaseManager = databaseManager;
-
-    TransactionHistoryGui.inventoryManager = inventoryManager;
-    TransactionHistoryGui.databaseManager = databaseManager;
-  }
+        ConfirmationGui.inventoryManager = inventoryManager;
+        ConfirmationGui.databaseManager = databaseManager;
+    }
 }

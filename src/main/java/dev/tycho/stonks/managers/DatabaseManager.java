@@ -9,8 +9,11 @@ import com.j256.ormlite.table.TableUtils;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.database.*;
-import dev.tycho.stonks.logging.Transaction;
-import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.service.Service;
+import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -28,6 +31,10 @@ public class DatabaseManager extends SpigotModule {
   private HoldingDaoImpl holdingDao = null;
   private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
   private TransactionDaoImpl transactionDao = null;
+  private Dao<Service, Integer> serviceDao = null;
+  private SubscriptionDaoImpl subscriptionDao = null;
+
+
   public DatabaseManager(Stonks plugin) {
     super("databaseManager", plugin);
   }
@@ -54,6 +61,9 @@ public class DatabaseManager extends SpigotModule {
       holdingDao = DaoManager.createDao(connectionSource, Holding.class);
       holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
       transactionDao = new TransactionDaoImpl(connectionSource);
+      subscriptionDao = new SubscriptionDaoImpl(connectionSource);
+      serviceDao = DaoManager.createDao(connectionSource, Service.class);
+
 
       TableUtils.createTableIfNotExists(connectionSource, Company.class);
       TableUtils.createTableIfNotExists(connectionSource, Member.class);
@@ -62,6 +72,8 @@ public class DatabaseManager extends SpigotModule {
       TableUtils.createTableIfNotExists(connectionSource, Holding.class);
       TableUtils.createTableIfNotExists(connectionSource, HoldingsAccount.class);
       TableUtils.createTableIfNotExists(connectionSource, Transaction.class);
+      TableUtils.createTableIfNotExists(connectionSource, Service.class);
+      TableUtils.createTableIfNotExists(connectionSource, Subscription.class);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -137,12 +149,45 @@ public class DatabaseManager extends SpigotModule {
   }
 
   //TODO move this too
-  void logTransaction(Transaction transaction) {
+  public void logTransaction(Transaction transaction) {
     try {
       getTransactionDao().create(transaction);
     } catch (SQLException e) {
       e.printStackTrace();
       Bukkit.broadcastMessage(ChatColor.RED + "SQL Exception creating a log ");
     }
+  }
+  public void updateAccount(Account account) {
+    //Update the account database
+    IAccountVisitor visitor = new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        try {
+          getCompanyAccountDao().update(a);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      public void visit(HoldingsAccount a) {
+        try {
+          //Update the account and holdings
+          getHoldingAccountDao().update(a);
+          for (Holding h : a.getHoldings()) getHoldingDao().update(h);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    };
+    account.accept(visitor);
+  }
+
+  public Dao<Service, Integer> getServiceDao() {
+    return serviceDao;
+  }
+
+  public SubscriptionDaoImpl getSubscriptionDao() {
+    return subscriptionDao;
   }
 }

@@ -5,9 +5,11 @@ import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
-import dev.tycho.stonks.logging.Transaction;
-import dev.tycho.stonks.model.*;
+import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.service.Service;
+import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import static dev.tycho.stonks.model.Role.*;
+import static dev.tycho.stonks.model.core.Role.*;
 
 public class DatabaseHelper extends SpigotModule {
 
@@ -49,6 +51,7 @@ public class DatabaseHelper extends SpigotModule {
   }
 
   public void createCompany(Player player, String companyName) {
+    //Prevent the player from spamming companies
     if (!player.isOp() && playerCompanyCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
       sendMessage(player, "You cannot make a company for another " + Util.convertString(COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId()))));
       return;
@@ -64,7 +67,8 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "A company with that name already exists!");
               return;
             }
-            if (!Stonks.economy.withdrawPlayer(player, COMPANY_FEE).transactionSuccess()) {
+            double creationFee = plugin.getConfig().getDouble("fees.companycreation");
+            if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
               sendMessage(player, "You don't have the sufficient funds for the $" + COMPANY_FEE + " company creation fee.");
               return;
             }
@@ -82,13 +86,13 @@ public class DatabaseHelper extends SpigotModule {
             Member creator = new Member(player, CEO);
             newCompany.getMembers().add(creator);
 
-            sendMessage(player, "Your company, " + ChatColor.YELLOW + companyName + ChatColor.GREEN + ", has been created!");
+            sendMessage(player, ChatColor.GREEN + "Company with name: \"" + companyName + "\" created successfully!");
             playerCompanyCooldown.put(player.getUniqueId(), System.currentTimeMillis());
-            Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + player.getDisplayName() + ChatColor.GREEN + " founded the company: " + ChatColor.YELLOW + companyName + ChatColor.GREEN + "!");
+            Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + ChatColor.GREEN + " just founded a new company - " + newCompany.getName() + "!");
 
           } catch (SQLException e) {
             e.printStackTrace();
-            sendMessage(player, "Something went wrong!");
+            sendMessage(player, ChatColor.RED + "Something went wrong! :(");
           }
         }).execute();
   }
@@ -97,20 +101,15 @@ public class DatabaseHelper extends SpigotModule {
     Stonks.newChain()
         .asyncFirst(() -> {
           List<Member> invites;
-          try {
-            invites = databaseManager.getMemberDao().getInvites(player);
-          } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-          }
+          invites = databaseManager.getMemberDao().getInvites(player);
           if (invites == null) {
             sendMessage(player, "You don't have any pending invites!");
             return null;
           }
-          return InviteListGui.getInventory();
+          return new InviteListGui(player);
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -134,9 +133,9 @@ public class DatabaseHelper extends SpigotModule {
           } catch (SQLException e) {
             e.printStackTrace();
           }
-          return CompanyListGui.getInventory(list);
+          return new CompanyListGui(list);
         })
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -146,7 +145,7 @@ public class DatabaseHelper extends SpigotModule {
           try {
             Company company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
-              player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+              sendMessage(player, "That company doesn't exist!");
               return null;
             }
             return CompanyInfoGui.getInventory(company);
@@ -166,7 +165,7 @@ public class DatabaseHelper extends SpigotModule {
           try {
             Company company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
-              player.sendMessage(ChatColor.RED + "That company doesn't exist!");
+              sendMessage(player, "That company doesn't exist!");
               return null;
             }
             List<Member> list = null;
@@ -177,14 +176,14 @@ public class DatabaseHelper extends SpigotModule {
             } catch (SQLException e) {
               e.printStackTrace();
             }
-            return MemberListGui.getInventory(company, list);
+            return new MemberListGui(company, list);
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -198,14 +197,14 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "That company doesn't exist!");
               return null;
             }
-            return AccountListGui.getInventory(company);
+            return new AccountListGui(company);
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -255,6 +254,7 @@ public class DatabaseHelper extends SpigotModule {
           }
         }).execute();
   }
+
 
   public void createCompanyAccount(Player player, String companyName, String accountName, boolean holding) {
     if (!player.isOp() && playerAccountCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId())) < ACCOUNT_CREATION_COOLDOWN) {
@@ -315,7 +315,7 @@ public class DatabaseHelper extends SpigotModule {
     Stonks.newChain()
         .async(() -> {
           if (share <= 0) {
-            player.sendMessage(ChatColor.RED + "Holding share must be greater than 0");
+            sendMessage(player, "Holding share must be greater than 0");
             return;
           }
           try {
@@ -364,7 +364,7 @@ public class DatabaseHelper extends SpigotModule {
             sendMessage(player, "Holding successfully created!");
           } catch (SQLException e) {
             e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "SQL ERROR please tell wheezy this happened");
+            sendMessage(player, "Error while executing command!");
           }
         }).execute();
   }
@@ -466,8 +466,7 @@ public class DatabaseHelper extends SpigotModule {
                     try {
                       databaseManager.getCompanyAccountDao().update(a);
                       Stonks.economy.depositPlayer(player, amount);
-                      //todo transaction fee
-                      player.sendMessage(ChatColor.GREEN + "Money Withdrawn!");
+                      sendMessage(player, "Error while executing command!");
 
 
                       //Log the transaction
@@ -498,7 +497,6 @@ public class DatabaseHelper extends SpigotModule {
                       h.subtractBalance(amount);
                       databaseManager.getHoldingDao().update(h);
                       Stonks.economy.depositPlayer(player, amount);
-                      //todo transaction fee
                       sendMessage(player, "Money withdrawn successfully");
                     } catch (SQLException e) {
                       e.printStackTrace();
@@ -622,7 +620,7 @@ public class DatabaseHelper extends SpigotModule {
 
             Member member = databaseManager.getMemberDao().getMember(playerProfile, company);
             if (member == null) {
-              player.sendMessage(ChatColor.RED + "That player isn't a member of that company!");
+              sendMessage(player, "That player isn't a member of that company!");
               return null;
             }
             return MemberInfoGui.getInventory(member);
@@ -767,14 +765,14 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You can only view holdings of holding accounts!");
               return null;
             }
-            return HoldingListGui.getInventory((HoldingsAccount) link.getAccount());
+            return new HoldingListGui((HoldingsAccount) link.getAccount());
           } catch (SQLException e) {
             e.printStackTrace();
           }
           return null;
         })
         .abortIfNull()
-        .sync((result) -> result.open(player))
+        .sync(gui -> gui.show(player))
         .execute();
   }
 
@@ -857,6 +855,244 @@ public class DatabaseHelper extends SpigotModule {
         }).execute();
   }
 
+  public void changeServiceMaxSubs(Player player, int maxSubs, Service service) {
+    Member m = service.getCompany().getMember(player);
+    if (m == null || !m.hasManagamentPermission()) {
+      sendMessage(player, "You don't have management perms for this company");
+      return;
+    }
+
+    if (maxSubs > 0 && maxSubs < service.getNumSubscriptions()) {
+      sendMessage(player, "You can't set the max subscriptions lower than the current number of subscriptions");
+      return;
+    }
+
+    service.setMaxSubscribers(maxSubs);
+    try {
+      databaseManager.getServiceDao().update(service);
+      sendMessage(player, "Max subs updated to " + maxSubs + " :)");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(player, "Error while executing command!");
+    }
+  }
+
+  public void paySubscription(Player player, int id) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(id);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(player, "Error while executing command!");
+      return;
+    }
+    if (service == null) {
+      sendMessage(player, "Service id not found");
+      return;
+    }
+
+    Subscription subscription = service.getSubscription(player);
+    if (subscription == null) {
+      sendMessage(player, "You are not subscribed to this service");
+      return;
+    }
+
+    if (!subscription.isOverdue()) {
+      sendMessage(player, "The subscription is not overdue, you don't need to pay for it");
+      return;
+    }
+
+
+    new ConfirmationGui.Builder().title("Pay bill of $" + service.getCost()).onChoiceMade(
+        c -> {
+          if (!c) return;
+          if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
+            sendMessage(player, "Insufficient funds!");
+            return;
+          } else {
+            //Payment success
+            try {
+              //Update that the subscription is paid
+              subscription.registerPaid();
+              databaseManager.getSubscriptionDao().update(subscription);
+              service.getAccount().getAccount().addBalance(service.getCost());
+              databaseManager.logTransaction(new Transaction(service.getAccount(),
+                  player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
+
+              //Update the account database
+              databaseManager.updateAccount(service.getAccount().getAccount());
+
+              //Subscription created!
+              sendMessage(player, "You have resubscribed to the service " + service.getName() +
+                  " (provided by " + service.getCompany().getName() + ")!");
+              sendMessage(player, "This service will expire in " + service.getDuration() + " days");
+              if (subscription.isAutoPay()) {
+                sendMessage(player, "You have set your subscription to automatically renew, so you don't need to do anything.");
+              } else {
+                sendMessage(player, "You have set your subscription to manually renew, so you will need to resubscribe in "
+                    + service.getDuration() + " days time.");
+              }
+            } catch (SQLException e) {
+              e.printStackTrace();
+              sendMessage(player, "Error while executing command!");
+            }
+          }
+        }
+    ).open(player);
+
+  }
+
+  public void unsubscribeFromService(Player player, int id) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(id);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(player, "Error while executing command!");
+      return;
+    }
+    if (service == null) {
+      sendMessage(player, "Service id not found");
+      return;
+    }
+
+    Subscription subscription = service.getSubscription(player);
+    if (subscription == null) {
+      sendMessage(player, "You are not subscribed to this service");
+      return;
+    }
+
+    new ConfirmationGui.Builder().title("Unsubscribe from " + service.getName() + "?")
+        .onChoiceMade(c -> {
+          if (!c) return;
+          try {
+            databaseManager.getSubscriptionDao().delete(subscription);
+            sendMessage(player, "You have unsubscribed from " + service.getName() +
+                " (from " + service.getCompany().getName() + ")");
+          } catch (SQLException e) {
+            e.printStackTrace();
+            sendMessage(player, "Error while executing command!");
+          }
+        }).open(player);
+
+  }
+
+  public void createService(Player player, double duration, double cost, int maxSubs, String name, Company company, AccountLink account) {
+    //Check for the same name
+    for (Service service : company.getServices()) {
+      if (service.getName().equals(name)) {
+        sendMessage(player, "A service with the same name already exists for this company");
+        return;
+      }
+    }
+
+    if (duration <= 0.5) {
+      sendMessage(player, "Service duration must be greater than 0.5 (12 hours)");
+      return;
+    }
+
+    if (name.length() > 40) {
+      sendMessage(player, "Service name cannot be longer than 40 characters");
+      return;
+    }
+
+    //Only verified companies can create services
+    if (!company.isVerified()) {
+      sendMessage(player, "Your company must be verified before you can create a service. Ask a moderator to consider verifying your company.");
+      return;
+    }
+
+    Service newService = new Service(name, company, account, duration, cost, maxSubs);
+    try {
+      databaseManager.getServiceDao().create(newService);
+      sendMessage(player, "Service created!");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(player, "Error while executing command!");
+    }
+  }
+
+  public void subscribeToService(Player player, int serviceId, Boolean autoPay) {
+    Service service;
+    try {
+      service = databaseManager.getServiceDao().queryForId(serviceId);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      sendMessage(player, "Error while executing command!");
+      return;
+    }
+    if (service == null) {
+      sendMessage(player, "That service id does not exist");
+      return;
+    }
+    if (service.getMaxSubscriptions() > 0 && service.getNumSubscriptions() >= service.getMaxSubscriptions()) {
+      sendMessage(player, "That service has the maximum number of subscriptions");
+      return;
+    }
+
+    if (service.getSubscription(player) != null) {
+      sendMessage(player, "You cannot subscribe to the same service twice");
+      return;
+    }
+
+    new ConfirmationGui.Builder().title("Accept first bill of $" + service.getCost()).onChoiceMade(
+        c -> {
+          if (!c) return;
+          //We can now subscribe to the service
+          //Setup the subscription
+          Subscription subscription = new Subscription(player, service, autoPay);
+          if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
+            sendMessage(player, "Insufficient funds!");
+            return;
+          } else {
+            //Payment success
+            try {
+              databaseManager.getSubscriptionDao().create(subscription);
+              service.getAccount().getAccount().addBalance(service.getCost());
+              databaseManager.logTransaction(new Transaction(service.getAccount(),
+                  player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
+              //Update the account database
+              databaseManager.updateAccount(service.getAccount().getAccount());
+
+
+              //Subscription created!
+              sendMessage(player, "You have subscribed to the service " + service.getName() + " (provided by " + service.getCompany().getName() + ")");
+              sendMessage(player, "This service will expire in " + service.getDuration() + " days");
+              if (autoPay) {
+                sendMessage(player, "You have set your subscription to automatically renew, so you don't need to do anything.");
+              } else {
+                sendMessage(player, "You have set your subscription to manually renew, so you will need to resubscribe in " + service.getDuration() + " days time.");
+              }
+            } catch (SQLException e) {
+              e.printStackTrace();
+              sendMessage(player, "Error while executing command!");
+            }
+          }
+        }
+    ).open(player);
+  }
+
+  public void openCompanyServices(Player player, String companyName) {
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          try {
+            Company company = databaseManager.getCompanyDao().getCompany(companyName);
+            if (company == null) {
+              sendMessage(player, "That company doesn't exist!");
+              return null;
+            }
+            return new ServiceListGui(company);
+          } catch (SQLException e) {
+            sendMessage(player, "Error while executing command!");
+            e.printStackTrace();
+          }
+          return null;
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
+  }
+
   @SuppressWarnings("DuplicatedCode")
   public void changeHidden(Player player, String companyName, boolean newHidden) {
     Stonks.newChain()
@@ -891,34 +1127,34 @@ public class DatabaseHelper extends SpigotModule {
       link = databaseManager.getAccountLinkDao().queryForId(accountId);
     } catch (SQLException e) {
       e.printStackTrace();
-      player.sendMessage(ChatColor.RED + "SQL ERROR");
+      sendMessage(player, "Error while executing command!");
       return;
     }
 
     if (link == null) {
-      player.sendMessage(ChatColor.RED + "Account not found");
+      sendMessage(player, "Account not found");
       return;
     }
 
     List<Transaction> transactions = databaseManager.getTransactionDao()
         .getTransactionsForAccount(link, databaseManager.getAccountLinkDao().queryBuilder(), 10, 10 * page);
     if (transactions.size() == 0) {
-      player.sendMessage("!");
-      player.sendMessage(ChatColor.YELLOW + "==== No more pages ====");
+      sendMessage(player, "!");
+      sendMessage(player, ChatColor.YELLOW + "==== No more pages ====");
       return;
     }
     int i = 0;
-    player.sendMessage(ChatColor.YELLOW + "==== Page " + page + " ====");
+    sendMessage(player, ChatColor.YELLOW + "==== Page " + page + " ====");
     for (Transaction transaction : transactions) {
       StringBuilder s = new StringBuilder((i + page * 10) + ")");
       s.append("[").append(transaction.getId()).append("] ");
       s.append("$").append(transaction.getAmount()).append(" ");
       s.append((transaction.getPayee() != null) ? transaction.getPayee() : "unknown").append(" ");
       if (transaction.getMessage() != null) s.append(transaction.getMessage());
-      player.sendMessage(s.toString());
+      sendMessage(player, s.toString());
       i++;
     }
-    if (i < 10) player.sendMessage("!");
+    if (i < 10) sendMessage(player, "!");
   }
 
   public DatabaseManager getDatabaseManager() {

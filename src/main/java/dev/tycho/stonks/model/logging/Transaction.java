@@ -1,8 +1,8 @@
-package dev.tycho.stonks.logging;
+package dev.tycho.stonks.model.logging;
 
 import com.Acrobot.ChestShop.ORMlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
-import dev.tycho.stonks.model.AccountLink;
+import dev.tycho.stonks.model.core.AccountLink;
 
 import java.sql.Timestamp;
 import java.util.Calendar;

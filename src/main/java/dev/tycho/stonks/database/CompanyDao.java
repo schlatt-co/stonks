@@ -2,8 +2,8 @@ package dev.tycho.stonks.database;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.Member;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;

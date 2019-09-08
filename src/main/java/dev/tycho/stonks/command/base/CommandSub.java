@@ -8,6 +8,7 @@ import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class CommandSub {
 
@@ -27,6 +28,10 @@ public abstract class CommandSub {
 
   protected final void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
+  }
+
+  protected boolean validateDouble(String text) {
+    return Pattern.matches("([0-9]*)\\.?([0-9]*)?", text);
   }
 
   protected String concatArgs(int startArg, String[] args) {

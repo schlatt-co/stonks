@@ -1,14 +1,14 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.model.Member;
+import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 
 public class MessageManager extends SpigotModule {
   private DatabaseManager databaseManager;
@@ -26,10 +26,24 @@ public class MessageManager extends SpigotModule {
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
-    List<Member> invites = databaseManager.getMemberDao().getInvites(event.getPlayer());
-    if (invites != null) {
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    Collection<Member> invites = databaseManager.getMemberDao().getInvites(event.getPlayer());
+    Collection<Subscription> subscriptions = databaseManager.getSubscriptionDao().getPlayerSubscriptions(event.getPlayer());
+
+    if (invites.size() > 0) {
       event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.GREEN + invites.size() + ChatColor.AQUA + " open company invites! Do " + ChatColor.GREEN + "/stonks invites" + ChatColor.AQUA + " to view them.");
+      event.getPlayer().sendMessage("============");
     }
+    int numOverdue = 0;
+    for (Subscription s : subscriptions) {
+      if (s.isOverdue()) numOverdue++;
+    }
+
+    if (numOverdue > 0) {
+      event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.RED + numOverdue + ChatColor.AQUA + " overdue subscriptions. Type " + ChatColor.GREEN + "/stonks subscriptions" + ChatColor.AQUA + " to view them.");
+      event.getPlayer().sendMessage("============");
+    }
+
+
   }
 }

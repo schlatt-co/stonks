@@ -1,11 +1,12 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.logging.Transaction;
-import dev.tycho.stonks.model.AccountLink;
-import dev.tycho.stonks.model.Company;
-import dev.tycho.stonks.model.CompanyAccount;
-import dev.tycho.stonks.model.HoldingsAccount;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
+import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
+import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.service.*;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,10 +80,37 @@ public class ItemInfoHelper {
     Material itemMaterial = Material.CHEST;
     if (transaction.getPayee() != null) {
       itemMaterial = (transaction.getAmount() > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
+      if (transaction.getMessage().startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
     }
 
     return Util.item(itemMaterial,
         ((transaction.getAmount() > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.getAmount(),
         lore);
   }
+
+  public static ItemStack serviceDisplayItem(Service service, String... extraLore) {
+    List<String> lore = new ArrayList<>();
+    lore.add("Cost: " + ChatColor.GREEN + "$" + service.getCost());
+    lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() + "/" +
+        ((service.getMaxSubscriptions() > 0) ? service.getMaxSubscriptions() : "unlimited"));
+    lore.add("Subscription Period: " + new DecimalFormat("#.#").format(service.getDuration()) + " days");
+    if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
+    Material itemMaterial = Material.KNOWLEDGE_BOOK;
+    return Util.item(itemMaterial, service.getName(), lore);
+  }
+
+  public static ItemStack subscriptionDisplayItem(Subscription subscription, String... extraLore) {
+    Service service = subscription.getService();
+    boolean overdue = subscription.isOverdue();
+    List<String> lore = new ArrayList<>();
+    lore.add("Company: " + ChatColor.YELLOW + service.getCompany().getName());
+    lore.add((overdue? ChatColor.RED : ChatColor.GREEN) +
+        new DecimalFormat("#.#").format(Math.abs(subscription.getDaysOverdue())) + ChatColor.WHITE + " days " + (overdue? "overdue" : "remaining"));
+    lore.add("Subscription cost: " + ChatColor.GREEN + "$" + service.getCost());
+    if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
+    return Util.item(Material.getMaterial(service.getCompany().getLogoMaterial()),
+        service.getName(),
+        lore);
+  }
+
 }
