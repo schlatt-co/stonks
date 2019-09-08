@@ -5,6 +5,7 @@ import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,16 +53,16 @@ public class CreateServiceCommandSub extends CommandSub {
       sendMessage(player, ChatColor.RED + "Correct usage: /" + alias + " createservice <duration (days)> <cost> <max_subs (0=unlimited)> <name>");
       return;
     }
-    if (!validateDouble(args[1])) {
-      sendMessage(player, "Please enter a number for duration");
+    if (!StringUtils.isNumeric(args[1])) {
+      sendMessage(player, "Please enter an integer for duration");
       return;
     }
     if (!validateDouble(args[2])) {
       sendMessage(player, "Please enter a number for cost");
       return;
     }
-    if (!validateDouble(args[3])) {
-      sendMessage(player, "Please enter a number for max subs");
+    if (!StringUtils.isNumeric(args[3])) {
+      sendMessage(player, "Please enter an integer for max subs");
       return;
     }
     double duration = Double.parseDouble(args[1]);

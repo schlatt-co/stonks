@@ -4,6 +4,7 @@ import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.ServiceInfoGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.service.Service;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,11 +21,11 @@ public class ServiceInfoCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     if (args.length < 2) {
-      sendMessage(player, ChatColor.RED + "Please specify a service id!");
+      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>" );
       return;
     }
-    if (!validateDouble(args[1])) {
-      sendMessage(player, ChatColor.RED + "Id must be a number");
+    if (!StringUtils.isNumeric(args[1])) {
+      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>" );
       return;
     }
     try {

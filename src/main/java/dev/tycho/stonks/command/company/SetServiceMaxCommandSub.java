@@ -5,6 +5,7 @@ import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ServiceSelectorGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,11 +22,11 @@ public class SetServiceMaxCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     if (args.length < 2) {
-      sendMessage(player, ChatColor.RED + "Correct usage: /" + alias + " setservicemax <max_subs (0=unlimited)>");
+      sendMessage(player, "Correct usage:" + ChatColor.YELLOW +  "/" + alias + " setservicemax <max_subs (0=unlimited)>");
       return;
     }
-    if (!validateDouble(args[1])) {
-      sendMessage(player, ChatColor.RED + "Id must be a number");
+    if (!StringUtils.isNumeric(args[1])) {
+      sendMessage(player, "Correct usage:" + ChatColor.YELLOW +  "/" + alias + " setservicemax <max_subs (0=unlimited)>");
       return;
     }
     int maxSubs = Integer.parseInt(args[1]);

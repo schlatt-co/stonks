@@ -20,10 +20,6 @@ public class ServicesCommandSub extends CommandSub {
       sendMessage(player, ChatColor.RED + "Please specify a company!");
       return;
     }
-    if (!validateDouble(args[1])) {
-      sendMessage(player, ChatColor.RED + "Id must be a number");
-      return;
-    }
     DatabaseHelper.getInstance().openCompanyServices(player, concatArgs(1, args));
 
   }
