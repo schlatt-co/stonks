@@ -449,6 +449,12 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You are not a member of the company the account is in!");
               return;
             }
+
+            if (amount < 0) {
+              sendMessage(player, "You cannot withdraw a negative number");
+              return;
+            }
+
             Member member = link.getCompany().getMember(player);
             IAccountVisitor visitor = new IAccountVisitor() {
               @Override
@@ -548,6 +554,12 @@ public class DatabaseHelper extends SpigotModule {
     Stonks.newChain()
         .async(() -> {
           AccountLink accountLink = null;
+          if (amount < 0) {
+            sendMessage(sender, "You cannot pay a negative number");
+            return;
+          }
+
+
           try {
             accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
           } catch (SQLException e) {

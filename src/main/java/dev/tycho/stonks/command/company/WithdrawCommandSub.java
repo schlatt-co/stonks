@@ -56,7 +56,6 @@ public class WithdrawCommandSub extends CommandSub {
 
     if (accountId.get() == -1) {
       List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().getAllCompanies();
-
       //We need a list of all companies with a withdrawable account for this player
       //Remove companies where the player is not a manager and doesn't have an account
       //todo remove this messy logic
