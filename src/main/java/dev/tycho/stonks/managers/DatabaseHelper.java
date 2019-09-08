@@ -145,7 +145,7 @@ public class DatabaseHelper extends SpigotModule {
           try {
             Company company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
-              sendMessage(player, ChatColor.RED + "That company doesn't exist!");
+              sendMessage(player, "That company doesn't exist!");
               return null;
             }
             return CompanyInfoGui.getInventory(company);
@@ -165,7 +165,7 @@ public class DatabaseHelper extends SpigotModule {
           try {
             Company company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
-              sendMessage(player, ChatColor.RED + "That company doesn't exist!");
+              sendMessage(player, "That company doesn't exist!");
               return null;
             }
             List<Member> list = null;
@@ -315,7 +315,7 @@ public class DatabaseHelper extends SpigotModule {
     Stonks.newChain()
         .async(() -> {
           if (share <= 0) {
-            sendMessage(player, ChatColor.RED + "Holding share must be greater than 0");
+            sendMessage(player, "Holding share must be greater than 0");
             return;
           }
           try {
@@ -364,7 +364,7 @@ public class DatabaseHelper extends SpigotModule {
             sendMessage(player, "Holding successfully created!");
           } catch (SQLException e) {
             e.printStackTrace();
-            sendMessage(player, ChatColor.RED + "SQL ERROR please tell wheezy this happened");
+            sendMessage(player, "Error while executing command!");
           }
         }).execute();
   }
@@ -466,8 +466,7 @@ public class DatabaseHelper extends SpigotModule {
                     try {
                       databaseManager.getCompanyAccountDao().update(a);
                       Stonks.economy.depositPlayer(player, amount);
-                      //todo transaction fee
-                      sendMessage(player, ChatColor.GREEN + "Money Withdrawn!");
+                      sendMessage(player, "Error while executing command!");
 
 
                       //Log the transaction
@@ -498,7 +497,6 @@ public class DatabaseHelper extends SpigotModule {
                       h.subtractBalance(amount);
                       databaseManager.getHoldingDao().update(h);
                       Stonks.economy.depositPlayer(player, amount);
-                      //todo transaction fee
                       sendMessage(player, "Money withdrawn successfully");
                     } catch (SQLException e) {
                       e.printStackTrace();
@@ -622,7 +620,7 @@ public class DatabaseHelper extends SpigotModule {
 
             Member member = databaseManager.getMemberDao().getMember(playerProfile, company);
             if (member == null) {
-              sendMessage(player, ChatColor.RED + "That player isn't a member of that company!");
+              sendMessage(player, "That player isn't a member of that company!");
               return null;
             }
             return MemberInfoGui.getInventory(member);

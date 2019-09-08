@@ -5,7 +5,6 @@ import dev.tycho.stonks.gui.ServiceInfoGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +30,7 @@ public class ServiceInfoCommandSub extends CommandSub {
     try {
       Service service = DatabaseHelper.getInstance().getDatabaseManager().getServiceDao().queryForId(Integer.parseInt(args[1]));
       if (service == null) {
-        player.sendMessage(ChatColor.RED + "Service id not found");
+        player.sendMessage("Service id not found");
         return;
       }
       ServiceInfoGui.getInventory(service).open(player);
