@@ -20,23 +20,23 @@ public class MemberDaoImpl extends BaseDaoImpl<Member, UUID> implements MemberDa
     super(connectionSource, Member.class);
   }
 
-    @Override
-    public List<Member> getInvites(Player player) {
-        QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
-        List<Member> list;
+  @Override
+  public List<Member> getInvites(Player player) {
+    QueryBuilder<Member, UUID> queryBuilder = queryBuilder();
+    List<Member> list;
 
-        try {
-            queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
-            list = queryBuilder.query();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-        if(list.size() > 0) {
-            return list;
-        }
-        return new ArrayList<>();
+    try {
+      queryBuilder.where().eq("acceptedInvite", "0").and().eq("uuid", player.getUniqueId());
+      list = queryBuilder.query();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return new ArrayList<>();
     }
+    if (list.size() > 0) {
+      return list;
+    }
+    return new ArrayList<>();
+  }
 
   @Override
   public void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException {

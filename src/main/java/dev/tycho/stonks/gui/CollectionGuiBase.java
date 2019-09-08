@@ -18,10 +18,8 @@ import java.util.Collection;
 public abstract class CollectionGuiBase<T> implements InventoryProvider {
   public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
-
+  private Collection<T> collection;
   private SmartInventory inventory;
-
-  protected Collection<T> collection;
 
   protected CollectionGuiBase(Collection<T> collection, String title) {
     this.collection = collection;
@@ -37,11 +35,12 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
   public Inventory show(Player player) {
     return inventory.open(player);
   }
-  public void close(Player player) {
+
+  void close(Player player) {
     inventory.close(player);
   }
 
-  public SmartInventory getInventory() {
+  private SmartInventory getInventory() {
     return inventory;
   }
 

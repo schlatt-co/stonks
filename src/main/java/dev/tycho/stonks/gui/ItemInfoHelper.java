@@ -6,7 +6,8 @@ import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.CompanyAccount;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.logging.Transaction;
-import dev.tycho.stonks.model.service.*;
+import dev.tycho.stonks.model.service.Service;
+import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class ItemInfoHelper {
 
-  public static ItemStack companyDisplayItem(Company company) {
+  static ItemStack companyDisplayItem(Company company) {
     String companyDisplayName = company.getName();
     if (company.isVerified()) companyDisplayName += "  " + ChatColor.AQUA + "✔";
     return Util.item(Material.getMaterial(company.getLogoMaterial()), companyDisplayName,
@@ -32,14 +33,14 @@ public class ItemInfoHelper {
     );
   }
 
-  public static ItemStack accountDisplayItem(AccountLink link) {
+  static ItemStack accountDisplayItem(AccountLink link) {
     return accountDisplayItem(link, new String[]{});
   }
 
 
-  public static ItemStack accountDisplayItem(AccountLink link, String... extraLore) {
+  static ItemStack accountDisplayItem(AccountLink link, String... extraLore) {
 
-    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<ItemStack>() {
+    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();
@@ -65,7 +66,7 @@ public class ItemInfoHelper {
     return visitor.getRecentVal();
   }
 
-  public static ItemStack transactionDisplayItem(Transaction transaction) {
+  static ItemStack transactionDisplayItem(Transaction transaction) {
     List<String> lore = new ArrayList<>();
     if (transaction.getPayee() != null) {
       OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.getPayee());
@@ -88,7 +89,7 @@ public class ItemInfoHelper {
         lore);
   }
 
-  public static ItemStack serviceDisplayItem(Service service, String... extraLore) {
+  static ItemStack serviceDisplayItem(Service service, String... extraLore) {
     List<String> lore = new ArrayList<>();
     lore.add("Cost: " + ChatColor.GREEN + "$" + service.getCost());
     lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() + "/" +
@@ -99,13 +100,13 @@ public class ItemInfoHelper {
     return Util.item(itemMaterial, service.getName(), lore);
   }
 
-  public static ItemStack subscriptionDisplayItem(Subscription subscription, String... extraLore) {
+  static ItemStack subscriptionDisplayItem(Subscription subscription, String... extraLore) {
     Service service = subscription.getService();
     boolean overdue = subscription.isOverdue();
     List<String> lore = new ArrayList<>();
     lore.add("Company: " + ChatColor.YELLOW + service.getCompany().getName());
-    lore.add((overdue? ChatColor.RED : ChatColor.GREEN) +
-        new DecimalFormat("#.#").format(Math.abs(subscription.getDaysOverdue())) + ChatColor.WHITE + " days " + (overdue? "overdue" : "remaining"));
+    lore.add((overdue ? ChatColor.RED : ChatColor.GREEN) +
+        new DecimalFormat("#.#").format(Math.abs(subscription.getDaysOverdue())) + ChatColor.WHITE + " days " + (overdue ? "overdue" : "remaining"));
     lore.add("Subscription cost: " + ChatColor.GREEN + "$" + service.getCost());
     if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
     return Util.item(Material.getMaterial(service.getCompany().getLogoMaterial()),

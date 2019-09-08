@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MemberDao extends Dao<Member, UUID> {
-    List<Member> getInvites(Player player);
+  List<Member> getInvites(Player player);
 
   void handleInvite(Boolean response, UUID companyUuid, UUID playerUuid) throws SQLException;
 

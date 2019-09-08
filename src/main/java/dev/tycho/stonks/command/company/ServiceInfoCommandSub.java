@@ -25,11 +25,11 @@ public class ServiceInfoCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     if (args.length < 2) {
-      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>" );
+      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>");
       return;
     }
     if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>" );
+      sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>");
       return;
     }
     try {

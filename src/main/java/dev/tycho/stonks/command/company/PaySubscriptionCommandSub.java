@@ -22,11 +22,11 @@ public class PaySubscriptionCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     if (args.length < 2) {
-      sendMessage(player, "Correct usage /" + alias + " paysubscription <service_id>" );
+      sendMessage(player, "Correct usage /" + alias + " paysubscription <service_id>");
       return;
     }
     if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Correct usage /" + alias + " paysubscription <service_id>" );
+      sendMessage(player, "Correct usage /" + alias + " paysubscription <service_id>");
       return;
     }
     DatabaseHelper.getInstance().paySubscription(player, Integer.parseInt(args[1]));

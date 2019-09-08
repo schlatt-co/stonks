@@ -7,7 +7,6 @@ import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import fr.minuskube.inv.content.Pagination;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -64,7 +63,8 @@ public class ConfirmationGui implements InventoryProvider {
   public static class Builder {
     private String title = "Confirm";
     private List<String> info = new ArrayList<>();
-    private Consumer<Boolean> onSelected = e->{};
+    private Consumer<Boolean> onSelected = e -> {
+    };
 
     public Builder() {
 
