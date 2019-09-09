@@ -10,8 +10,8 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.database.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
-import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Bukkit;
@@ -157,6 +157,7 @@ public class DatabaseManager extends SpigotModule {
       Bukkit.broadcastMessage(ChatColor.RED + "SQL Exception creating a log ");
     }
   }
+
   public void updateAccount(Account account) {
     //Update the account database
     IAccountVisitor visitor = new IAccountVisitor() {

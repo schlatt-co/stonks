@@ -106,6 +106,7 @@ public class Service {
   public Collection<Subscription> getSubscriptions() {
     return subscriptions;
   }
+
   public int getNumSubscriptions() {
     return subscriptions.size();
   }

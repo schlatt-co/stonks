@@ -17,6 +17,10 @@ public class SetRoleCommandSub extends CommandSub {
       "Employee",
       "Intern");
 
+  public SetRoleCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     if (args.length == 2) {

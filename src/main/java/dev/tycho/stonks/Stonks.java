@@ -51,7 +51,7 @@ public class Stonks extends JavaPlugin {
 
     //Schedule the auto-pay services task
     BukkitScheduler scheduler = getServer().getScheduler();
-    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(),  1000L, 6000L);
+    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1000L, 6000L);
 
 
     Bukkit.getLogger().info("Loaded!");

@@ -15,7 +15,7 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
   private Company company;
   private Consumer<AccountLink> onAccountSelected;
 
-  public AccountSelectorGui(Company company, String title, Consumer<AccountLink> onAccountSelected, Player player) {
+  private AccountSelectorGui(Company company, String title, Consumer<AccountLink> onAccountSelected, Player player) {
     super(company.getAccounts(), title);
     this.company = company;
     this.onAccountSelected = onAccountSelected;
@@ -31,8 +31,8 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
   protected ClickableItem itemProvider(Player player, AccountLink obj) {
     return ClickableItem.of(ItemInfoHelper.accountDisplayItem(obj),
         e -> {
-            onAccountSelected.accept(obj);
-            close(player);
+          onAccountSelected.accept(obj);
+          close(player);
         });
   }
 

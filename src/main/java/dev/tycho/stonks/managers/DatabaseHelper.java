@@ -5,9 +5,9 @@ import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.*;
-import dev.tycho.stonks.model.logging.Transaction;
-import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
@@ -48,6 +48,10 @@ public class DatabaseHelper extends SpigotModule {
     ACCOUNT_FEE = plugin.getConfig().getDouble("fees.companyaccountcreation");
     COMPANY_CREATION_COOLDOWN = plugin.getConfig().getLong("cooldowns.companycreation");
     ACCOUNT_CREATION_COOLDOWN = plugin.getConfig().getLong("cooldowns.accountcreation");
+  }
+
+  public static DatabaseHelper getInstance() {
+    return instance;
   }
 
   public void createCompany(Player player, String companyName) {
@@ -253,7 +257,6 @@ public class DatabaseHelper extends SpigotModule {
           }
         }).execute();
   }
-
 
   public void createCompanyAccount(Player player, String companyName, String accountName, boolean holding) {
     if (!player.isOp() && playerAccountCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerAccountCooldown.get(player.getUniqueId())) < ACCOUNT_CREATION_COOLDOWN) {
@@ -906,7 +909,6 @@ public class DatabaseHelper extends SpigotModule {
           if (!c) return;
           if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
             sendMessage(player, "Insufficient funds!");
-            return;
           } else {
             //Payment success
             try {
@@ -1041,7 +1043,6 @@ public class DatabaseHelper extends SpigotModule {
           Subscription subscription = new Subscription(player, service, autoPay);
           if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
             sendMessage(player, "Insufficient funds!");
-            return;
           } else {
             //Payment success
             try {
@@ -1157,10 +1158,6 @@ public class DatabaseHelper extends SpigotModule {
 
   public DatabaseManager getDatabaseManager() {
     return databaseManager;
-  }
-
-  public static DatabaseHelper getInstance() {
-    return instance;
   }
 
   public void openCompanyServices(Player player, int accountId) {

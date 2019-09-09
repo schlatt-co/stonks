@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class SubscriptionsCommandSub extends CommandSub {
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;

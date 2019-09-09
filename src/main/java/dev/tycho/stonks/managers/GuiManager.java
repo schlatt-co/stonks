@@ -16,11 +16,11 @@ public class GuiManager extends SpigotModule {
     databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
   }
 
-    //TODO turn these into singletons
-    @Override
-    public void enable() {
-        CollectionGuiBase.databaseManager = databaseManager;
-        CollectionGuiBase.inventoryManager = inventoryManager;
+  //TODO turn these into singletons
+  @Override
+  public void enable() {
+    CollectionGuiBase.databaseManager = databaseManager;
+    CollectionGuiBase.inventoryManager = inventoryManager;
 
     CompanyInfoGui.inventoryManager = inventoryManager;
     CompanyInfoGui.databaseManager = databaseManager;
@@ -35,7 +35,7 @@ public class GuiManager extends SpigotModule {
     AccountTypeSelectorGui.inventoryManager = inventoryManager;
     AccountTypeSelectorGui.databaseManager = databaseManager;
 
-        ConfirmationGui.inventoryManager = inventoryManager;
-        ConfirmationGui.databaseManager = databaseManager;
-    }
+    ConfirmationGui.inventoryManager = inventoryManager;
+    ConfirmationGui.databaseManager = databaseManager;
+  }
 }

@@ -1,7 +1,6 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -19,7 +18,7 @@ public class ServiceInfoGui implements InventoryProvider {
 
   private Service service;
 
-  public ServiceInfoGui(Service service) {
+  private ServiceInfoGui(Service service) {
     this.service = service;
   }
 

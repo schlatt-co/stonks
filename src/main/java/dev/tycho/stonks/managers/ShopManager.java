@@ -6,9 +6,9 @@ import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.logging.Transaction;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 
@@ -146,20 +146,20 @@ public class ShopManager extends SpigotModule {
     }
   }
 
-    @EventHandler
-    public void onEconomyCheck(AccountCheckEvent event) {
-        //Try to see if we have an account for this UUID
-        dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
-        if (account != null) {
-            event.hasAccount(true);
-        }
+  @EventHandler
+  public void onEconomyCheck(AccountCheckEvent event) {
+    //Try to see if we have an account for this UUID
+    dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
+    if (account != null) {
+      event.hasAccount(true);
     }
+  }
 
-    @EventHandler
-    public void onCurrencyAdd(PreCurrencyAddEvent event) {
-        dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getTarget());
-        if (account != null) {
-            event.setCancelled(true);
+  @EventHandler
+  public void onCurrencyAdd(PreCurrencyAddEvent event) {
+    dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getTarget());
+    if (account != null) {
+      event.setCancelled(true);
 
       Stonks.newChain()
           .async(() -> {
@@ -239,23 +239,23 @@ public class ShopManager extends SpigotModule {
     }
   }
 
-    @EventHandler
-    public void onAmountCheck(PreAmountCheckEvent event) {
-        //If they try to check an account balance for one of our accounts cancel it
-        dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
-        if (account != null) {
-            event.setCancelled(true);
-        }
+  @EventHandler
+  public void onAmountCheck(PreAmountCheckEvent event) {
+    //If they try to check an account balance for one of our accounts cancel it
+    dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
+    if (account != null) {
+      event.setCancelled(true);
     }
+  }
 
-    @EventHandler
-    public void onCurrencyCheck(PreCurrencyCheckEvent event) {
-        dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
-        if (account != null) {
-            if (account.getTotalBalance() >= event.getAmountSent().doubleValue()) {
-                event.setHasEnough(true);
-            }
-            event.setCancelled(true);
-        }
+  @EventHandler
+  public void onCurrencyCheck(PreCurrencyCheckEvent event) {
+    dev.tycho.stonks.model.core.Account account = databaseManager.getAccountWithUUID(event.getAccount());
+    if (account != null) {
+      if (account.getTotalBalance() >= event.getAmountSent().doubleValue()) {
+        event.setHasEnough(true);
+      }
+      event.setCancelled(true);
     }
+  }
 }

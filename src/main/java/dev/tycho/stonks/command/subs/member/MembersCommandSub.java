@@ -10,6 +10,10 @@ import java.util.List;
 
 public class MembersCommandSub extends CommandSub {
 
+  public MembersCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;

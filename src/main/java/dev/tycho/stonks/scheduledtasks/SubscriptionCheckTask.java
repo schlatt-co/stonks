@@ -88,6 +88,7 @@ public class SubscriptionCheckTask implements Runnable {
       }
     }
   }
+
   private void cancelSubscriptionIfOverdue(Subscription subscription) {
     Service service = subscription.getService();
     OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.getPlayerId());
