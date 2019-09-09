@@ -81,9 +81,9 @@ public class ItemInfoHelper {
     Material itemMaterial = Material.CHEST;
     if (transaction.getPayee() != null) {
       itemMaterial = (transaction.getAmount() > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
-      if (transaction.getMessage().startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
-    }
 
+      if (transaction.getMessage() != null && transaction.getMessage().startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
+    }
     return Util.item(itemMaterial,
         ((transaction.getAmount() > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.getAmount(),
         lore);

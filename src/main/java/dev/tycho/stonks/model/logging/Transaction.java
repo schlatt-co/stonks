@@ -36,6 +36,7 @@ public class Transaction {
     this.account = account;
     this.payee = payee;
     this.message = message;
+    if (this.message == null) this.message = "";
     this.amount = amount;
     this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
   }

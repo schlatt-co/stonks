@@ -194,7 +194,6 @@ public class DatabaseHelper extends SpigotModule {
   public void openCompanyAccounts(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
-          sendMessage(player, "Loading accounts...");
           try {
             Company company = databaseManager.getCompanyDao().getCompany(companyName);
             if (company == null) {
