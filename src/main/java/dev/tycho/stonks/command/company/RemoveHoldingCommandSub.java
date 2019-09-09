@@ -27,7 +27,7 @@ public class RemoveHoldingCommandSub extends CommandSub {
     }
 
     if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Invalid account id!");
+      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " removeholding <account id> <player>");
       return;
     }
 
