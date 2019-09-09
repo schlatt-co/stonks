@@ -1,7 +1,20 @@
 package dev.tycho.stonks.command;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.company.*;
+import dev.tycho.stonks.command.subs.*;
+import dev.tycho.stonks.command.subs.account.*;
+import dev.tycho.stonks.command.subs.company.CreateCommandSub;
+import dev.tycho.stonks.command.subs.FeesCommandSub;
+import dev.tycho.stonks.command.subs.company.InfoCommandSub;
+import dev.tycho.stonks.command.subs.company.InvitesCommandSub;
+import dev.tycho.stonks.command.subs.company.LogoCommandSub;
+import dev.tycho.stonks.command.subs.holding.HoldingInfoCommandSub;
+import dev.tycho.stonks.command.subs.holding.RemoveHoldingCommandSub;
+import dev.tycho.stonks.command.subs.member.*;
+import dev.tycho.stonks.command.subs.moderator.*;
+import dev.tycho.stonks.command.subs.holding.CreateHoldingCommandSub;
+import dev.tycho.stonks.command.subs.service.*;
+import dev.tycho.stonks.command.subs.service.subscription.*;
 
 public class MainCommand extends CommandBase {
 
