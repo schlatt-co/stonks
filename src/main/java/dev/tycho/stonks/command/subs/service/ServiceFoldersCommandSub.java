@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class ServiceFoldersCommandSub extends CommandSub {
+  public ServiceFoldersCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;
@@ -15,8 +19,8 @@ public class ServiceFoldersCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 2){
-      sendMessage(player, "Correct usage /" + alias + " servicefolders <company_name>" );
+    if (args.length < 2) {
+      sendMessage(player, "Correct usage /" + alias + " servicefolders <company_name>");
       return;
     }
     DatabaseHelper.getInstance().openCompanyServiceFolders(player, concatArgs(1, args));

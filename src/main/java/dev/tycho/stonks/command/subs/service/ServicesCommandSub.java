@@ -10,6 +10,11 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class ServicesCommandSub extends CommandSub {
+
+  public ServicesCommandSub() {
+    super(false);
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
     return null;
