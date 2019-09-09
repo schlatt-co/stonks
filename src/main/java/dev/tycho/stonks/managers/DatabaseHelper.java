@@ -1070,7 +1070,7 @@ public class DatabaseHelper extends SpigotModule {
     ).open(player);
   }
 
-  public void openCompanyServices(Player player, String companyName) {
+  public void openCompanyServiceFolders(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
           try {
@@ -1079,7 +1079,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "That company doesn't exist!");
               return null;
             }
-            return new ServiceListGui(company);
+            return new ServiceFoldersListGui(company);
           } catch (SQLException e) {
             sendMessage(player, "Error while executing command!");
             e.printStackTrace();
@@ -1161,5 +1161,26 @@ public class DatabaseHelper extends SpigotModule {
 
   public static DatabaseHelper getInstance() {
     return instance;
+  }
+
+  public void openCompanyServices(Player player, int accountId) {
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          try {
+            AccountLink accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
+            if (accountLink == null) {
+              sendMessage(player, "That accountId doesn't exist!");
+              return null;
+            }
+            return new ServicesListGui(accountLink.getCompany(), accountLink);
+          } catch (SQLException e) {
+            sendMessage(player, "Error while executing command!");
+            e.printStackTrace();
+          }
+          return null;
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 }

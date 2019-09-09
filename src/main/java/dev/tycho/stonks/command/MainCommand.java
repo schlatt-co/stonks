@@ -39,6 +39,7 @@ public class MainCommand extends CommandBase {
     addSubCommand("createservice", new CreateServiceCommandSub());
     addSubCommand("paysubscription", new PaySubscriptionCommandSub());
     addSubCommand("serviceinfo", new ServiceInfoCommandSub());
+    addSubCommand("servicefolders", new ServiceFoldersCommandSub());
     addSubCommand("services", new ServicesCommandSub());
     addSubCommand("setservicemax", new SetServiceMaxCommandSub());
     addSubCommand("subscribe", new SubscribeCommandSub());

@@ -45,7 +45,7 @@ public class CompanyInfoGui implements InventoryProvider {
     contents.set(2, 4, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"),
         e -> player.performCommand("stonks accounts " + company.getName())));
     contents.set(2, 5, ClickableItem.of(Util.item(Material.BOOKSHELF, "Services"),
-        e -> player.performCommand("stonks services " + company.getName())));
+        e -> player.performCommand("stonks servicefolders " + company.getName())));
 
   }
 
