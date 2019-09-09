@@ -343,8 +343,7 @@ public class DatabaseHelper extends SpigotModule {
             }
             //Try and find the UUID of that player
             User u = essentials.getOfflineUser(playerName);
-            //check if the player has been on the server
-            if (u != null) {
+            if (u == null) {
               sendMessage(player, "That player has never played on the server!");
               return;
             }
