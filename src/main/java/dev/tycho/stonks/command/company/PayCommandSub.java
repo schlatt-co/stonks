@@ -49,7 +49,7 @@ public class PayCommandSub extends CommandSub {
     }
     double amount = Double.parseDouble(args[1]);
 
-    String message = args.length > 2 ? concatArgs(2, args) : "";
+    String message = (args.length > 2) ? concatArgs(2, args) : "";
     if (message.length() > 200) {
       sendMessage(player, "Your message cannot be longer than 200 characters!");
       return;
