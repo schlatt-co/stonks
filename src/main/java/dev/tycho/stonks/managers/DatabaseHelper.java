@@ -467,7 +467,7 @@ public class DatabaseHelper extends SpigotModule {
                     try {
                       databaseManager.getCompanyAccountDao().update(a);
                       Stonks.economy.depositPlayer(player, amount);
-                      sendMessage(player, "Error while executing command!");
+                      sendMessage(player, "Money withdrawn successfully!");
 
 
                       //Log the transaction
@@ -498,7 +498,7 @@ public class DatabaseHelper extends SpigotModule {
                       h.subtractBalance(amount);
                       databaseManager.getHoldingDao().update(h);
                       Stonks.economy.depositPlayer(player, amount);
-                      sendMessage(player, "Money withdrawn successfully");
+                      sendMessage(player, "Money withdrawn successfully!");
                     } catch (SQLException e) {
                       e.printStackTrace();
                       sendMessage(player, "Error while executing command!");
@@ -1071,6 +1071,27 @@ public class DatabaseHelper extends SpigotModule {
     ).open(player);
   }
 
+  public void openCompanyServices(Player player, int accountId) {
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          try {
+            AccountLink accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
+            if (accountLink == null) {
+              sendMessage(player, "That accountId doesn't exist!");
+              return null;
+            }
+            return new ServicesListGui(accountLink.getCompany(), accountLink);
+          } catch (SQLException e) {
+            sendMessage(player, "Error while executing command!");
+            e.printStackTrace();
+          }
+          return null;
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
+  }
+
   public void openCompanyServiceFolders(Player player, String companyName) {
     Stonks.newChain()
         .asyncFirst(() -> {
@@ -1158,26 +1179,5 @@ public class DatabaseHelper extends SpigotModule {
 
   public DatabaseManager getDatabaseManager() {
     return databaseManager;
-  }
-
-  public void openCompanyServices(Player player, int accountId) {
-    Stonks.newChain()
-        .asyncFirst(() -> {
-          try {
-            AccountLink accountLink = databaseManager.getAccountLinkDao().queryForId(accountId);
-            if (accountLink == null) {
-              sendMessage(player, "That accountId doesn't exist!");
-              return null;
-            }
-            return new ServicesListGui(accountLink.getCompany(), accountLink);
-          } catch (SQLException e) {
-            sendMessage(player, "Error while executing command!");
-            e.printStackTrace();
-          }
-          return null;
-        })
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
   }
 }
