@@ -926,12 +926,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You have resubscribed to the service " + service.getName() +
                   " (provided by " + service.getCompany().getName() + ")!");
               sendMessage(player, "This service will expire in " + service.getDuration() + " days");
-              if (subscription.isAutoPay()) {
                 sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
-              } else {
-                sendMessage(player, "You have set your subscription to manually renew, so you will need to resubscribe in "
-                    + service.getDuration() + " days time.");
-              }
             } catch (SQLException e) {
               e.printStackTrace();
               sendMessage(player, "Error while executing command!");
@@ -1040,7 +1035,7 @@ public class DatabaseHelper extends SpigotModule {
           if (!c) return;
           //We can now subscribe to the service
           //Setup the subscription
-          Subscription subscription = new Subscription(player, service, autoPay);
+          Subscription subscription = new Subscription(player, service);
           if (!Stonks.economy.withdrawPlayer(player, service.getCost()).transactionSuccess()) {
             sendMessage(player, "Insufficient funds!");
           } else {

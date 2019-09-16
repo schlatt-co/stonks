@@ -22,16 +22,13 @@ public class Subscription {
   @DatabaseField
   private Timestamp lastPaymentDate;
 
-  @DatabaseField
-  private boolean autoPay;
 
   public Subscription() {
   }
 
-  public Subscription(Player player, Service service, boolean autoPay) {
+  public Subscription(Player player, Service service) {
     this.playerId = player.getUniqueId();
     this.service = service;
-    this.autoPay = autoPay;
     this.lastPaymentDate = new Timestamp(Calendar.getInstance().getTime().getTime());
   }
 
@@ -68,9 +65,6 @@ public class Subscription {
     return lastPaymentDate;
   }
 
-  public boolean isAutoPay() {
-    return autoPay;
-  }
 
 
 }

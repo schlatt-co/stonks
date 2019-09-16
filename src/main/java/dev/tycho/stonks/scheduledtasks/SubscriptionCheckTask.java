@@ -2,6 +2,10 @@ package dev.tycho.stonks.scheduledtasks;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.core.Account;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -41,11 +45,38 @@ public class SubscriptionCheckTask implements Runnable {
 
   private void renewSubscription(Subscription subscription) {
     Service service = subscription.getService();
+    Account account = service.getAccount().getAccount();
+    //Refresh the account because we have to recurse quite deeply
+    IAccountVisitor visitor = new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        try {
+          DatabaseHelper.getInstance().getDatabaseManager().getCompanyAccountDao().refresh(a);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      public void visit(HoldingsAccount a) {
+        try {
+          DatabaseHelper.getInstance().getDatabaseManager().getHoldingsAccountDao().refresh(a);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+    };
+    account.accept(visitor);
+
+    if (account.getName() == null) return;
+
+
     OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.getPlayerId());
     Player onlinePlayer = null;
     if (player.isOnline()) onlinePlayer = player.getPlayer();
 
-    if (subscription.isOverdue() && subscription.isAutoPay()) {
+    if (subscription.isOverdue()) {
       System.out.println("Auto billing " + player.getName() + " $" + service.getCost() + " for service id " + service.getId());
       //Subscription is overdue and we must renew it
       if (onlinePlayer != null)
@@ -62,14 +93,14 @@ public class SubscriptionCheckTask implements Runnable {
         //Update that the subscription is paid
         subscription.registerPaid();
         try {
-          //Pay and update the account
-          service.getAccount().getAccount().addBalance(service.getCost());
+          //Pay the account
+          account.addBalance(service.getCost());
 
           //Update the subscription in the database
           DatabaseHelper.getInstance().getDatabaseManager().getSubscriptionDao().update(subscription);
 
           //Update the account in the database and add a log
-          DatabaseHelper.getInstance().getDatabaseManager().updateAccount(service.getAccount().getAccount());
+          DatabaseHelper.getInstance().getDatabaseManager().updateAccount(account);
           DatabaseHelper.getInstance().getDatabaseManager().logTransaction(new Transaction(service.getAccount(),
               player.getUniqueId(), "Subscription payment for " + service.getName(), service.getCost()));
 
@@ -89,6 +120,35 @@ public class SubscriptionCheckTask implements Runnable {
     }
   }
 
+  /*
+  * IAccountVisitor visitor = new IAccountVisitor() {
+            @Override
+            public void visit(CompanyAccount a) {
+              try {
+                databaseManager.getCompanyAccountDao().update(a);
+              } catch (SQLException e) {
+                sendMessage(sender, "Error while executing command!");
+                e.printStackTrace();
+              }
+            }
+
+            @Override
+            public void visit(HoldingsAccount a) {
+              try {
+                databaseManager.getHoldingAccountDao().update(a);
+                for (Holding h : a.getHoldings()) {
+                  databaseManager.getHoldingDao().update(h);
+                }
+              } catch (SQLException e) {
+                sendMessage(sender, "Error while executing command!");
+                e.printStackTrace();
+              }
+            }
+          };
+          accountLink.getAccount().accept(visitor);
+  *
+  * */
+
   private void cancelSubscriptionIfOverdue(Subscription subscription) {
     Service service = subscription.getService();
     OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.getPlayerId());
@@ -100,8 +160,8 @@ public class SubscriptionCheckTask implements Runnable {
         try {
           DatabaseHelper.getInstance().getDatabaseManager().getSubscriptionDao().delete(subscription);
           Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mail send " +
-              player.getName() + " Your subscription to " + service.getName() + " has been cancelled since you did not pay: " +
-              (subscription.isAutoPay() ? " you did not have enough money to automatically pay it." : " you did not manually renew it."));
+              player.getName() + " Your subscription to " + service.getName() +
+              " has been cancelled since you did not have enough money to automatically pay it.");
         } catch (SQLException e) {
           e.printStackTrace();
           System.out.println("Failed to delete subscription");

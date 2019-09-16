@@ -30,7 +30,6 @@ public class Service {
   //0 = no limit
   @DatabaseField
   private int maxSubscribers;
-
   @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
   private Company company;
 
