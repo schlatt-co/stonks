@@ -62,11 +62,11 @@ public class SubscriptionCheckTask implements Runnable {
         //Update that the subscription is paid
         subscription.registerPaid();
         try {
-          //Update the subscription in the database
-          DatabaseHelper.getInstance().getDatabaseManager().getSubscriptionDao().update(subscription);
-
           //Pay and update the account
           service.getAccount().getAccount().addBalance(service.getCost());
+
+          //Update the subscription in the database
+          DatabaseHelper.getInstance().getDatabaseManager().getSubscriptionDao().update(subscription);
 
           //Update the account in the database and add a log
           DatabaseHelper.getInstance().getDatabaseManager().updateAccount(service.getAccount().getAccount());
