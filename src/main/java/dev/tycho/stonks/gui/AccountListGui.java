@@ -30,7 +30,7 @@ public class AccountListGui extends CollectionGuiBase<AccountLink> {
       @Override
       public void visit(CompanyAccount a) {
         val = ClickableItem.of(
-            ItemInfoHelper.accountDisplayItem(obj, ChatColor.YELLOW + "Right click to see history"),
+            ItemInfoHelper.accountDisplayItem(obj, player, ChatColor.YELLOW + "Right click to see history"),
             e -> {
               if (e.getClick().isRightClick()) {
                 player.performCommand("stonks history " + obj.getId());
@@ -41,7 +41,7 @@ public class AccountListGui extends CollectionGuiBase<AccountLink> {
       @Override
       public void visit(HoldingsAccount a) {
         val = ClickableItem.of(
-            ItemInfoHelper.accountDisplayItem(obj, ChatColor.DARK_PURPLE + "Left click to see holdings", ChatColor.YELLOW + "Right click to see history"),
+            ItemInfoHelper.accountDisplayItem(obj, player, ChatColor.DARK_PURPLE + "Left click to see holdings", ChatColor.YELLOW + "Right click to see history"),
             e -> {
               if (e.getClick().isLeftClick()) {
                 player.performCommand("stonks holdinginfo " + obj.getId());

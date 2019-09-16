@@ -1,10 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
-import dev.tycho.stonks.model.core.AccountLink;
-import dev.tycho.stonks.model.core.Company;
-import dev.tycho.stonks.model.core.CompanyAccount;
-import dev.tycho.stonks.model.core.HoldingsAccount;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -13,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
@@ -33,12 +31,12 @@ public class ItemInfoHelper {
     );
   }
 
-  static ItemStack accountDisplayItem(AccountLink link) {
-    return accountDisplayItem(link, new String[]{});
+  static ItemStack accountDisplayItem(AccountLink link, Player player) {
+    return accountDisplayItem(link, player, new String[]{});
   }
 
 
-  static ItemStack accountDisplayItem(AccountLink link, String... extraLore) {
+  static ItemStack accountDisplayItem(AccountLink link, Player player, String... extraLore) {
 
     ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
       @Override
@@ -59,7 +57,17 @@ public class ItemInfoHelper {
         lore.add("Holdings: " + ChatColor.YELLOW + a.getHoldings().size());
         lore.add(ChatColor.ITALIC + "Holdings Account");
         if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
-        val = Util.item(Material.GOLD_INGOT, a.getName(), lore);
+
+        Material material;
+        //If the player has no money in the holding display it as an iron bar
+        Holding playerHolding = a.getPlayerHolding(player.getUniqueId());
+        if (playerHolding != null && playerHolding.getBalance() > 0.1) {
+          material = Material.GOLD_INGOT;
+        } else {
+          material = Material.IRON_INGOT;
+        }
+
+        val = Util.item(material, a.getName(), lore);
       }
     };
     link.getAccount().accept(visitor);

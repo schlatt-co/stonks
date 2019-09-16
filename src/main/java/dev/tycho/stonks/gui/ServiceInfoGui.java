@@ -42,7 +42,7 @@ public class ServiceInfoGui implements InventoryProvider {
 
     contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Subscribers"),
         e -> player.performCommand("stonks subscribers " + service.getId())));
-    contents.set(2, 5, ClickableItem.of(ItemInfoHelper.accountDisplayItem(service.getAccount()),
+    contents.set(2, 5, ClickableItem.of(ItemInfoHelper.accountDisplayItem(service.getAccount(), player),
         e -> player.performCommand("stonks accounts " + service.getCompany().getName())));
 
   }

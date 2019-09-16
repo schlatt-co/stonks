@@ -29,7 +29,7 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
 
   @Override
   protected ClickableItem itemProvider(Player player, AccountLink obj) {
-    return ClickableItem.of(ItemInfoHelper.accountDisplayItem(obj),
+    return ClickableItem.of(ItemInfoHelper.accountDisplayItem(obj, player),
         e -> {
           onAccountSelected.accept(obj);
           close(player);

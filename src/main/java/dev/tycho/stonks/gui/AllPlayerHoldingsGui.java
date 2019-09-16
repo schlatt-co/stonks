@@ -27,7 +27,6 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
   }
 
 
-
   @Override
   protected void customInit(Player player, InventoryContents contents) {
   }
@@ -42,15 +41,27 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
     List<String> lore = new ArrayList<>();
     lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(holding.getBalance()));
     lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.getShare());
-      lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
-      lore.add(ChatColor.GREEN + "Right click to view this company");
-    return ClickableItem.of(Util.item(Material.GOLD_INGOT, obj.getName(),
+    lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
+    lore.add(ChatColor.GREEN + "Right click to view this company");
+
+
+
+    Material material;
+    //If the player has no money in the holding display it as an iron bar
+    Holding playerHolding = obj.getPlayerHolding(player.getUniqueId());
+    if (playerHolding != null && playerHolding.getBalance() > 0.1) {
+      material = Material.GOLD_INGOT;
+    } else {
+      material = Material.IRON_INGOT;
+    }
+
+    return ClickableItem.of(Util.item(material, obj.getName(),
         lore), e -> {
-       if (e.getClick().isLeftClick()) {
+      if (e.getClick().isLeftClick()) {
         player.performCommand("stonks withdraw " + holding.getBalance() + " " + linkLookup.get(obj).getId());
       } else if (e.getClick().isRightClick()) {
-         player.performCommand("stonks info " + linkLookup.get(obj).getCompany().getName());
-       }
+        player.performCommand("stonks info " + linkLookup.get(obj).getCompany().getName());
+      }
     });
   }
 }
