@@ -303,7 +303,7 @@ public class DatabaseHelper extends SpigotModule {
             }
             databaseManager.getAccountLinkDao().create(new AccountLink(company, account));
 
-            sendMessage(player, "Created new " + (holding ? "holdins " : "") + "account!");
+            sendMessage(player, "Created new " + (holding ? "holdings " : "") + "account!");
 
             playerAccountCooldown.put(player.getUniqueId(), System.currentTimeMillis());
           } catch (SQLException e) {

@@ -24,7 +24,7 @@ public class SubscriberListGui extends CollectionGuiBase<Subscription> {
   @Override
   protected void customInit(Player player, InventoryContents contents) {
     contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to services"),
-        e -> player.performCommand("stonks services " + service.getCompany().getName())));
+        e -> player.performCommand("stonks services " + service.getAccount().getId())));
     contents.set(0, 4, ClickableItem.empty(ItemInfoHelper.serviceDisplayItem(service)));
   }
 

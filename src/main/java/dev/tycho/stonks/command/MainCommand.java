@@ -9,6 +9,7 @@ import dev.tycho.stonks.command.subs.company.InfoCommandSub;
 import dev.tycho.stonks.command.subs.company.InvitesCommandSub;
 import dev.tycho.stonks.command.subs.company.LogoCommandSub;
 import dev.tycho.stonks.command.subs.holding.HoldingInfoCommandSub;
+import dev.tycho.stonks.command.subs.holding.MyHoldingsCommandSub;
 import dev.tycho.stonks.command.subs.holding.RemoveHoldingCommandSub;
 import dev.tycho.stonks.command.subs.member.*;
 import dev.tycho.stonks.command.subs.moderator.*;
@@ -38,6 +39,7 @@ public class MainCommand extends CommandBase {
     addSubCommand("setlogo", new LogoCommandSub());
     addSubCommand("memberinfo", new MemberInfoCommandSub());
     addSubCommand("members", new MembersCommandSub());
+    addSubCommand("myholdings", new MyHoldingsCommandSub());
     addSubCommand("pay", new PayCommandSub());
     addSubCommand("removeholding", new RemoveHoldingCommandSub());
     addSubCommand("rename", new RenameCommandSub());

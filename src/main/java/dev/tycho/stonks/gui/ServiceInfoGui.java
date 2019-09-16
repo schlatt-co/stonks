@@ -36,7 +36,7 @@ public class ServiceInfoGui implements InventoryProvider {
   public void init(Player player, InventoryContents contents) {
     contents.fillBorders(ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
     contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Services List"),
-        e -> player.performCommand("stonks services " + service.getCompany().getName())));
+        e -> player.performCommand("stonks services " + service.getAccount().getId())));
     contents.set(0, 4, ClickableItem.empty(ItemInfoHelper.serviceDisplayItem(service)));
 
 

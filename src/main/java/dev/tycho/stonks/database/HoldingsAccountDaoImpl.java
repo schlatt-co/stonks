@@ -20,9 +20,10 @@ public class HoldingsAccountDaoImpl extends BaseDaoImpl<HoldingsAccount, Integer
   public List<HoldingsAccount> playerHoldingsAccounts(Player player) {
     try {
       QueryBuilder<Holding, Integer> holdingQuery = DatabaseHelper.getInstance().getDatabaseManager().getHoldingDao().queryBuilder();
+      QueryBuilder<HoldingsAccount, Integer> accountQuery = queryBuilder();
       holdingQuery.where().eq("player", player.getUniqueId());
-      queryBuilder().join(holdingQuery);
-      return queryBuilder().query();
+      accountQuery.join(holdingQuery);
+      return accountQuery.query();
     } catch (SQLException e) {
       e.printStackTrace();
     }
