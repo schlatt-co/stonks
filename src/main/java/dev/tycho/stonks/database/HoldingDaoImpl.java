@@ -14,6 +14,9 @@ public class HoldingDaoImpl extends BaseDaoImpl<Holding, Integer> implements Hol
 
   @Override
   public boolean memberHasHoldings(Member member) {
+    //todo someone should fix this
     return false;
   }
+
+
 }

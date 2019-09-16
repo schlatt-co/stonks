@@ -29,7 +29,7 @@ public class DatabaseManager extends SpigotModule {
   private CompanyAccountDao companyAccountDao = null;
   private AccountLinkDaoImpl accountlinkDao = null;
   private HoldingDaoImpl holdingDao = null;
-  private Dao<HoldingsAccount, Integer> holdingAccountDao = null;
+  private HoldingsAccountDaoImpl holdingAccountDao = null;
   private TransactionDaoImpl transactionDao = null;
   private Dao<Service, Integer> serviceDao = null;
   private SubscriptionDaoImpl subscriptionDao = null;
@@ -59,7 +59,7 @@ public class DatabaseManager extends SpigotModule {
       companyAccountDao = new CompanyAccountDaoImpl(connectionSource);
       accountlinkDao = new AccountLinkDaoImpl(connectionSource);
       holdingDao = DaoManager.createDao(connectionSource, Holding.class);
-      holdingAccountDao = DaoManager.createDao(connectionSource, HoldingsAccount.class);
+      holdingAccountDao = new HoldingsAccountDaoImpl(connectionSource);
       transactionDao = new TransactionDaoImpl(connectionSource);
       subscriptionDao = new SubscriptionDaoImpl(connectionSource);
       serviceDao = DaoManager.createDao(connectionSource, Service.class);
@@ -186,6 +186,10 @@ public class DatabaseManager extends SpigotModule {
 
   public Dao<Service, Integer> getServiceDao() {
     return serviceDao;
+  }
+
+  public HoldingsAccountDaoImpl getHoldingsAccountDao() {
+    return holdingAccountDao;
   }
 
   public SubscriptionDaoImpl getSubscriptionDao() {

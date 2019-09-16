@@ -1180,4 +1180,15 @@ public class DatabaseHelper extends SpigotModule {
   public DatabaseManager getDatabaseManager() {
     return databaseManager;
   }
+
+  public void showPlayerHoldings(Player player) {
+    //Get all holdings for a player
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          return new AllPlayerHoldingsGui(player);
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
+  }
 }

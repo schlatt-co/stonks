@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public abstract class CollectionGuiBase<T> implements InventoryProvider {
   public static DatabaseManager databaseManager;
@@ -30,6 +31,10 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
         .size(5, 9)
         .title(title)
         .build();
+  }
+
+  protected Collection<T> getReadonlyCollection() {
+    return Collections.unmodifiableCollection(collection);
   }
 
   public Inventory show(Player player) {
