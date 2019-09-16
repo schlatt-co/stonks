@@ -30,6 +30,7 @@ public class SubscribeCommandSub extends CommandSub {
       return;
     }
     int serviceId = Integer.parseInt(args[1]);
+    DatabaseHelper.getInstance().subscribeToService(player, serviceId, true);
 //    List<String> info = new ArrayList<>();
 //    info.add("Automatic billing will automatically renew your");
 //    info.add("subscription to this service.");
@@ -39,7 +40,6 @@ public class SubscribeCommandSub extends CommandSub {
 //    new ConfirmationGui.Builder().title("Set up automatic billing?")
 //        .info(info)
 //        .onChoiceMade(c ->
-    DatabaseHelper.getInstance().subscribeToService(player, serviceId, true);
 //        ).open(player);
   }
 }
