@@ -28,7 +28,7 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
         .id(title)
         .provider(this)
         .manager(inventoryManager)
-        .size(5, 9)
+        .size(6, 9)
         .title(title)
         .build();
   }
@@ -58,7 +58,7 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
   @Override
   public void init(Player player, InventoryContents contents) {
     contents.fillRow(0, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
-    contents.fillRow(4, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
+    contents.fillRow(5, ClickableItem.empty(Util.item(Material.BLACK_STAINED_GLASS_PANE, " ")));
     customInit(player, contents);
 
     Pagination pagination = contents.pagination();
@@ -69,12 +69,12 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
       i++;
     }
     pagination.setItems(items);
-    pagination.setItemsPerPage(27);
+    pagination.setItemsPerPage(36);
     pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 0));
 
-    contents.set(4, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
+    contents.set(5, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
         e -> getInventory().open(player, pagination.previous().getPage())));
-    contents.set(4, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
+    contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
         e -> getInventory().open(player, pagination.next().getPage())));
   }
 
