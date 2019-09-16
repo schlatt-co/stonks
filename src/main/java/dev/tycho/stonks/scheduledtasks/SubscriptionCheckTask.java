@@ -2,10 +2,7 @@ package dev.tycho.stonks.scheduledtasks;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.Account;
-import dev.tycho.stonks.model.core.CompanyAccount;
-import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -47,30 +44,9 @@ public class SubscriptionCheckTask implements Runnable {
     Service service = subscription.getService();
     Account account = service.getAccount().getAccount();
     //Refresh the account because we have to recurse quite deeply
-    IAccountVisitor visitor = new IAccountVisitor() {
-      @Override
-      public void visit(CompanyAccount a) {
-        try {
-          DatabaseHelper.getInstance().getDatabaseManager().getCompanyAccountDao().refresh(a);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void visit(HoldingsAccount a) {
-        try {
-          DatabaseHelper.getInstance().getDatabaseManager().getHoldingsAccountDao().refresh(a);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-    };
-    account.accept(visitor);
+    DatabaseHelper.getInstance().getDatabaseManager().updateAccount(account);
 
     if (account.getName() == null) return;
-
 
     OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.getPlayerId());
     Player onlinePlayer = null;

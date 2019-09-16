@@ -158,6 +158,32 @@ public class DatabaseManager extends SpigotModule {
     }
   }
 
+  public void refreshAccount(Account account) {
+    //Refresh the account because we have to recurse quite deeply
+    IAccountVisitor visitor = new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        try {
+          DatabaseHelper.getInstance().getDatabaseManager().getCompanyAccountDao().refresh(a);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      public void visit(HoldingsAccount a) {
+        try {
+          DatabaseHelper.getInstance().getDatabaseManager().getHoldingsAccountDao().refresh(a);
+          for (Holding h : a.getHoldings()) getHoldingDao().refresh(h);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+    };
+    account.accept(visitor);
+  }
+
   public void updateAccount(Account account) {
     //Update the account database
     IAccountVisitor visitor = new IAccountVisitor() {
