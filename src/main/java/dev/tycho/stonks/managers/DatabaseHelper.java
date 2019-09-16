@@ -927,7 +927,7 @@ public class DatabaseHelper extends SpigotModule {
                   " (provided by " + service.getCompany().getName() + ")!");
               sendMessage(player, "This service will expire in " + service.getDuration() + " days");
               if (subscription.isAutoPay()) {
-                sendMessage(player, "You have set your subscription to automatically renew, so you don't need to do anything.");
+                sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
               } else {
                 sendMessage(player, "You have set your subscription to manually renew, so you will need to resubscribe in "
                     + service.getDuration() + " days time.");
@@ -1058,7 +1058,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You have subscribed to the service " + service.getName() + " (provided by " + service.getCompany().getName() + ")");
               sendMessage(player, "This service will expire in " + service.getDuration() + " days");
               if (autoPay) {
-                sendMessage(player, "You have set your subscription to automatically renew, so you don't need to do anything.");
+                sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
               } else {
                 sendMessage(player, "You have set your subscription to manually renew, so you will need to resubscribe in " + service.getDuration() + " days time.");
               }
