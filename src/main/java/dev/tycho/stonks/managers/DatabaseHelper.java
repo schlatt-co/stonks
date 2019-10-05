@@ -352,7 +352,7 @@ public class DatabaseHelper extends SpigotModule {
             }
             Player newHoldingOwner = essentials.getOfflineUser(playerName).getBase();
             //Check they are a member of that company
-            if (link.getCompany().hasMember(newHoldingOwner)) {
+            if (!link.getCompany().hasMember(newHoldingOwner)) {
               sendMessage(player, "That player isn't a member of the selected company");
               return;
             }
