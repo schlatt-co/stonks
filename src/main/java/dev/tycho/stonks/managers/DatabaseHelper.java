@@ -101,6 +101,18 @@ public class DatabaseHelper extends SpigotModule {
         }).execute();
   }
 
+
+  //api
+  public Company getCompanyByName(String name) {
+      try {
+          return databaseManager.getCompanyDao().getCompany(name);
+      } catch (SQLException e) {
+          e.printStackTrace();
+          return null;
+      }
+  }
+
+
   public void openInvitesList(Player player) {
     Stonks.newChain()
         .asyncFirst(() -> {
