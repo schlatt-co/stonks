@@ -97,6 +97,7 @@ public class DatabaseHelper extends SpigotModule {
           } catch (SQLException e) {
             e.printStackTrace();
             sendMessage(player, ChatColor.RED + "Something went wrong! :(");
+            sendMessage(player, ChatColor.RED + "Try changing the name you entered (make it shorter, don't use special characters)");
           }
         }).execute();
   }
@@ -368,7 +369,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "That player isn't a member of the selected company");
               return;
             }
-            if (account.getPlayerHolding(newHoldingOwner.getUniqueId()) == null) {
+            if (account.getPlayerHolding(newHoldingOwner.getUniqueId()) != null) {
               sendMessage(player, "That player already has a holding in this holding account!");
               return;
             }
@@ -419,8 +420,8 @@ public class DatabaseHelper extends SpigotModule {
             }
             Player op = essentials.getOfflineUser(playerName).getBase();
             Holding playerHolding = account.getPlayerHolding(op.getUniqueId());
-            if (playerHolding != null) {
-              sendMessage(player, "There is not holding for this player!");
+            if (playerHolding == null) {
+              sendMessage(player, "There is no holding for this player!");
               return;
             }
             //That player has a holding
