@@ -617,6 +617,17 @@ public class DatabaseHelper extends SpigotModule {
           databaseManager.logTransaction(new Transaction(accountLink, sender.getUniqueId(), message, amount));
           //Tell the user we paid the account
           sendMessage(sender, "Paid " + ChatColor.YELLOW + accountLink.getCompany().getName() + " (" + accountLink.getAccount().getName() + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
+
+          //Send a message to all managers in the company that are online that the company got paid
+          for (Member member : accountLink.getCompany().getMembers()) {
+              if (member.hasManagamentPermission()) {
+                  Player u = essentials.getUser(member.getUuid()).getBase();
+                  if (u.isOnline()) {
+                      sendMessage(u, sender.getDisplayName() + " paid the account "
+                              + accountLink.getAccount().getName() + " (from the company " + accountLink.getCompany().getName() + ") $" + amount);
+                  }
+              }
+          }
         }).execute();
   }
 
