@@ -105,12 +105,12 @@ public class DatabaseHelper extends SpigotModule {
 
   //api
   public Company getCompanyByName(String name) {
-      try {
-          return databaseManager.getCompanyDao().getCompany(name);
-      } catch (SQLException e) {
-          e.printStackTrace();
-          return null;
-      }
+    try {
+      return databaseManager.getCompanyDao().getCompany(name);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
 
@@ -619,13 +619,12 @@ public class DatabaseHelper extends SpigotModule {
 
           //Send a message to all managers in the company that are online that the company got paid
           for (Member member : accountLink.getCompany().getMembers()) {
-              if (member.hasManagamentPermission()) {
-                  Player u = essentials.getUser(member.getUuid()).getBase();
-                  if (u.isOnline()) {
-                      sendMessage(u, sender.getDisplayName() + " paid the account "
-                              + accountLink.getAccount().getName() + " (from the company " + accountLink.getCompany().getName() + ") $" + amount);
-                  }
+            if (member.hasManagamentPermission()) {
+              Player u = essentials.getUser(member.getUuid()).getBase();
+              if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
+                sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + accountLink.getCompany().getName() + " (" + accountLink.getAccount().getName() + ") $" + Util.commify(amount));
               }
+            }
           }
         }).execute();
   }
@@ -949,7 +948,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You have resubscribed to the service " + service.getName() +
                   " (provided by " + service.getCompany().getName() + ")!");
               sendMessage(player, "This service will expire in " + service.getDuration() + " days");
-                sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
+              sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
             } catch (SQLException e) {
               e.printStackTrace();
               sendMessage(player, "Error while executing command!");
