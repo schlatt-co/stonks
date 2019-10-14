@@ -427,7 +427,6 @@ public class DatabaseHelper extends SpigotModule {
             //That player has a holding
             //If their balance is lower than 1 we can remove it
             //This isnt == 0 because of possible floating point errors
-            //noinspection ConstantConditions
             if (playerHolding.getBalance() > 1) {
               sendMessage(player, "That account is worth more than $1! Please get the player to withdraw the money from it!");
               return;
@@ -1200,12 +1199,14 @@ public class DatabaseHelper extends SpigotModule {
     return databaseManager;
   }
 
+  Essentials getEssentials() {
+    return essentials;
+  }
+
   public void showPlayerHoldings(Player player) {
     //Get all holdings for a player
     Stonks.newChain()
-        .asyncFirst(() -> {
-          return new AllPlayerHoldingsGui(player);
-        })
+        .asyncFirst(() -> new AllPlayerHoldingsGui(player))
         .abortIfNull()
         .sync(gui -> gui.show(player))
         .execute();

@@ -9,7 +9,10 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 import java.sql.SQLException;
@@ -256,6 +259,46 @@ public class ShopManager extends SpigotModule {
         event.setHasEnough(true);
       }
       event.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onOfflinePlayerBuyEvent(OfflinePlayerBuyEvent event) {
+    if (!event.getTransactionEvent().getOwnerAccount().getName().startsWith("#")) {
+      event.setCancelled(true);
+      return;
+    }
+    try {
+      for (Member member : databaseManager.getAccountLinkDao().queryForId(Integer.valueOf(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", ""))).getCompany().getMembers()) {
+        if (member.hasManagamentPermission()) {
+          Player player = DatabaseHelper.getInstance().getEssentials().getUser(member.getUuid()).getBase();
+          if (player.isOnline()) {
+            event.addTarget(player);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @EventHandler
+  public void onOfflinePlayerSellEvent(OfflinePlayerSellEvent event) {
+    if (!event.getTransactionEvent().getOwnerAccount().getName().startsWith("#")) {
+      event.setCancelled(true);
+      return;
+    }
+    try {
+      for (Member member : databaseManager.getAccountLinkDao().queryForId(Integer.valueOf(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", ""))).getCompany().getMembers()) {
+        if (member.hasManagamentPermission()) {
+          OfflinePlayer player = Bukkit.getOfflinePlayer(member.getUuid());
+          if (player.isOnline()) {
+            event.addTarget(player.getPlayer());
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
   }
 }
