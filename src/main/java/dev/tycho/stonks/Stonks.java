@@ -4,12 +4,10 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import dev.tycho.stonks.managers.*;
-import dev.tycho.stonks.scheduledtasks.SubscriptionCheckTask;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +48,8 @@ public class Stonks extends JavaPlugin {
     }
 
     //Schedule the auto-pay services task
-    BukkitScheduler scheduler = getServer().getScheduler();
-    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1000L, 6000L);
+//    BukkitScheduler scheduler = getServer().getScheduler();
+//    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1000L, 6000L);
 
 
     Bukkit.getLogger().info("Loaded!");

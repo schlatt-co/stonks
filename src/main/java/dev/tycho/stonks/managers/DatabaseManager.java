@@ -201,7 +201,8 @@ public class DatabaseManager extends SpigotModule {
         try {
           //Update the account and holdings
           getHoldingAccountDao().update(a);
-          for (Holding h : a.getHoldings()) getHoldingDao().update(h);
+          if (a.getHoldings() != null)
+          for (Holding h : a.getHoldings()) if (h != null) getHoldingDao().update(h);
         } catch (SQLException e) {
           e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.command.subs.ListCommandSub;
 import dev.tycho.stonks.gui.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -130,7 +131,7 @@ public class DatabaseHelper extends SpigotModule {
         .execute();
   }
 
-  public void openCompanyList(Player player) {
+  public void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
     Stonks.newChain()
         .asyncFirst(() -> {
           List<Company> list = null;
@@ -139,14 +140,13 @@ public class DatabaseHelper extends SpigotModule {
             companyQueryBuilder.orderBy("name", true);
             list = companyQueryBuilder.query();
 
-            //remove hidden companies from the list if a player is not a member
-            //todo move this into a query
-            for (int i = list.size() - 1; i >= 0; i--) {
-              if (list.get(i).isHidden() && list.get(i).getMember(player) == null) {
-                list.remove(i);
-              }
+            if (options == ListCommandSub.CompanyListOptions.VERIFIED) {
+              list.removeIf(c->!c.isVerified());
+            } else if (options == ListCommandSub.CompanyListOptions.MEMBER_OF) {
+              list.removeIf(c->c.getMember(player) == null || !c.getMember(player).getAcceptedInvite());
+            } else if (options == ListCommandSub.CompanyListOptions.NOT_HIDDEN_OR_MEMBER) {
+              list.removeIf(c->(c.getMember(player) == null || !c.getMember(player).getAcceptedInvite()) && c.isHidden());
             }
-
           } catch (SQLException e) {
             e.printStackTrace();
           }
