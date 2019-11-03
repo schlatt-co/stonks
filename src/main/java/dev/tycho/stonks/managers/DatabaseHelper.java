@@ -752,7 +752,8 @@ public class DatabaseHelper extends SpigotModule {
             }
 
             Member sender = databaseManager.getMemberDao().getMember(player, company);
-            if (sender == null || !sender.hasManagamentPermission()) {
+            //If the the member is not kicking themselves and doesnt have management permission
+            if (sender == null || (!memberToKick.getUuid().equals(sender.getUuid()) && !sender.hasManagamentPermission())) {
               sendMessage(player, "You don't have permission to preform that action.");
               return;
             }
