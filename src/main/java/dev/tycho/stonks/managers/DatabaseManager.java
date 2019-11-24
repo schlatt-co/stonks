@@ -3,6 +3,7 @@ package dev.tycho.stonks.managers;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
@@ -53,7 +54,7 @@ public class DatabaseManager extends SpigotModule {
     String databaseUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=" + useSsl;
 
     try {
-      connectionSource = new JdbcConnectionSource(databaseUrl, username, password);
+      connectionSource = new JdbcPooledConnectionSource(databaseUrl, username, password);
       companyDao = DaoManager.createDao(connectionSource, Company.class);
       memberDao = DaoManager.createDao(connectionSource, Member.class);
       companyAccountDao = new CompanyAccountDaoImpl(connectionSource);
