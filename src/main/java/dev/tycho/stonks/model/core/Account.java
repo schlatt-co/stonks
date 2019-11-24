@@ -1,30 +1,18 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.field.DatabaseField;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 
 import java.util.UUID;
 
-public abstract class Account {
-  @DatabaseField(generatedId = true)
-  private int id;
+public abstract class Account{
 
-  @DatabaseField
   private UUID uuid;
 
-  @DatabaseField
   private String name;
 
-  public Account() {
-  }
-
-  public Account(String name) {
+  public Account(String name, UUID uuid) {
     this.name = name;
-    this.uuid = UUID.randomUUID();
-  }
-
-  public int getId() {
-    return id;
+    this.uuid = uuid;
   }
 
   public String getName() {

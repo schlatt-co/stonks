@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.HashMap;
 
 public abstract class Store<T extends Entity>  {
-  protected int nextPk;
   protected HashMap<Integer, T> entities = new HashMap<>();
   protected abstract void populate();
 

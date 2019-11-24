@@ -1,18 +1,23 @@
 package dev.tycho.stonks.model.store;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 
 public class SyncStore<T extends Entity> extends Store<T> {
 
-  private Connection connection;
-  public SyncStore(Connection connection) {
-    this.connection = connection;
+  private DatabaseInterface<T> dbi;
+  public SyncStore(DatabaseInterface<T> dbi) {
+    this.dbi = dbi;
   }
-
 
   @Override
   protected void populate() {
-
+    try {
+      for (T e: dbi.loadAll()) {
+        entities.put(e.pk, e);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -23,7 +28,11 @@ public class SyncStore<T extends Entity> extends Store<T> {
 
   @Override
   public void save(T obj) {
-    obj.save(connection);
+    try {
+      dbi.save(obj);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -31,9 +40,15 @@ public class SyncStore<T extends Entity> extends Store<T> {
     if (obj.pk != 0) {
       throw new IllegalArgumentException("Entity to create already has a primary key");
     }
-    obj.pk = nextPk;
-    nextPk++;
-    entities.put(obj.pk, obj);
-    save(obj);
+    int pk = 0;
+    try {
+      pk = dbi.create(obj);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    if (entities.containsKey(pk)) {
+      throw new IllegalArgumentException("Created new entity but we already have the new pk stored");
+    }
+    entities.put(pk, obj);
   }
 }
