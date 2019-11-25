@@ -1,23 +1,19 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 
+import java.util.Collection;
 import java.util.UUID;
 
-@DatabaseTable(tableName = "holdingsaccount")
 public class HoldingsAccount extends Account {
 
-  @ForeignCollectionField(eager = true)
-  private ForeignCollection<Holding> holdings;
+  private Collection<Holding> holdings;
 
-  public HoldingsAccount() {
-  }
-
-  public HoldingsAccount(String name) {
-    super(name);
+  //Passing holdings this way might cause some problems, we'll see
+  //Important to maintain reference equality here
+  public HoldingsAccount(String name, UUID uuid, Collection<Holding> holdings) {
+    super(name, uuid);
+    this.holdings = holdings;
   }
 
   private double getTotalShare() {
@@ -28,7 +24,7 @@ public class HoldingsAccount extends Account {
     return total;
   }
 
-  public ForeignCollection<Holding> getHoldings() {
+  public Collection<Holding> getHoldings() {
     return holdings;
   }
 

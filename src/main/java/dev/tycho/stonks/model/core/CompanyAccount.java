@@ -1,19 +1,14 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 
-@DatabaseTable(tableName = "companyaccount")
+import java.util.UUID;
+
 public class CompanyAccount extends Account {
-  @DatabaseField
   private double balance;
 
-  public CompanyAccount() {
-  }
-
-  public CompanyAccount(String name) {
-    super(name);
+  public CompanyAccount(String name, UUID uuid) {
+    super(name, uuid);
   }
 
   @Override

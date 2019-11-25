@@ -2,17 +2,14 @@ package dev.tycho.stonks.model.store;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.HashMap;
+public interface  Store<T extends Entity>  {
 
-public abstract class Store<T extends Entity>  {
-  protected HashMap<Integer, T> entities = new HashMap<>();
-  protected abstract void populate();
+  abstract void populate();
 
-  public abstract T get(int pk);
-  public abstract void save(T obj);
-  public abstract void create(T obj);
-  public ImmutableList<T> getAll() {
-    return ImmutableList.copyOf(entities.values());
-  }
+  T get(int pk);
+
+  void save(T obj);
+  void create(T obj);
+  ImmutableList<T> getAll();
 
 }

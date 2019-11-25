@@ -1,60 +1,62 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.store.IntermediateEntity;
 
-@DatabaseTable(tableName = "accountlink")
-public class AccountLink {
-  @DatabaseField(generatedId = true)
-  private int id;
+public class AccountLink extends IntermediateEntity<Company, Account> {
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private Company company;
 
-  //TODO replace the double fields with a single one and a custom data persister class
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private CompanyAccount companyAccount = null;
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private HoldingsAccount holdingsAccount = null;
+  private int companyPk;
 
-  public AccountLink() {
+  private int accountPk;
 
+  private String accountType;
+
+  public AccountLink(int companyPk, int accountPk, String accountType) {
+    this.companyPk = companyPk;
+    this.accountPk = accountPk;
+    this.accountPk = accountPk;
   }
 
   public AccountLink(Company company, Account account) {
-    this.company = company;
+    this.companyPk = company.getPk();
     //Avoid reflection, determine the type of the account through a visitor
     IAccountVisitor visitor = new IAccountVisitor() {
       @Override
       public void visit(CompanyAccount a) {
-        companyAccount = a;
+        accountType = "CompanyAccount";
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        holdingsAccount = a;
+        accountType = "HoldingsAccount";
       }
     };
     account.accept(visitor);
+    accountPk = account.getPk();
   }
 
-  public int getId() {
-    return id;
+  public String getAccountType() {
+    return accountType;
   }
 
-  public Account getAccount() {
-    return (companyAccount != null) ? companyAccount : holdingsAccount;
+  public int getCompanyPk() {
+    return companyPk;
   }
 
-  private AccountType getAccountType() {
-    return (companyAccount != null) ? AccountType.CompanyAccount : AccountType.HoldingsAccount;
-  }
-
-  public Company getCompany() {
-    return company;
+  public int getAccountPk() {
+    return accountPk;
   }
 
 
+  @Override
+  public int getParentPk() {
+    return companyPk;
+  }
+
+  @Override
+  public int getComponentPk() {
+    return accountPk;
+  }
 }

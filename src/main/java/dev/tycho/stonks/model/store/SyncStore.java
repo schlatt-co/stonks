@@ -1,29 +1,28 @@
 package dev.tycho.stonks.model.store;
 
+import com.google.common.collect.ImmutableList;
+
 import java.sql.SQLException;
+import java.util.HashMap;
 
-public class SyncStore<T extends Entity> extends Store<T> {
+public class SyncStore<T extends Entity> implements Store<T> {
 
+  HashMap<Integer, T> entities = new HashMap<>();
   private DatabaseInterface<T> dbi;
   public SyncStore(DatabaseInterface<T> dbi) {
     this.dbi = dbi;
+    populate();
   }
 
   @Override
-  protected void populate() {
+  public void populate() {
     try {
-      for (T e: dbi.loadAll()) {
-        entities.put(e.pk, e);
+      for (T e : dbi.loadAll()) {
+        entities.put(e.getPk(), e);
       }
     } catch (SQLException e) {
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public T get(int pk) {
-    if (entities.containsKey(pk)) return entities.get(pk);
-    return null;
   }
 
   @Override
@@ -36,8 +35,14 @@ public class SyncStore<T extends Entity> extends Store<T> {
   }
 
   @Override
+  public T get(int pk) {
+    if (entities.containsKey(pk)) return entities.get(pk);
+    return null;
+  }
+
+  @Override
   public void create(T obj) {
-    if (obj.pk != 0) {
+    if (obj.getPk() != 0) {
       throw new IllegalArgumentException("Entity to create already has a primary key");
     }
     int pk = 0;
@@ -50,5 +55,9 @@ public class SyncStore<T extends Entity> extends Store<T> {
       throw new IllegalArgumentException("Created new entity but we already have the new pk stored");
     }
     entities.put(pk, obj);
+  }
+  @Override
+  public ImmutableList<T> getAll() {
+    return ImmutableList.copyOf(entities.values());
   }
 }

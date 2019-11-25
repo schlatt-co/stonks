@@ -1,7 +1,6 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.core.AccountType;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;

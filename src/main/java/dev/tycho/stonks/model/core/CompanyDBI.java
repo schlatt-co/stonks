@@ -15,7 +15,6 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
     super(connection);
   }
 
-
   @Override
   protected void createTable() throws SQLException {
     connection.createStatement().executeQuery(
@@ -26,7 +25,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
             " 'logoMaterial' varchar(255) DEFAULT NULL," +
             " 'verified' bit NOT NULL DEFAULT '0'," +
             " 'hidden' bit NOT NULL DEFAULT '0'," +
-            " PRIMARY KEY ('id') ) "
+            " PRIMARY KEY ('pk') ) "
     );
   }
 
@@ -67,6 +66,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
           results.getString("logoMaterial"),
           results.getBoolean("verified"),
           results.getBoolean("hidden"));
+      return company;
     }
     return null;
   }
@@ -78,12 +78,13 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
         "SELECT name, shopName, logoMaterial, verified, hidden FROM company WHERE pk = ?");
     ResultSet results = statement.executeQuery();
     while (results.next()) {
-      Company company = new Company(results.getString("name"),
-          results.getString("shopName"),
-          results.getString("logoMaterial"),
-          results.getBoolean("verified"),
-          results.getBoolean("hidden"));
-      objects.add(company);
+      objects.add(
+          new Company(
+              results.getString("name"),
+              results.getString("shopName"),
+              results.getString("logoMaterial"),
+              results.getBoolean("verified"),
+              results.getBoolean("hidden")));
     }
     return objects;
   }

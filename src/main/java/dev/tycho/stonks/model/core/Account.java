@@ -1,10 +1,11 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.store.Entity;
 
 import java.util.UUID;
 
-public abstract class Account{
+public abstract class Account extends Entity {
 
   private UUID uuid;
 

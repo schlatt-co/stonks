@@ -1,7 +1,7 @@
 package dev.tycho.stonks.model.store;
 
 public abstract class Entity {
-  int pk;
+  private int pk;
   public int getPk() {
     return pk;
   }
