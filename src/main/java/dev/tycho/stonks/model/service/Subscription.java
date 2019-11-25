@@ -1,44 +1,37 @@
 package dev.tycho.stonks.model.service;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import dev.tycho.stonks.model.store.Entity;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;
 
-@DatabaseTable(tableName = "subscription")
-public class Subscription {
-  @DatabaseField(generatedId = true)
-  private int id;
+public class Subscription extends Entity {
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private Service service;
+  private int servicePk;
 
-  @DatabaseField
   private UUID playerId;
 
-  @DatabaseField
   private Timestamp lastPaymentDate;
 
 
   public Subscription() {
   }
 
-  public Subscription(Player player, Service service) {
+  public Subscription(Player player, Service service, Timestamp lastPaymentDate) {
     this.playerId = player.getUniqueId();
-    this.service = service;
-    this.lastPaymentDate = new Timestamp(Calendar.getInstance().getTime().getTime());
+    this.servicePk = service.getPk();
+    this.lastPaymentDate = lastPaymentDate; //= new Timestamp(Calendar.getInstance().getTime().getTime());
   }
 
-  public boolean isOverdue() {
-    return (getDaysOverdue() > 0);
+  public static boolean isOverdue(Service service, Subscription subscription) {
+    return (getDaysOverdue(service, subscription) > 0);
   }
 
   //Will return negative for a non-overdue date
-  public double getDaysOverdue() {
-    long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
+  public static double getDaysOverdue(Service service, Subscription subscription) {
+    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentDate.getTime();
     return ((double) millisDifference / 86400000) - service.getDuration();
   }
 
@@ -49,12 +42,8 @@ public class Subscription {
 
   //Getters
 
-  public int getId() {
-    return id;
-  }
-
-  public Service getService() {
-    return service;
+  public int getService() {
+    return servicePk;
   }
 
   public UUID getPlayerId() {

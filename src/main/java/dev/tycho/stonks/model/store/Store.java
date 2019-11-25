@@ -2,14 +2,20 @@ package dev.tycho.stonks.model.store;
 
 import com.google.common.collect.ImmutableList;
 
-public interface  Store<T extends Entity>  {
+import java.util.function.Predicate;
 
-  abstract void populate();
+public interface Store<T extends Entity> {
 
   T get(int pk);
 
+  abstract void populate();
+
   void save(T obj);
+
   void create(T obj);
+
   ImmutableList<T> getAll();
+
+  T getWhere(Predicate<T> p);
 
 }

@@ -14,6 +14,7 @@ import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -77,11 +78,14 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "You don't have the sufficient funds for the $" + COMPANY_FEE + " company creation fee.");
               return;
             }
-            Company newCompany = new Company(companyName, "S" + companyName, player);
+
+
+            Company newCompany = new Company(companyName, "S" + companyName, Material.EMERALD.name(), false, false);
             databaseManager.getCompanyDao().assignEmptyForeignCollection(newCompany, "members");
             databaseManager.getCompanyDao().create(newCompany);
 
-            CompanyAccount companyAccount = new CompanyAccount("Main");
+            //Create a uuid
+            CompanyAccount companyAccount = new CompanyAccount("Main", UUID.randomUUID());
             databaseManager.getCompanyAccountDao().create(companyAccount);
 
             //Create an link so the account is stored as belonging to the new company
@@ -205,23 +209,7 @@ public class DatabaseHelper extends SpigotModule {
   }
 
   public void openCompanyAccounts(Player player, String companyName) {
-    Stonks.newChain()
-        .asyncFirst(() -> {
-          try {
-            Company company = databaseManager.getCompanyDao().getCompany(companyName);
-            if (company == null) {
-              sendMessage(player, "That company doesn't exist!");
-              return null;
-            }
-            return new AccountListGui(company);
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-          return null;
-        })
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
+
   }
 
   public void invitePlayerToCompany(Player player, String companyName, String playerToInvite) {

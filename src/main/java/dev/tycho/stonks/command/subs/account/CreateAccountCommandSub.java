@@ -6,10 +6,12 @@ import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.store.Repo;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CreateAccountCommandSub extends CommandSub {
@@ -30,11 +32,9 @@ public class CreateAccountCommandSub extends CommandSub {
     new AccountTypeSelectorGui.Builder()
         .title("Select an account type")
         .typeSelected(type -> {
-              List<Company> list;
+              Collection<Company> list;
               //Get all the accounts the player is a manager of
-              list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
-                  .getAllCompaniesWhereManager(player,
-                      DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
+              list = Repo.getInstance().companiesWhereManager(player);
               new CompanySelectorGui.Builder()
                   .title("Select a company")
                   .companies(list)

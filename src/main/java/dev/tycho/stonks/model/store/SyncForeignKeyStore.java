@@ -8,18 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class SyncOTMStore<P extends Entity, C extends  Entity> implements OTMStore<P, C> {
-  protected Store<P> parents;
-  protected Store<C> children;
-  protected OneToMany<P, C> otm;
+public class SyncForeignKeyStore<P extends Entity, C extends Entity> implements ForeignKeyStore<P, C> {
+  private HashMap<P, Collection<C>> relationCache;
+  private Store<P> parents;
+  private Store<C> children;
+  private ForeignKey<P, C> key;
 
-  protected HashMap<P, Collection<C>> relationCache;
-
-  public SyncOTMStore(Store<P> parents, Store<C> children, OneToMany<P, C> otm) {
+  public SyncForeignKeyStore(Store<P> parents, Store<C> children, ForeignKey<P, C> key) {
     relationCache = new HashMap<>();
     this.parents = parents;
     this.children = children;
-    this.otm = otm;
+    this.key = key;
   }
 
   @Override
@@ -41,14 +40,14 @@ public class SyncOTMStore<P extends Entity, C extends  Entity> implements OTMSto
   }
 
   public P getParent(C child) {
-    return parents.get(otm.getParentPk(child));
+    return parents.get(key.getParentPk(child));
     //Todo check that we have parent and child in our stores
   }
 
 
   @Override
   public void cacheRelation(C child) {
-    P parent = parents.get(otm.getChildPk(child));
+    P parent = parents.get(child.getPk());
     if (parent != null) {
       relationCache.get(parent).add(child);
     } else {

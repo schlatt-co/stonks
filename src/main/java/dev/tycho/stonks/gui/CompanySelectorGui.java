@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class CompanySelectorGui extends CollectionGuiBase<Company> {
@@ -33,7 +32,7 @@ public class CompanySelectorGui extends CollectionGuiBase<Company> {
   }
 
   public static class Builder {
-    private List<Company> companies = new ArrayList<>();
+    private Collection<Company> companies = new ArrayList<>();
     private String title = "";
     private Consumer<Company> onCompanySelected;
 
@@ -41,7 +40,7 @@ public class CompanySelectorGui extends CollectionGuiBase<Company> {
 
     }
 
-    public CompanySelectorGui.Builder companies(List<Company> companies) {
+    public CompanySelectorGui.Builder companies(Collection<Company> companies) {
       this.companies = companies;
       return this;
     }

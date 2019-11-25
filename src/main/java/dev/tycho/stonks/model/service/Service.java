@@ -1,54 +1,38 @@
 package dev.tycho.stonks.model.service;
 
 
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.store.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-@DatabaseTable(tableName = "service")
-public class Service {
-  @DatabaseField(generatedId = true)
-  private int id;
+public class Service extends Entity {
 
-  @DatabaseField
   private String name;
 
   //days
-  @DatabaseField
   private double duration;
 
-  @DatabaseField
   private double cost;
 
   //0 = no limit
-  @DatabaseField
   private int maxSubscribers;
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private Company company;
-
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private AccountLink account;
-
-  @ForeignCollectionField(eager = true)
-  private ForeignCollection<Subscription> subscriptions;
-
+  private int companyPk;
+  private int accountPk;
+  private Collection<Subscription> subscriptions;
   public Service() {
   }
 
-  public Service(String name, Company company, AccountLink account, double duration, double cost, int maxSubscribers) {
+  public Service(String name, Company company, AccountLink account, Collection<Subscription> subscriptions, double duration, double cost, int maxSubscribers) {
     this.name = name;
-    this.company = company;
-    this.account = account;
+    this.companyPk = company.getPk();
+    this.accountPk = account.getPk();
     this.duration = duration;
     this.cost = cost;
     this.maxSubscribers = maxSubscribers;
+    this.subscriptions = subscriptions;
   }
 
   //Returns the subscription for a player.
@@ -70,20 +54,8 @@ public class Service {
     }
   }
 
-  public Collection<Subscription> getOverdueSubscriptions() {
-    Collection<Subscription> overdue = new ArrayList<>();
-    for (Subscription s : subscriptions) {
-      if (s.isOverdue()) overdue.add(s);
-    }
-    return overdue;
-  }
-
   public void setMaxSubscribers(int maxSubscribers) {
     this.maxSubscribers = maxSubscribers;
-  }
-
-  public int getId() {
-    return id;
   }
 
   public String getName() {
@@ -111,11 +83,11 @@ public class Service {
   }
 
 
-  public Company getCompany() {
-    return company;
+  public int getCompanyPk() {
+    return companyPk;
   }
 
-  public AccountLink getAccount() {
-    return account;
+  public int getAccountPk() {
+    return accountPk;
   }
 }

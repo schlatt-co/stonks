@@ -4,22 +4,17 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.database.*;
-import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class DatabaseManager extends SpigotModule {
 
@@ -94,132 +89,5 @@ public class DatabaseManager extends SpigotModule {
       connectionSource.close();
     } catch (IOException ignored) {
     }
-  }
-
-  public CompanyDao getCompanyDao() {
-    return companyDao;
-  }
-
-  public MemberDao getMemberDao() {
-    return memberDao;
-  }
-
-  public AccountLinkDaoImpl getAccountLinkDao() {
-    return accountlinkDao;
-  }
-
-  public CompanyAccountDao getCompanyAccountDao() {
-    return companyAccountDao;
-  }
-
-  Dao<HoldingsAccount, Integer> getHoldingAccountDao() {
-    return holdingAccountDao;
-  }
-
-  public HoldingDao getHoldingDao() {
-    return holdingDao;
-  }
-
-  public TransactionDaoImpl getTransactionDao() {
-    return transactionDao;
-  }
-
-  //TODO move this method to a better place
-  Account getAccountWithUUID(UUID uuid) {
-    try {
-      //Try company account first as those are the most common
-      QueryBuilder<CompanyAccount, Integer> queryBuilder = getCompanyAccountDao().queryBuilder();
-      queryBuilder.where().eq("uuid", uuid);
-      CompanyAccount companyAccount = queryBuilder.queryForFirst();
-      //If no company account was found try and find a holdings account
-      if (companyAccount == null) {
-        QueryBuilder<HoldingsAccount, Integer> queryBuilder2 = getHoldingAccountDao().queryBuilder();
-        queryBuilder2.where().eq("uuid", uuid);
-        //This will either return a result or null
-        //If it is null there are no accounts with this match
-        return queryBuilder2.queryForFirst();
-      } else {
-        return companyAccount;
-      }
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  //TODO move this too
-  public void logTransaction(Transaction transaction) {
-    try {
-      getTransactionDao().create(transaction);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      Bukkit.broadcastMessage(ChatColor.RED + "SQL Exception creating a log ");
-    }
-  }
-
-  public void refreshAccount(Account account) {
-    //Refresh the account because we have to recurse quite deeply
-    IAccountVisitor visitor = new IAccountVisitor() {
-      @Override
-      public void visit(CompanyAccount a) {
-        try {
-          DatabaseHelper.getInstance().getDatabaseManager().getCompanyAccountDao().refresh(a);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void visit(HoldingsAccount a) {
-        try {
-          DatabaseHelper.getInstance().getDatabaseManager().getHoldingsAccountDao().refresh(a);
-          for (Holding h : a.getHoldings()) getHoldingDao().refresh(h);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-    };
-    account.accept(visitor);
-  }
-
-  public void updateAccount(Account account) {
-    //Update the account database
-    IAccountVisitor visitor = new IAccountVisitor() {
-      @Override
-      public void visit(CompanyAccount a) {
-        try {
-          getCompanyAccountDao().update(a);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void visit(HoldingsAccount a) {
-        try {
-          //Update the account and holdings
-          getHoldingAccountDao().update(a);
-          if (a.getHoldings() != null)
-          for (Holding h : a.getHoldings()) if (h != null) getHoldingDao().update(h);
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    };
-    account.accept(visitor);
-  }
-
-  public Dao<Service, Integer> getServiceDao() {
-    return serviceDao;
-  }
-
-  public HoldingsAccountDaoImpl getHoldingsAccountDao() {
-    return holdingAccountDao;
-  }
-
-  public SubscriptionDaoImpl getSubscriptionDao() {
-    return subscriptionDao;
   }
 }

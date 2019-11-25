@@ -79,4 +79,8 @@ public class AccountTypeSelectorGui implements InventoryProvider {
   }
 
 
+  public enum AccountType {
+    CompanyAccount,
+    HoldingsAccount
+  }
 }

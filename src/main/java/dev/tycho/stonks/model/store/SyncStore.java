@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 public class SyncStore<T extends Entity> implements Store<T> {
 
@@ -59,5 +60,13 @@ public class SyncStore<T extends Entity> implements Store<T> {
   @Override
   public ImmutableList<T> getAll() {
     return ImmutableList.copyOf(entities.values());
+  }
+
+  @Override
+  public T getWhere(Predicate<T> p) {
+    for (T entity : entities.values()) {
+      if (p.test(entity)) return entity;
+    }
+    return null;
   }
 }
