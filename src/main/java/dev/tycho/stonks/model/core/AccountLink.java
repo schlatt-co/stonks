@@ -4,9 +4,8 @@ import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.store.Entity;
 
 public class AccountLink extends Entity {
-
-
-
+  private Company company;
+  private Account account;
   private int companyPk;
 
   private int accountPk;
@@ -47,5 +46,21 @@ public class AccountLink extends Entity {
 
   public int getAccountPk() {
     return accountPk;
+  }
+
+  public Company getCompany() {
+    return company;
+  }
+
+  public void setCompany(Company company) {
+    this.company = company;
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public void setAccount(Account account) {
+    this.account = account;
   }
 }

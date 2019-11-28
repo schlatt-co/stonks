@@ -11,6 +11,7 @@ public class Member extends Entity {
   private UUID uuid;
 
   private int companyPk;
+  private Company company;
 
   private Date joinDate;
 
@@ -73,5 +74,13 @@ public class Member extends Entity {
 
   public Boolean hasManagamentPermission() {
     return this.role.equals(Role.CEO) || this.role.equals(Role.Manager);
+  }
+
+  public Company getCompany() {
+    return company;
+  }
+
+  public void setCompany(Company company) {
+    this.company = company;
   }
 }

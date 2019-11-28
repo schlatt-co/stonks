@@ -17,6 +17,10 @@ public class Holding extends Entity {
 
   private int accountPk;
 
+  private HoldingsAccount account;
+
+
+
   public Holding() {
   }
 
@@ -69,6 +73,15 @@ public class Holding extends Entity {
 
   public int getAccountPk() {
     return accountPk;
+  }
+
+
+  public HoldingsAccount getAccount() {
+    return account;
+  }
+
+  public void setAccount(HoldingsAccount account) {
+    this.account = account;
   }
 }
 

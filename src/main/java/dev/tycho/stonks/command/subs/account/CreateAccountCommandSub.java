@@ -92,14 +92,18 @@ public class CreateAccountCommandSub extends CommandSub {
           //Checks done, the account is valid to be created
 
           Account account;
-          if (accountType == AccountTypeSelectorGui.AccountType.HoldingsAccount) {
-            //Create a new holdings account
-            account = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
-          } else if (accountType == AccountTypeSelectorGui.AccountType.CompanyAccount) {
-            account = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
-          } else {
-            throw new IllegalArgumentException("AAAAAAAAAAAAAAAAAAAAa");
-          }
+            switch (accountType) {
+                case HoldingsAccount:
+                    //Create a new holdings account
+                    account = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
+                    break;
+                case CompanyAccount:
+                    account = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
+                    break;
+                default:
+                    //account type not recognised
+                    throw new IllegalArgumentException("AAAAAAAAAAAAAAAAAAAAa");
+            }
           sendMessage(player, "Account creation successful!");
           sendMessage(player, "Account ID: " + ChatColor.YELLOW + Repo.getInstance().accountLinkForAccount(account).getPk());
 

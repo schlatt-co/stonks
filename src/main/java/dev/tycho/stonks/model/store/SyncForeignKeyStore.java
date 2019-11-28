@@ -25,12 +25,11 @@ public class SyncForeignKeyStore<P extends Entity, C extends Entity> implements 
   public void populate() {
     //Add an empty list for each parent
     for (P parent : parents.getAll()) {
-      relationCache.put(parent, new ArrayList<>());
-      key.onCreate(parent, relationCache.get(parent));
+      putParent(parent);
     }
     //Assign each child to the parent's list of children
     for (C child : children.getAll()) {
-      putRelation(child);
+      putChild(child);
     }
   }
 
@@ -52,17 +51,18 @@ public class SyncForeignKeyStore<P extends Entity, C extends Entity> implements 
     }
     if (!relationCache.containsKey(parent)) {
       relationCache.put(parent, new ArrayList<>());
-      key.onCreate(parent, relationCache.get(parent));
+      key.createParentReference(parent, relationCache.get(parent));
     }
     return relationCache.get(parent);
   }
 
 
   @Override
-  public void putRelation(C child) {
+  public void putChild(C child) {
     P parent = parents.get(child.getPk());
     if (parent != null) {
       relationCache.get(parent).add(child);
+      key.createChildReference(child, parent);
     } else {
       //parent not found
       //assume this is ok

@@ -10,7 +10,7 @@ import java.util.UUID;
 public class Subscription extends Entity {
 
   private int servicePk;
-
+  private Service service;
   private UUID playerId;
 
   private Timestamp lastPaymentDate;
@@ -19,19 +19,18 @@ public class Subscription extends Entity {
   public Subscription() {
   }
 
-  public Subscription(Player player, Service service, Timestamp lastPaymentDate) {
+  public Subscription(Player player) {
     this.playerId = player.getUniqueId();
-    this.servicePk = service.getPk();
-    this.lastPaymentDate = lastPaymentDate; //= new Timestamp(Calendar.getInstance().getTime().getTime());
+    this.lastPaymentDate = new Timestamp(Calendar.getInstance().getTime().getTime());
   }
 
-  public static boolean isOverdue(Service service, Subscription subscription) {
-    return (getDaysOverdue(service, subscription) > 0);
+  public boolean isOverdue() {
+    return (getDaysOverdue() > 0);
   }
 
   //Will return negative for a non-overdue date
-  public static double getDaysOverdue(Service service, Subscription subscription) {
-    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentDate.getTime();
+  public double getDaysOverdue() {
+    long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
     return ((double) millisDifference / 86400000) - service.getDuration();
   }
 
@@ -42,8 +41,16 @@ public class Subscription extends Entity {
 
   //Getters
 
-  public int getService() {
+  public int getServicePk() {
     return servicePk;
+  }
+
+  public Service getService() {
+    return service;
+  }
+
+  public void setService(Service service) {
+    this.service = service;
   }
 
   public UUID getPlayerId() {
@@ -55,5 +62,7 @@ public class Subscription extends Entity {
   }
 
 
-
+  public void setServicePk(int servicePk) {
+    this.servicePk = servicePk;
+  }
 }

@@ -10,5 +10,5 @@ public interface ForeignKeyStore<P extends Entity, C extends Entity> {
 
   P getParent(C child);
   Collection<C> putParent(P parent);
-  void putRelation(C child);
+  void putChild(C child);
 }

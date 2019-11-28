@@ -9,15 +9,8 @@ public class HoldingsAccount extends Account {
 
   private Collection<Holding> holdings;
 
-  //Passing holdings this way might cause some problems, we'll see
-  //Important to maintain reference equality here
-  public HoldingsAccount(String name, UUID uuid, Collection<Holding> holdings) {
-    super(name, uuid);
-    this.holdings = holdings;
-  }
   public HoldingsAccount(String name, UUID uuid) {
     super(name, uuid);
-    this.holdings = holdings;
   }
   public void setHoldings(Collection<Holding> holdings) {
     this.holdings = holdings;
@@ -43,14 +36,6 @@ public class HoldingsAccount extends Account {
       }
     }
     return null;
-  }
-
-  public void addHolding(Holding holding) {
-    this.holdings.add(holding);
-  }
-
-  public void removeHolding(Holding holding) {
-    holdings.remove(holding);
   }
 
 

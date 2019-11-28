@@ -35,7 +35,7 @@ public class Repo {
   private ForeignKeyStore<Company, Member> companyMembers;
   private ForeignKeyStore<Company, AccountLink> companyAccountLinks;
   private ForeignKeyStore<HoldingsAccount, Holding> accountHoldings;
-  private ForeignKeyStore<AccountLink, Service> accountServices;
+  private ForeignKeyStore<Company, Service> companyServices;
   private ForeignKeyStore<Service, Subscription> serviceSubscriptions;
 
   private Repo() {
@@ -44,22 +44,97 @@ public class Repo {
     companyStore = new SyncStore<>(new CompanyDBI(conn));
     accountLinkStore = new SyncStore<>(new AccountLinkDBI(conn));
 
-    companyMembers = new SyncForeignKeyStore<>(companyStore, memberStore, Member::getCompanyPk);
-    accountServices = new SyncForeignKeyStore<>(accountLinkStore, serviceStore, Service::getAccountPk);
-    serviceSubscriptions = new SyncForeignKeyStore<>(serviceStore, subscriptionStore, Subscription::getService);
+    companyMembers = new SyncForeignKeyStore<>(companyStore, memberStore, new ForeignKey<>() {
+      @Override
+      public int getParentPk(Member child) {
+        return child.getCompanyPk();
+      }
 
-    //Provide an on populate definition here to maintain child collection refrence equality
-    accountHoldings = new SyncForeignKeyStore<>(holdingsAccountStore, holdingStore, new ForeignKey<HoldingsAccount, Holding>() {
+      @Override
+      public void createParentReference(Company parent, Collection<Member> children) {
+        parent.setMembers(children);
+      }
+
+      @Override
+      public void createChildReference(Member child, Company parent) {
+        child.setCompany(parent);
+      }
+    });
+    companyAccountLinks = new SyncForeignKeyStore<>(companyStore, accountLinkStore, new ForeignKey<>() {
+      @Override
+      public int getParentPk(AccountLink child) {
+        return child.getCompanyPk();
+      }
+
+      @Override
+      public void createParentReference(Company parent, Collection<AccountLink> children) {
+        parent.setAccounts(children);
+      }
+
+      @Override
+      public void createChildReference(AccountLink child, Company parent) {
+        child.setCompany(parent);
+      }
+    });
+    accountHoldings = new SyncForeignKeyStore<>(holdingsAccountStore, holdingStore, new ForeignKey<>() {
       @Override
       public int getParentPk(Holding child) {
         return child.getAccountPk();
       }
 
       @Override
-      public void onCreate(HoldingsAccount parent, Collection<Holding> children) {
+      public void createChildReference(Holding child, HoldingsAccount parent) {
+        child.setAccount(parent);
+      }
+
+      @Override
+      public void createParentReference(HoldingsAccount parent, Collection<Holding> children) {
         parent.setHoldings(children);
       }
     });
+    companyServices = new SyncForeignKeyStore<>(companyStore, serviceStore, new ForeignKey<>() {
+      @Override
+      public int getParentPk(Service child) {
+        return child.getCompanyPk();
+      }
+
+      @Override
+      public void createParentReference(Company parent, Collection<Service> children) {
+        parent.setServices(children);
+      }
+
+      @Override
+      public void createChildReference(Service child, Company parent) {
+        child.setCompany(parent);
+      }
+    });
+    serviceSubscriptions = new SyncForeignKeyStore<>(serviceStore, subscriptionStore, new ForeignKey<>() {
+      @Override
+      public int getParentPk(Subscription child) {
+        return child.getServicePk();
+      }
+
+      @Override
+      public void createParentReference(Service parent, Collection<Subscription> children) {
+        parent.setSubscriptions(children);
+      }
+
+      @Override
+      public void createChildReference(Subscription child, Service parent) {
+        child.setService(parent);
+      }
+    });
+
+
+
+
+
+    //Provide an on populate definition here to maintain child collection refrence equality
+
+
+
+
+
   }
 
   //Store getters
@@ -99,6 +174,15 @@ public class Repo {
   public ForeignKeyStore<Company, Member> companyMembers() {
     return companyMembers;
   }
+
+  public ForeignKeyStore<Company, Service> companyServices() {
+    return companyServices;
+  }
+
+  public ForeignKeyStore<Service, Subscription> serviceSubscriptions() {
+    return serviceSubscriptions;
+  }
+
 
   public Collection<Company> companiesWhereManager(Player player) {
     Collection<Company> list = Repo.getInstance().companies().getAll();
@@ -172,10 +256,10 @@ public class Repo {
     //Cache the relation for holdings, which will also populate the account's holding collection
     accountHoldings.putParent(ha);
     //Add a default holding
-    accountHoldings.putRelation(new Holding(player.getUniqueId(), ha, 1));
+    accountHoldings.putChild(new Holding(player.getUniqueId(), ha, 1));
 
     //Create an account link to store the relation to the company
-    companyAccountLinks.putRelation(new AccountLink(company, ha));
+    companyAccountLinks.putChild(new AccountLink(company, ha));
     return ha;
   }
 
@@ -184,9 +268,10 @@ public class Repo {
     companyAccountStore.create(ca);
 
     //Create an account link to store the relation to the company
-    companyAccountLinks.putRelation(new AccountLink(company, ca));
+    companyAccountLinks.putChild(new AccountLink(company, ca));
     return ca;
   }
+
 
 
 }

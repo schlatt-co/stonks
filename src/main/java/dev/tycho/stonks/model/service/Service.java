@@ -20,6 +20,8 @@ public class Service extends Entity {
   //0 = no limit
   private int maxSubscribers;
   private int companyPk;
+  private Company company;
+
   private int accountPk;
   private Collection<Subscription> subscriptions;
   public Service() {
@@ -44,15 +46,6 @@ public class Service extends Entity {
     return null;
   }
 
-  public Subscription cancelSubscription(Player player) {
-    Subscription s = getSubscription(player);
-    if (s == null) {
-      return null;
-    } else {
-      subscriptions.remove(s);
-      return s;
-    }
-  }
 
   public void setMaxSubscribers(int maxSubscribers) {
     this.maxSubscribers = maxSubscribers;
@@ -78,6 +71,10 @@ public class Service extends Entity {
     return subscriptions;
   }
 
+  public void setSubscriptions(Collection<Subscription> subscriptions) {
+    this.subscriptions = subscriptions;
+  }
+
   public int getNumSubscriptions() {
     return subscriptions.size();
   }
@@ -89,5 +86,13 @@ public class Service extends Entity {
 
   public int getAccountPk() {
     return accountPk;
+  }
+
+  public Company getCompany() {
+    return company;
+  }
+
+  public void setCompany(Company company) {
+    this.company = company;
   }
 }
