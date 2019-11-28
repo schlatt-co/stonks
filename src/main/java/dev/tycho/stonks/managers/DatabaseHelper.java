@@ -38,8 +38,7 @@ public class DatabaseHelper extends SpigotModule {
   private final long COMPANY_CREATION_COOLDOWN;
   private final long ACCOUNT_CREATION_COOLDOWN;
 
-  private HashMap<UUID, Long> playerCompanyCooldown = new HashMap<>();
-  private HashMap<UUID, Long> playerAccountCooldown = new HashMap<>();
+
 
   public DatabaseHelper(Stonks plugin, DatabaseManager databaseManager) {
     super("Database Helper", plugin);
@@ -52,7 +51,7 @@ public class DatabaseHelper extends SpigotModule {
     ACCOUNT_CREATION_COOLDOWN = plugin.getConfig().getLong("cooldowns.accountcreation");
   }
 
-  public static DatabaseHelper getInstance() {
+  private static DatabaseHelper getInstance() {
     return instance;
   }
 

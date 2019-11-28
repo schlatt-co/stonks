@@ -7,6 +7,7 @@ import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.store.Repo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -76,7 +77,7 @@ public class PayCommandSub extends CommandSub {
           info.add("");
           info.add(ChatColor.GOLD + "The CEO of this company is ");
           String ceoName = "[error lol]";
-          for (Member m : company.getMembers()) {
+          for (Member m : Repo.getInstance().companyMembers().getChildren(company)) {
             if (m.getRole().equals(CEO)) {
               OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
               if (p != null) ceoName = p.getName();
