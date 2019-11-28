@@ -9,6 +9,6 @@ public interface ForeignKeyStore<P extends Entity, C extends Entity> {
   Collection<C> getChildren(P parent);
 
   P getParent(C child);
-
-  void cacheRelation(C child);
+  Collection<C> putParent(P parent);
+  void putRelation(C child);
 }

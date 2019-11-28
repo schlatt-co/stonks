@@ -1,9 +1,9 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
-import dev.tycho.stonks.model.store.IntermediateEntity;
+import dev.tycho.stonks.model.store.Entity;
 
-public class AccountLink extends IntermediateEntity<Company, Account> {
+public class AccountLink extends Entity {
 
 
 
@@ -16,7 +16,7 @@ public class AccountLink extends IntermediateEntity<Company, Account> {
   public AccountLink(int companyPk, int accountPk, String accountType) {
     this.companyPk = companyPk;
     this.accountPk = accountPk;
-    this.accountPk = accountPk;
+    this.accountType = accountType;
   }
 
   public AccountLink(Company company, Account account) {
@@ -46,17 +46,6 @@ public class AccountLink extends IntermediateEntity<Company, Account> {
   }
 
   public int getAccountPk() {
-    return accountPk;
-  }
-
-
-  @Override
-  public int getParentPk() {
-    return companyPk;
-  }
-
-  @Override
-  public int getComponentPk() {
     return accountPk;
   }
 }

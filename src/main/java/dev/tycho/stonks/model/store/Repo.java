@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.UUID;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo {
@@ -32,10 +33,10 @@ public class Repo {
   private Store<Subscription> subscriptionStore;
 
   private ForeignKeyStore<Company, Member> companyMembers;
+  private ForeignKeyStore<Company, AccountLink> companyAccountLinks;
   private ForeignKeyStore<HoldingsAccount, Holding> accountHoldings;
   private ForeignKeyStore<AccountLink, Service> accountServices;
   private ForeignKeyStore<Service, Subscription> serviceSubscriptions;
-
 
   private Repo() {
     instance = this;
@@ -46,7 +47,22 @@ public class Repo {
     companyMembers = new SyncForeignKeyStore<>(companyStore, memberStore, Member::getCompanyPk);
     accountServices = new SyncForeignKeyStore<>(accountLinkStore, serviceStore, Service::getAccountPk);
     serviceSubscriptions = new SyncForeignKeyStore<>(serviceStore, subscriptionStore, Subscription::getService);
+
+    //Provide an on populate definition here to maintain child collection refrence equality
+    accountHoldings = new SyncForeignKeyStore<>(holdingsAccountStore, holdingStore, new ForeignKey<HoldingsAccount, Holding>() {
+      @Override
+      public int getParentPk(Holding child) {
+        return child.getAccountPk();
+      }
+
+      @Override
+      public void onCreate(HoldingsAccount parent, Collection<Holding> children) {
+        parent.setHoldings(children);
+      }
+    });
   }
+
+  //Store getters
 
   public Store<Company> companies() {
     return companyStore;
@@ -84,7 +100,6 @@ public class Repo {
     return companyMembers;
   }
 
-
   public Collection<Company> companiesWhereManager(Player player) {
     Collection<Company> list = Repo.getInstance().companies().getAll();
     list.removeIf(c -> {
@@ -100,7 +115,77 @@ public class Repo {
   }
 
   public Company companyWithName(String name) {
-    return Repo.getInstance().companies().getWhere(c->c.getName().equals(name));
+    return Repo.getInstance().companies().getWhere(c -> c.getName().equals(name));
+  }
+
+  public ForeignKeyStore<Company, AccountLink> companyAccountLinks() {
+    return companyAccountLinks;
+  }
+
+  public Account resolveAccountLink(AccountLink accountLink) {
+    switch (accountLink.getAccountType()) {
+      case "HoldingsAccount":
+        return holdingsAccountStore.get(accountLink.getAccountPk());
+      case "CompanyAccount":
+        return companyAccountStore.get(accountLink.getAccountPk());
+      default:
+        throw new IllegalArgumentException("AccountLink did not have a recognised account type");
+    }
+  }
+
+  //todo cache the account link <-> account relation
+  public AccountLink accountLinkForAccount(Account account) {
+    for (AccountLink link : accountLinkStore.getAll()) {
+      if (resolveAccountLink(link).equals(account)) {
+        return link;
+      }
+    }
+    return null;
+  }
+
+  public Company companyForAccount(Account account) {
+    return companyAccountLinks.getParent(accountLinkForAccount(account));
+  }
+
+  public Member getCompanyMember(Company company, Player player) {
+    for (Member member : companyMembers.getChildren(company)) {
+      if (member.getUuid().equals(player.getUniqueId())) {
+        return member;
+      }
+    }
+    return null;
+  }
+
+  public Boolean hasMember(Company company, Player player) {
+    for (Member member : companyMembers.getChildren(company)) {
+      if (member.getUuid().equals(player.getUniqueId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
+    HoldingsAccount ha = new HoldingsAccount(name, UUID.randomUUID());
+    holdingsAccountStore.create(ha);
+    //Cache the relation for holdings, which will also populate the account's holding collection
+    accountHoldings.putParent(ha);
+    //Add a default holding
+    accountHoldings.putRelation(new Holding(player.getUniqueId(), ha, 1));
+
+    //Create an account link to store the relation to the company
+    companyAccountLinks.putRelation(new AccountLink(company, ha));
+    return ha;
+  }
+
+  public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
+    CompanyAccount ca = new CompanyAccount(name, UUID.randomUUID());
+    companyAccountStore.create(ca);
+
+    //Create an account link to store the relation to the company
+    companyAccountLinks.putRelation(new AccountLink(company, ca));
+    return ca;
   }
 
 

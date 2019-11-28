@@ -15,6 +15,13 @@ public class HoldingsAccount extends Account {
     super(name, uuid);
     this.holdings = holdings;
   }
+  public HoldingsAccount(String name, UUID uuid) {
+    super(name, uuid);
+    this.holdings = holdings;
+  }
+  public void setHoldings(Collection<Holding> holdings) {
+    this.holdings = holdings;
+  }
 
   private double getTotalShare() {
     double total = 0;

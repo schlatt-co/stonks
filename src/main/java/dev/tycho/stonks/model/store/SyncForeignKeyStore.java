@@ -26,10 +26,11 @@ public class SyncForeignKeyStore<P extends Entity, C extends Entity> implements 
     //Add an empty list for each parent
     for (P parent : parents.getAll()) {
       relationCache.put(parent, new ArrayList<>());
+      key.onCreate(parent, relationCache.get(parent));
     }
     //Assign each child to the parent's list of children
     for (C child : children.getAll()) {
-      cacheRelation(child);
+      putRelation(child);
     }
   }
 
@@ -44,9 +45,21 @@ public class SyncForeignKeyStore<P extends Entity, C extends Entity> implements 
     //Todo check that we have parent and child in our stores
   }
 
+  @Override
+  public Collection<C> putParent(P parent) {
+    if (parents.get(parent.getPk()) == null) {
+      throw new IllegalArgumentException("Couldn't find parent PK");
+    }
+    if (!relationCache.containsKey(parent)) {
+      relationCache.put(parent, new ArrayList<>());
+      key.onCreate(parent, relationCache.get(parent));
+    }
+    return relationCache.get(parent);
+  }
+
 
   @Override
-  public void cacheRelation(C child) {
+  public void putRelation(C child) {
     P parent = parents.get(child.getPk());
     if (parent != null) {
       relationCache.get(parent).add(child);
