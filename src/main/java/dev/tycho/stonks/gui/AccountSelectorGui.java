@@ -1,6 +1,6 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
 
-public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
+public class AccountSelectorGui extends CollectionGuiBase<Account> {
 
   private Company company;
-  private Consumer<AccountLink> onAccountSelected;
+  private Consumer<Account> onAccountSelected;
 
-  private AccountSelectorGui(Company company, String title, Consumer<AccountLink> onAccountSelected, Player player) {
-    super(company.getAccounts(), title);
+  private AccountSelectorGui(Company company, String title, Consumer<Account> onAccountSelected, Player player) {
+    super(company.accounts, title);
     this.company = company;
     this.onAccountSelected = onAccountSelected;
     show(player);
@@ -24,11 +24,11 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
 
   @Override
   protected void customInit(Player player, InventoryContents contents) {
-    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
+    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.logoMaterial), company.name)));
   }
 
   @Override
-  protected ClickableItem itemProvider(Player player, AccountLink obj) {
+  protected ClickableItem itemProvider(Player player, Account obj) {
     return ClickableItem.of(ItemInfoHelper.accountDisplayItem(obj, player),
         e -> {
           onAccountSelected.accept(obj);
@@ -39,7 +39,7 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
   public static class Builder {
     private Company company = null;
     private String title = "";
-    private Consumer<AccountLink> onAccountSelected;
+    private Consumer<Account> onAccountSelected;
 
     public Builder() {
 
@@ -55,7 +55,7 @@ public class AccountSelectorGui extends CollectionGuiBase<AccountLink> {
       return this;
     }
 
-    public AccountSelectorGui.Builder accountSelected(Consumer<AccountLink> onAccountSelected) {
+    public AccountSelectorGui.Builder accountSelected(Consumer<Account> onAccountSelected) {
       this.onAccountSelected = onAccountSelected;
       return this;
     }

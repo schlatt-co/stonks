@@ -1,5 +1,6 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.util.Util;
@@ -9,12 +10,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
+import java.util.Collection;
 
 public class InviteListGui extends CollectionGuiBase<Member> {
-
-  public InviteListGui(Player player) {
-    super(databaseManager.getMemberDao().getInvites(player), "Invites Inbox");
+  public InviteListGui(Collection<Member> invites) {
+    super(invites, "Invites Inbox");
   }
 
   @Override
@@ -24,23 +24,19 @@ public class InviteListGui extends CollectionGuiBase<Member> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Member obj) {
-    Company company = obj.getCompany();
-    return ClickableItem.of(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName(), ChatColor.GREEN + "Left click to accept.", ChatColor.RED + "Right click to decline."),
+    Company company = Repo.getInstance().companies().get(obj.companyPk);
+    if (company == null) {
+      player.sendMessage("Error opening GUI, company was null, tell an admin");
+      return ClickableItem.empty(Util.item(Material.COBWEB, "error"));
+    }
+    return ClickableItem.of(Util.item(Material.getMaterial(company.logoMaterial), company.name, ChatColor.GREEN + "Left click to accept.", ChatColor.RED + "Right click to decline."),
         e -> {
-          boolean accepted;
           if (e.getClick().isLeftClick()) {
-            accepted = true;
-            player.sendMessage(ChatColor.GREEN + "Invite successfully accepted!");
+            player.performCommand("stonks acceptinvite " + company.pk);
           } else if (e.getClick().isRightClick()) {
-            player.sendMessage(ChatColor.GREEN + "Invite successfully declined!");
-            accepted = false;
+            player.performCommand("stonks rejectinvite " + company.pk);
           } else {
             return;
-          }
-          try {
-            databaseManager.getMemberDao().handleInvite(accepted, company.getId(), player.getUniqueId());
-          } catch (SQLException ex) {
-            ex.printStackTrace();
           }
           player.closeInventory();
         });

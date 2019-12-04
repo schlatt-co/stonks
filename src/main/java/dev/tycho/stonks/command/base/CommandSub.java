@@ -1,5 +1,8 @@
 package dev.tycho.stonks.command.base;
 
+import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.model.core.Company;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -65,6 +68,18 @@ public abstract class CommandSub {
     List<String> playerNames = new ArrayList<>();
     Bukkit.getOnlinePlayers().forEach(o -> playerNames.add(o.getName()));
     return copyPartialMatches(search, playerNames);
+  }
+
+  protected Company companyFromName(String name) {
+    Company company;
+    if (StringUtils.isNumeric(name)) {
+      //Numeric name means we have a company ID
+      company = Repo.getInstance().companies().get(Integer.parseInt(name));
+    } else {
+      //String name means get value for the name
+      company = Repo.getInstance().companyWithName(name);
+    }
+    return company;
   }
 
   String getPermission() {

@@ -1,7 +1,11 @@
 package dev.tycho.stonks.command.subs.company;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.gui.CompanyInfoGui;
+import dev.tycho.stonks.model.core.Company;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +29,17 @@ public class InfoCommandSub extends CommandSub {
       sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " info <company name>");
       return;
     }
-    DatabaseHelper.getInstance().openCompanyInfo(player, concatArgs(1, args));
+    String name = concatArgs(1, args);
+    Company company = companyFromName(name);
+
+    if (company == null) {
+      sendMessage(player, "Company not found.");
+      return;
+    }
+    Stonks.newChain()
+        .asyncFirst(() -> CompanyInfoGui.getInventory(company))
+        .abortIfNull()
+        .sync((result) -> result.open(player))
+        .execute();
   }
 }

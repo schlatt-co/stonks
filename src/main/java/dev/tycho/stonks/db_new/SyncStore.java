@@ -15,7 +15,8 @@ public class SyncStore<T extends Entity> implements Store<T> {
   private HashMap<Integer, T> entities = new HashMap<>();
   private Function<T, T> factory;
   private DatabaseInterface<T> dbi;
-  public SyncStore(DatabaseInterface<T> dbi, Function<T, T> factory)  {
+
+  public SyncStore(DatabaseInterface<T> dbi, Function<T, T> factory) {
     this.dbi = dbi;
     this.factory = factory;
     populate();
@@ -67,7 +68,22 @@ public class SyncStore<T extends Entity> implements Store<T> {
       throw new IllegalArgumentException("Created new entity but we already have the new pk stored");
     }
     entities.put(created.pk, created);
-    return created;
+    return factory.apply(created);
+  }
+
+  @Override
+  public boolean delete(int pk) {
+    if (entities.containsKey(pk)) {
+      try {
+        if (dbi.delete(entities.get(pk))) {
+          entities.remove(pk);
+          return true;
+        }
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+    return false;
   }
 
   @Override

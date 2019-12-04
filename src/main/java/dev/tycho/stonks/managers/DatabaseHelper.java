@@ -5,6 +5,7 @@ import com.earth2me.essentials.User;
 import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.subs.ListCommandSub;
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.*;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -57,8 +58,8 @@ public class DatabaseHelper extends SpigotModule {
 
   public void createCompany(Player player, String companyName) {
     //Prevent the player from spamming companies
-    if (!player.isOp() && playerCompanyCooldown.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
-      sendMessage(player, "You cannot make a company for another " + Util.convertString(COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - playerCompanyCooldown.get(player.getUniqueId()))));
+    if (!player.isOp() && (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId())) < COMPANY_CREATION_COOLDOWN) {
+      sendMessage(player, "You cannot make a company for another " + Util.convertString(COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId()))));
       return;
     }
     Stonks.newChain()
@@ -67,12 +68,13 @@ public class DatabaseHelper extends SpigotModule {
             sendMessage(player, "A company name cannot be longer than 32 characters!");
             return;
           }
+
           try {
-            if (databaseManager.getCompanyDao().companyExists(companyName)) {
+            if (Repo.getInstance().companyWithName(companyName) != null) {
               sendMessage(player, "A company with that name already exists!");
               return;
             }
-            double creationFee = plugin.getConfig().getDouble("fees.companycreation");
+            double creationFee = SettingsManager.COMPANY_FEE;
             if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
               sendMessage(player, "You don't have the sufficient funds for the $" + COMPANY_FEE + " company creation fee.");
               return;

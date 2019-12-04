@@ -14,6 +14,8 @@ public interface Store<T extends Entity> {
 
   T create(T obj);
 
+  boolean delete(int pk);
+
   void refresh(int pk);
 
   ImmutableList<T> getAll();

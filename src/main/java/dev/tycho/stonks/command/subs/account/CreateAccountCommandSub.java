@@ -2,16 +2,15 @@ package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerStateData;
 import dev.tycho.stonks.managers.SettingsManager;
 import dev.tycho.stonks.model.core.Account;
-import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
-import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -47,7 +46,7 @@ public class CreateAccountCommandSub extends CommandSub {
                   .companySelected(company -> new ConfirmationGui.Builder()
                       .title("Accept creation fee?")
                       .onChoiceMade(b -> {
-                          if (b) createAccount(player, company,  accountName, type);
+                        if (b) createAccount(player, company, accountName, type);
                       })
                       .open(player))
                   .open(player);
@@ -69,13 +68,14 @@ public class CreateAccountCommandSub extends CommandSub {
             return;
           }
 
-          for (AccountLink account : Repo.getInstance().companyAccountLinks().getChildren(company)) {
-            if (Repo.getInstance().resolveAccountLink(account).getName().equals(newAccountName)) ;
-            sendMessage(player, "Account name already exist in company!");
-            return;
+          for (Account account : company.accounts) {
+            if (account.name.equals(newAccountName)) {
+              sendMessage(player, "Account name already exist in company!");
+              return;
+            }
           }
 
-          Member member = company.getMember(player)
+          Member member = company.getMember(player);
           if (member == null) {
             sendMessage(player, "You are not a member of this company!");
             return;
@@ -90,22 +90,25 @@ public class CreateAccountCommandSub extends CommandSub {
           }
 
           //Checks done, the account is valid to be created
-
-          Account account;
-            switch (accountType) {
-                case HoldingsAccount:
-                    //Create a new holdings account
-                    account = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
-                    break;
-                case CompanyAccount:
-                    account = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
-                    break;
-                default:
-                    //account type not recognised
-                    throw new IllegalArgumentException("AAAAAAAAAAAAAAAAAAAAa");
-            }
+          Account newAccount;
+          switch (accountType) {
+            case HoldingsAccount:
+              //Create a new holdings account
+              newAccount = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
+              break;
+            case CompanyAccount:
+              newAccount = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
+              break;
+            default:
+              //account type not recognised
+              throw new IllegalArgumentException("Account type not recognised. This is your problem");
+          }
+          if (newAccount == null) {
+            sendMessage(player, "Account creation failed! Please tell an admin");
+            return;
+          }
           sendMessage(player, "Account creation successful!");
-          sendMessage(player, "Account ID: " + ChatColor.YELLOW + Repo.getInstance().accountLinkForAccount(account).getPk());
+          sendMessage(player, "Account ID: " + ChatColor.YELLOW + newAccount.pk);
 
           PlayerStateData.getInstance().setPlayerCreateAccountCooldown(player.getUniqueId(), System.currentTimeMillis());
         }).execute();

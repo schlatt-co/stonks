@@ -1,63 +1,35 @@
 package dev.tycho.stonks.model.logging;
 
-import com.Acrobot.ChestShop.ORMlite.table.DatabaseTable;
-import com.j256.ormlite.field.DatabaseField;
-import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.db_new.Entity;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.UUID;
 
-@DatabaseTable(tableName = "transaction")
-public class Transaction {
-  @DatabaseField(generatedId = true)
-  private int id;
-
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private AccountLink account;
-
-  @DatabaseField()
-  private UUID payee = null;
-
+public class Transaction extends Entity {
+  public final int accountPk;
+  public final  UUID payee;
+  public final  String message;
   //negative amount represents money withdrawn
-  @DatabaseField()
-  private double amount;
+  public final  double amount;
+  public final  Timestamp timestamp;
 
-  @DatabaseField()
-  private Timestamp timestamp;
 
-  @DatabaseField()
-  private String message;
-
-  public Transaction() {
-  }
-
-  public Transaction(AccountLink account, UUID payee, String message, double amount) {
-    this.account = account;
+  public Transaction(int pk, int accountPk, UUID payee, String message, double amount, Timestamp timestamp) {
+    super(pk);
+    this.accountPk = accountPk;
     this.payee = payee;
     this.message = message;
-    if (this.message == null) this.message = "";
     this.amount = amount;
-    this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+    this.timestamp = timestamp;
+//    this.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
   }
 
-  public UUID getPayee() {
-    return payee;
-  }
-
-  public Timestamp getTimestamp() {
-    return timestamp;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public double getAmount() {
-    return amount;
-  }
-
-  public int getId() {
-    return id;
+  public Transaction(Transaction transaction) {
+    super(transaction.pk);
+    this.accountPk = transaction.accountPk;
+    this.payee = transaction.payee;
+    this.message = transaction.message;
+    this.amount = transaction.amount;
+    this.timestamp = transaction.timestamp;
   }
 }

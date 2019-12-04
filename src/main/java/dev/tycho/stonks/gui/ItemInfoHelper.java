@@ -21,56 +21,56 @@ import java.util.List;
 public class ItemInfoHelper {
 
   static ItemStack companyDisplayItem(Company company) {
-    String companyDisplayName = company.getName();
-    if (company.isVerified()) companyDisplayName += "  " + ChatColor.AQUA + "✔";
-    return Util.item(Material.getMaterial(company.getLogoMaterial()), companyDisplayName,
-        (company.isVerified()) ? ChatColor.ITALIC + "" + ChatColor.AQUA + "Verified company" : "",
+    String companyDisplayName = company.name;
+    if (company.verified) companyDisplayName += "  " + ChatColor.AQUA + "✔";
+    return Util.item(Material.getMaterial(company.logoMaterial), companyDisplayName,
+        (company.verified) ? ChatColor.ITALIC + "" + ChatColor.AQUA + "Verified company" : "",
         "Total value: " + ChatColor.GREEN + "$" + Util.commify(company.getTotalValue()),
         "Members: " + company.getNumAcceptedMembers(),
-        "Accounts: " + company.getAccounts().size()
+        "Accounts: " + company.accounts.size()
     );
   }
 
-  static ItemStack accountDisplayItem(AccountLink link, Player player) {
-    return accountDisplayItem(link, player, new String[]{});
+  static ItemStack accountDisplayItem(Account account, Player player) {
+    return accountDisplayItem(account, player, new String[]{});
   }
 
 
-  static ItemStack accountDisplayItem(AccountLink link, Player player, String... extraLore) {
+  static ItemStack accountDisplayItem(Account account, Player player, String... extraLore) {
 
     ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();
-        lore.add("ID: " + ChatColor.YELLOW + link.getId());
+        lore.add("ID: " + ChatColor.YELLOW + a.pk);
         lore.add("Balance: " + ChatColor.GREEN + " $" + Util.commify(a.getTotalBalance()));
         lore.add(ChatColor.ITALIC + "Company Account");
         if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
-        val = Util.item(Material.DIAMOND, a.getName(), lore);
+        val = Util.item(Material.DIAMOND, a.name, lore);
       }
 
       @Override
       public void visit(HoldingsAccount a) {
         List<String> lore = new ArrayList<>();
-        lore.add("ID: " + ChatColor.YELLOW + link.getId());
+        lore.add("ID: " + ChatColor.YELLOW + a.pk);
         lore.add("Total Balance: " + ChatColor.GREEN + "$" + Util.commify(a.getTotalBalance()));
-        lore.add("Holdings: " + ChatColor.YELLOW + a.getHoldings().size());
+        lore.add("Holdings: " + ChatColor.YELLOW + a.holdings.size());
         lore.add(ChatColor.ITALIC + "Holdings Account");
         if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
 
         Material material;
         //If the player has no money in the holding display it as an iron bar
         Holding playerHolding = a.getPlayerHolding(player.getUniqueId());
-        if (playerHolding != null && playerHolding.getBalance() > 0.1) {
+        if (playerHolding != null && playerHolding.balance > 0.1) {
           material = Material.GOLD_INGOT;
         } else {
           material = Material.IRON_INGOT;
         }
 
-        val = Util.item(material, a.getName(), lore);
+        val = Util.item(material, a.name, lore);
       }
     };
-    link.getAccount().accept(visitor);
+    account.accept(visitor);
     return visitor.getRecentVal();
   }
 
@@ -99,26 +99,25 @@ public class ItemInfoHelper {
 
   static ItemStack serviceDisplayItem(Service service, String... extraLore) {
     List<String> lore = new ArrayList<>();
-    lore.add("Cost: " + ChatColor.GREEN + "$" + service.getCost());
-    lore.add("Subscribers: " + ChatColor.YELLOW + service.getSubscriptions().size() + "/" +
-        ((service.getMaxSubscriptions() > 0) ? service.getMaxSubscriptions() : "unlimited"));
-    lore.add("Subscription Period: " + new DecimalFormat("#.#").format(service.getDuration()) + " days");
+    lore.add("Cost: " + ChatColor.GREEN + "$" + service.cost);
+    lore.add("Subscribers: " + ChatColor.YELLOW + service.subscriptions.size() + "/" +
+        ((service.maxSubscribers > 0) ? service.maxSubscribers : "unlimited"));
+    lore.add("Subscription Period: " + new DecimalFormat("#.#").format(service.duration) + " days");
     if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
     Material itemMaterial = Material.KNOWLEDGE_BOOK;
-    return Util.item(itemMaterial, service.getName(), lore);
+    return Util.item(itemMaterial, service.name, lore);
   }
 
-  static ItemStack subscriptionDisplayItem(Subscription subscription, String... extraLore) {
-    Service service = subscription.getService();
-    boolean overdue = subscription.isOverdue();
+  static ItemStack subscriptionDisplayItem(Subscription subscription, Service service, Company company, String... extraLore) {
+    boolean overdue = Subscription.isOverdue(service, subscription);
     List<String> lore = new ArrayList<>();
-    lore.add("Company: " + ChatColor.YELLOW + service.getCompany().getName());
+    lore.add("Company: " + ChatColor.YELLOW + company.name);
     lore.add((overdue ? ChatColor.RED : ChatColor.GREEN) +
-        new DecimalFormat("#.#").format(Math.abs(subscription.getDaysOverdue())) + ChatColor.WHITE + " days " + (overdue ? "overdue" : "remaining"));
-    lore.add("Subscription cost: " + ChatColor.GREEN + "$" + service.getCost());
+        new DecimalFormat("#.#").format(Math.abs(Subscription.getDaysOverdue(service, subscription))) + ChatColor.WHITE + " days " + (overdue ? "overdue" : "remaining"));
+    lore.add("Subscription cost: " + ChatColor.GREEN + "$" + service.cost);
     if (extraLore.length > 0) lore.addAll(Arrays.asList(extraLore));
-    return Util.item(Material.getMaterial(service.getCompany().getLogoMaterial()),
-        service.getName(),
+    return Util.item(Material.getMaterial(company.logoMaterial),
+        service.name,
         lore);
   }
 

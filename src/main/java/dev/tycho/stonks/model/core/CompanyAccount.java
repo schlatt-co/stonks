@@ -1,14 +1,16 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.logging.Transaction;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class CompanyAccount extends Account {
     public final double balance;
 
-    public CompanyAccount(int pk, String name, UUID uuid, int companyPk, double balance) {
-        super(pk, name, uuid, companyPk);
+    public CompanyAccount(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactionHistory, double balance) {
+        super(pk, name, uuid, companyPk, transactionHistory);
         this.balance = balance;
     }
 

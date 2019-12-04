@@ -3,6 +3,7 @@ package dev.tycho.stonks.model.service;
 import dev.tycho.stonks.db_new.Entity;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.UUID;
 
 public class Subscription extends Entity {
@@ -26,13 +27,13 @@ public class Subscription extends Entity {
     this.lastPaymentDate = subscription.lastPaymentDate;
   }
 
-//  public boolean isOverdue() {
-//    return (getDaysOverdue() > 0);
-//  }
-//
-//  //Will return negative for a non-overdue date
-//  public double getDaysOverdue() {
-//    long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
-//    return ((double) millisDifference / 86400000) - service.duration;
-//  }
+  public static boolean isOverdue(Service service, Subscription subscription) {
+    return (getDaysOverdue(service, subscription) > 0);
+  }
+
+  //Will return negative for a non-overdue date
+  public static double getDaysOverdue(Service service, Subscription subscription) {
+    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentDate.getTime();
+    return ((double) millisDifference / 86400000) - service.duration;
+  }
 }

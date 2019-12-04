@@ -1,13 +1,17 @@
 package dev.tycho.stonks.db_new;
 
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -32,6 +36,7 @@ public class Repo {
   private Store<Member> memberStore;
   private Store<Service> serviceStore;
   private Store<Subscription> subscriptionStore;
+  private Store<Transaction> transactionStore;
 
   private Repo() {
     instance = this;
@@ -43,7 +48,7 @@ public class Repo {
     memberStore = new SyncStore<>(null, Member::new);
     serviceStore = new SyncStore<>(null, Service::new);
     subscriptionStore = new SyncStore<>(null, Subscription::new);
-
+    transactionStore = new SyncStore<>(null, Transaction::new);
   }
 
 
@@ -61,6 +66,15 @@ public class Repo {
 
   public Company companyWithName(String name) {
     return Repo.getInstance().companies().getWhere(c -> c.name.equals(name));
+  }
+
+  //Find the account with a given id. Will return null if none is found
+  public Account accountWithId(int id) {
+    Account a = holdingsAccountStore.get(id);
+    if (a == null) {
+      a = companyAccountStore.get(id);
+    }
+    return a;
   }
 
   public Company createCompany(String companyName, Player player) {
@@ -99,8 +113,40 @@ public class Repo {
     return member;
   }
 
+  public boolean deleteMember(Member m) {
+    memberStore.delete(m.pk);
+    //Update the company for this to remove the member
+    companyStore.refresh(m.companyPk);
+  }
+
+  public Collection<Member> getInvites(Player player) {
+    return memberStore.getAllWhere(member-> !member.acceptedInvite && member.uuid.equals(player.getUniqueId()));
+  }
+
+  public Transaction createTransaction(Player player, Account account, String message, double amount) {
+    //Create the new transaction
+    Transaction t = new Transaction(0, account.pk, player.getUniqueId(), message, amount,
+        new Timestamp(Calendar.getInstance().getTime().getTime()));
+    t = transactionStore.create(t);
+    //Refresh the respective account object
+    account.accept(new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        companyAccountStore.refresh(a.pk);
+      }
+
+      @Override
+      public void visit(HoldingsAccount a) {
+        holdingsAccountStore.refresh(a.pk);
+      }
+    });
+    //Update the company for the account we just updated
+    companyStore.refresh(account.companyPk);
+    return t;
+  }
+
   public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
-    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, null);
+    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, null, null);
     ha = holdingsAccountStore.create(ha);
 
     Holding h = new Holding(0, player.getUniqueId(), ha.pk, 1, 0);
@@ -111,7 +157,7 @@ public class Repo {
   }
 
   public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
-    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, 0);
+    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, null, 0);
     ca = companyAccountStore.create(ca);
     companyAccountStore.refresh(company.pk);
     return ca;
@@ -121,14 +167,14 @@ public class Repo {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.balance);
+        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.balance);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.holdings);
         holdingsAccountStore.save(ha);
         val = ha;
       }
@@ -139,22 +185,22 @@ public class Repo {
     return a;
   }
 
-  public Account payAccount(Account account, double amount) {
+  public Account payAccount(Player player, String message, Account account, double amount) {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.balance + amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.balance + amount);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.holdings);
         double totalShare = ha.getTotalShare();
         //Add money proportionally to all holdings
         for (Holding h : ha.holdings) {
-          Holding newHolding = new Holding(h.pk, h.player, h.accountPk, h.share,  h.balance + (h.share / totalShare) * amount);
+          Holding newHolding = new Holding(h.pk, h.player, h.accountPk, h.share, h.balance + (h.share / totalShare) * amount);
           holdingStore.save(newHolding);
         }
         holdingsAccountStore.save(ha);
@@ -165,12 +211,14 @@ public class Repo {
     };
     account.accept(visitor);
     Account a = visitor.getRecentVal();
-    //TODO create a transaction log
-    companyStore.refresh(a.companyPk);
+    //Create a transaction log too
+    createTransaction(player, account, message, amount);
+    //We don't need to refresh the company because this is done when creating a transaction log
+    //companyStore.refresh(a.companyPk);
     return a;
   }
 
-  public Account withdrawFromAccount(Account account, double amount) {
+  public Account withdrawFromAccount(Player player, Account account, double amount) {
     if (amount < 0) {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
@@ -179,7 +227,7 @@ public class Repo {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.balance - amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.balance - amount);
         companyAccountStore.save(ca);
         val = ca;
       }
@@ -191,8 +239,10 @@ public class Repo {
     };
     account.accept(visitor);
     Account a = visitor.getRecentVal();
-    //TODO create a transaction log
-    companyStore.refresh(a.companyPk);
+    //Create a transaction log too
+    createTransaction(player, account, "withdraw", amount);
+    //We don't need to refresh the company because this is done when creating a transaction log
+    //companyStore.refresh(a.companyPk);
     return a;
   }
 

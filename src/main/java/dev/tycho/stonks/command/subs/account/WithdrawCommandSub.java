@@ -1,9 +1,9 @@
 package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,14 +44,15 @@ public class WithdrawCommandSub extends CommandSub {
     }
     double amount = Double.parseDouble(args[1]);
     if (args.length == 3) {
-      if (StringUtils.isNumeric(args[2])) {
-        DatabaseHelper.getInstance().withdrawFromAccount(player, amount, Integer.parseInt(args[2]));
+      Account a;
+      if (StringUtils.isNumeric(args[2]) && (a = Repo.getInstance().accountWithId(Integer.parseInt(args[2]))) != null) {
+        Repo.getInstance().withdrawFromAccount(player, a, amount);
         return;
       } else {
         sendMessage(player, "Invalid account id! Pulling up selector...");
       }
     }
-    List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().getAllCompanies();
+    List<Company> list = new ArrayList<Company>(Repo.getInstance().companies().getAll());
     //We need a list of all companies with a withdrawable account for this player
     //Remove companies where the player is not a manager and doesn't have an account
     //todo remove this messy logic
@@ -63,7 +65,7 @@ public class WithdrawCommandSub extends CommandSub {
         remove = false;
       }
       //If you are not a manager, or a non-member with a holding then don't remove
-      for (AccountLink a : c.getAccounts()) {
+      for (Account a : c.accounts) {
         //Is there a holding account for the player
         ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
           @Override
@@ -76,7 +78,7 @@ public class WithdrawCommandSub extends CommandSub {
             val = (a.getPlayerHolding(player.getUniqueId()) != null);
           }
         };
-        a.getAccount().accept(visitor);
+        a.accept(visitor);
         if (visitor.getRecentVal()) remove = false;
       }
       if (remove) list.remove(i);
@@ -89,9 +91,7 @@ public class WithdrawCommandSub extends CommandSub {
             new AccountSelectorGui.Builder()
                 .company(company)
                 .title("Select an account to withdraw from")
-                .accountSelected(acc -> {
-                  DatabaseHelper.getInstance().withdrawFromAccount(player, amount, acc.getId());
-                })
+                .accountSelected(acc -> Repo.getInstance().withdrawFromAccount(player, acc, amount))
                 .open(player)))
         .open(player);
   }
