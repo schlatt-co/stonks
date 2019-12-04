@@ -1,7 +1,8 @@
 package dev.tycho.stonks.command.subs.holding;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.gui.AllPlayerHoldingsGui;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,10 @@ public class MyHoldingsCommandSub extends CommandSub {
 
     @Override
     public void onCommand(Player player, String alias, String[] args) {
-        DatabaseHelper.getInstance().showPlayerHoldings(player);
+        Stonks.newChain()
+            .asyncFirst(() -> new AllPlayerHoldingsGui(player))
+            .abortIfNull()
+            .sync(gui -> gui.show(player))
+            .execute();
     }
 }

@@ -114,9 +114,12 @@ public class Repo {
   }
 
   public boolean deleteMember(Member m) {
-    memberStore.delete(m.pk);
-    //Update the company for this to remove the member
-    companyStore.refresh(m.companyPk);
+    if (memberStore.delete(m.pk)) {
+      //Update the company for this to remove the member
+      companyStore.refresh(m.companyPk);
+      return true;
+    }
+    return false;
   }
 
   public Collection<Member> getInvites(Player player) {
@@ -152,14 +155,14 @@ public class Repo {
     Holding h = new Holding(0, player.getUniqueId(), ha.pk, 1, 0);
     h = holdingStore.create(h);
     holdingsAccountStore.refresh(ha.pk);
-    companyAccountStore.refresh(company.pk);
+    companyStore.refresh(company.pk);
     return ha;
   }
 
   public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
     CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, null, 0);
     ca = companyAccountStore.create(ca);
-    companyAccountStore.refresh(company.pk);
+    companyStore.refresh(company.pk);
     return ca;
   }
 
@@ -244,6 +247,30 @@ public class Repo {
     //We don't need to refresh the company because this is done when creating a transaction log
     //companyStore.refresh(a.companyPk);
     return a;
+  }
+
+  public Holding createHolding(UUID player, HoldingsAccount holdingsAccount, double share) {
+    Holding holding = new Holding(0, player, holdingsAccount.pk, share, 0);
+    holding = holdingStore.create(holding);
+    if (holding == null) {
+      // error creating holding, we should never get here
+      return null;
+    }
+    //Update account and company to persist the new holding
+    holdingsAccountStore.refresh(holding.accountPk);
+    companyStore.refresh(holdingsAccount.companyPk);
+    return holding;
+  }
+
+  public boolean deleteHolding(Holding holding) {
+    if (memberStore.delete(holding.pk)) {
+      //Update the company and account
+      holdingsAccountStore.refresh(holding.accountPk);
+      HoldingsAccount ha = holdingsAccountStore.get(holding.accountPk);
+      companyStore.refresh(ha.companyPk);
+      return true;
+    }
+    return false;
   }
 
   public Store<Company> companies() {

@@ -1,5 +1,7 @@
 package dev.tycho.stonks.command.base;
 
+import com.earth2me.essentials.User;
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.model.core.Company;
 import org.apache.commons.lang.StringUtils;
@@ -80,6 +82,15 @@ public abstract class CommandSub {
       company = Repo.getInstance().companyWithName(name);
     }
     return company;
+  }
+
+  protected Player playerFromName(String name) {
+    User u = Stonks.essentials.getOfflineUser(name);
+    if (u == null) {
+      return null;
+    } else {
+      return u.getBase();
+    }
   }
 
   String getPermission() {

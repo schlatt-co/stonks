@@ -3,6 +3,7 @@ package dev.tycho.stonks;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class Stonks extends JavaPlugin {
 
+  public static Essentials essentials = null;
   public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
   private List<SpigotModule> loadedModules = new ArrayList<>();
@@ -37,9 +39,12 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
-//    loadedModules.add(new SignManager(this));
 
     if (!setupEconomy()) {
+      return;
+    }
+
+    if (!setupEssentials()) {
       return;
     }
 
@@ -78,5 +83,11 @@ public class Stonks extends JavaPlugin {
     }
 
     return (economy != null);
+  }
+
+
+  private boolean setupEssentials() {
+    essentials = (Essentials)this.getServer().getPluginManager().getPlugin("Essentials");
+    return (essentials != null);
   }
 }

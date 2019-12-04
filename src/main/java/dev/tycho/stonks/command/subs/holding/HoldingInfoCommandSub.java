@@ -1,7 +1,11 @@
 package dev.tycho.stonks.command.subs.holding;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.gui.HoldingListGui;
+import dev.tycho.stonks.model.core.Account;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +36,21 @@ public class HoldingInfoCommandSub extends CommandSub {
       return;
     }
 
-    DatabaseHelper.getInstance().openHoldingAccountInfo(player, Integer.parseInt(args[1]));
+    Account account = Repo.getInstance().accountWithId(Integer.parseInt(args[1]));
+    if (account == null) {
+      sendMessage(player, "Account with id does not exist!");
+      return;
+    }
+    Stonks.newChain()
+        .asyncFirst(() -> {
+            if (!(account instanceof HoldingsAccount)) {
+              sendMessage(player, "You can only view holdings of holding accounts!");
+              return null;
+            }
+            return new HoldingListGui((HoldingsAccount)account);
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 }

@@ -1,7 +1,9 @@
 package dev.tycho.stonks.command.subs.holding;
 
+import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.model.core.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -11,8 +13,11 @@ import java.util.List;
 
 public class RemoveHoldingCommandSub extends CommandSub {
 
-  public RemoveHoldingCommandSub() {
+  final Essentials essentials;
+
+  public RemoveHoldingCommandSub(Essentials essentials) {
     super(false);
+    this.essentials = essentials;
   }
 
   @Override
@@ -35,6 +40,68 @@ public class RemoveHoldingCommandSub extends CommandSub {
       return;
     }
 
-    DatabaseHelper.getInstance().removeHolding(player, Integer.parseInt(args[1]), args[2]);
+    Account account = Repo.getInstance().accountWithId(Integer.parseInt(args[1]));
+    removeHolding(player, account, args[2]);
+  }
+
+  private void removeHolding(Player player, Account account, String playerName) {
+    if (account == null) {
+      sendMessage(player, "Invalid account id!");
+      return;
+    }
+    //We have a valid account
+    //First make sure the account is a holdings account
+    if (!(account instanceof HoldingsAccount)) {
+      sendMessage(player, "That is not a holding account!");
+      return;
+    }
+    HoldingsAccount holdingsAccount = (HoldingsAccount) account;
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    if (company == null) {
+      sendMessage(player, "Could not find company for account");
+      return;
+    }
+    Member member = company.getMember(player);
+    //Is the player a member of that company
+    if (member == null) {
+      sendMessage(player, "You are not a member of that company!");
+      return;
+    }
+
+    //Does the player have permission to create a holding in that account?
+    if (!member.hasManagamentPermission()) {
+      sendMessage(player, "You do not have permission to create a holding account! Ask to be promoted.");
+      return;
+    }
+
+    //Try and find the UUID of that player
+    Player op = playerFromName(playerName);
+    if (op == null) {
+      sendMessage(player, "That player has never played on the server!");
+      return;
+    }
+    Holding playerHolding = holdingsAccount.getPlayerHolding(op.getUniqueId());
+    if (playerHolding == null) {
+      sendMessage(player, "There is no holding for this player!");
+      return;
+    }
+    //That player has a holding
+    //If their balance is lower than 1 we can remove it
+    //This isn't == 0 because of possible floating point errors
+    if (playerHolding.balance > 1) {
+      sendMessage(player, "That account is worth more than $1! Please get the player to withdraw the money from it!");
+      return;
+    }
+    if (holdingsAccount.holdings.size() < 2) {
+      sendMessage(player, "There needs to be at least one holding per holding account!");
+      return;
+    }
+    //We can delete the holding
+    if (Repo.getInstance().deleteHolding(playerHolding)) {
+      sendMessage(player, "Holding removed successfully!");
+    } else {
+      sendMessage(player, "Error deleting holding");
+    }
+
   }
 }
