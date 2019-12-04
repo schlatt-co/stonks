@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.holding;
 
-import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
@@ -18,10 +17,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class CreateHoldingCommandSub extends CommandSub {
-  private final Essentials essentials;
-  public CreateHoldingCommandSub(Essentials essentials) {
-    this.essentials = essentials;
-  }
 
 
   private static final List<String> RATIOS = Arrays.asList(

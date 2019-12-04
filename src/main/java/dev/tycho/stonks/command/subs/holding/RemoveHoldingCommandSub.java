@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.holding;
 
-import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.model.core.*;
@@ -13,11 +12,9 @@ import java.util.List;
 
 public class RemoveHoldingCommandSub extends CommandSub {
 
-  final Essentials essentials;
 
-  public RemoveHoldingCommandSub(Essentials essentials) {
+  public RemoveHoldingCommandSub() {
     super(false);
-    this.essentials = essentials;
   }
 
   @Override

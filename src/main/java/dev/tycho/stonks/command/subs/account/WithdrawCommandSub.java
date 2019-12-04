@@ -46,7 +46,7 @@ public class WithdrawCommandSub extends CommandSub {
     if (args.length == 3) {
       Account a;
       if (StringUtils.isNumeric(args[2]) && (a = Repo.getInstance().accountWithId(Integer.parseInt(args[2]))) != null) {
-        Repo.getInstance().withdrawFromAccount(player, a, amount);
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
         return;
       } else {
         sendMessage(player, "Invalid account id! Pulling up selector...");
@@ -91,7 +91,7 @@ public class WithdrawCommandSub extends CommandSub {
             new AccountSelectorGui.Builder()
                 .company(company)
                 .title("Select an account to withdraw from")
-                .accountSelected(acc -> Repo.getInstance().withdrawFromAccount(player, acc, amount))
+                .accountSelected(acc -> Repo.getInstance().withdrawFromAccount(player.getUniqueId(), acc, amount))
                 .open(player)))
         .open(player);
   }

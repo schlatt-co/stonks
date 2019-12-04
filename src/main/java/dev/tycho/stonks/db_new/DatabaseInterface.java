@@ -1,4 +1,4 @@
-package dev.tycho.stonks.model.store_old;
+package dev.tycho.stonks.db_new;
 
 import dev.tycho.stonks.db_new.Entity;
 

@@ -16,14 +16,14 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
   private Consumer<Service> onServiceSelected;
 
   public ServiceSelectorGui(Company company, String title, Consumer<Service> onServiceSelected, Player player) {
-    super(company.getServices(), title);
+    super(company.services, title);
     this.company = company;
     this.onServiceSelected = onServiceSelected;
   }
 
   @Override
   protected void customInit(Player player, InventoryContents contents) {
-    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
+    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.logoMaterial), company.name)));
   }
 
   @Override

@@ -75,7 +75,7 @@ public class SubscribeCommandSub extends CommandSub {
               } else {
                 //Payment success
                 Repo.getInstance().createSubscription(player, service, autoPay);
-                Repo.getInstance().createTransaction(player, Repo.getInstance().accountWithId(service.accountPk),
+                Repo.getInstance().createTransaction(player.getUniqueId(), Repo.getInstance().accountWithId(service.accountPk),
                     "First Subscription payment (" + service.name + ")", service.cost);
                 //Subscription created!
                 sendMessage(player, "You have subscribed to the service " + service.name);

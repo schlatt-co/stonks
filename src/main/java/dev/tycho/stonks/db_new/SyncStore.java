@@ -1,7 +1,6 @@
 package dev.tycho.stonks.db_new;
 
 import com.google.common.collect.ImmutableList;
-import dev.tycho.stonks.model.store_old.DatabaseInterface;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

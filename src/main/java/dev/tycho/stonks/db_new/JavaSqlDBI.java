@@ -1,6 +1,4 @@
-package dev.tycho.stonks.model.store_old;
-
-import dev.tycho.stonks.db_new.Entity;
+package dev.tycho.stonks.db_new;
 
 import java.sql.Connection;
 import java.sql.SQLException;

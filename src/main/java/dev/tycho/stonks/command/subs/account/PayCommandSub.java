@@ -65,7 +65,7 @@ public class PayCommandSub extends CommandSub {
               new AccountSelectorGui.Builder()
                   .company(company)
                   .title("Select which account to pay")
-                  .accountSelected(account -> Repo.getInstance().payAccount(player, message, account, amount));
+                  .accountSelected(account -> Repo.getInstance().payAccount(player.getUniqueId(), message, account, amount));
           List<String> info = new ArrayList<>();
           info.add("You are trying to pay an unverified company!");
           info.add("Unverified companies might be pretending to be ");

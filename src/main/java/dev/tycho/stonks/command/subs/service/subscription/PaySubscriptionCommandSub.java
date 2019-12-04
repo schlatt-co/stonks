@@ -61,7 +61,7 @@ public class PaySubscriptionCommandSub extends CommandSub {
                 sendMessage(player, "Insufficient funds!");
               } else {
                 //Payment success
-                Repo.getInstance().paySubscription(player, subscription, service);
+                Repo.getInstance().paySubscription(player.getUniqueId(), subscription, service);
                 //Subscription created!
                 sendMessage(player, "You have resubscribed to the service " + service.name + "!");
                 sendMessage(player, "This service will expire in " + service.duration + " days");

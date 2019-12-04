@@ -41,7 +41,7 @@ public class Repo {
   private Repo() {
     instance = this;
     conn = null;
-    companyStore = new SyncStore<>(new CompanyDBI(conn), Company::new);
+    companyStore = new SyncStore<>(null, Company::new);
     companyAccountStore = new SyncStore<>(null, CompanyAccount::new);
     holdingsAccountStore = new SyncStore<>(null, HoldingsAccount::new);
     holdingStore = new SyncStore<>(null, Holding::new);
@@ -76,6 +76,15 @@ public class Repo {
     }
     return a;
   }
+
+  public Account accountWithUUID(UUID uuid) {
+    Account a = holdingsAccountStore.getWhere(c->c.uuid.equals(uuid));
+    if (a == null) {
+      a = companyAccountStore.getWhere(c->c.uuid.equals(uuid));
+    }
+    return a;
+  }
+
 
   public Company createCompany(String companyName, Player player) {
     Company c = new Company(0, companyName, "S" + companyName,
@@ -126,9 +135,9 @@ public class Repo {
     return memberStore.getAllWhere(member -> !member.acceptedInvite && member.uuid.equals(player.getUniqueId()));
   }
 
-  public Transaction createTransaction(Player player, Account account, String message, double amount) {
+  public Transaction createTransaction(UUID player, Account account, String message, double amount) {
     //Create the new transaction
-    Transaction t = new Transaction(0, account.pk, player.getUniqueId(), message, amount,
+    Transaction t = new Transaction(0, account.pk, player, message, amount,
         new Timestamp(Calendar.getInstance().getTime().getTime()));
     t = transactionStore.create(t);
     //Refresh the respective account object
@@ -192,7 +201,7 @@ public class Repo {
     return a;
   }
 
-  public Account payAccount(Player player, String message, Account account, double amount) {
+  public Account payAccount(UUID player, String message, Account account, double amount) {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
@@ -225,7 +234,7 @@ public class Repo {
     return a;
   }
 
-  public Account withdrawFromAccount(Player player, Account account, double amount) {
+  public Account withdrawFromAccount(UUID player, Account account, double amount) {
     if (amount < 0) {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
@@ -304,7 +313,7 @@ public class Repo {
     return subscription;
   }
 
-  public Subscription paySubscription(Player player, Subscription subscription, Service service) {
+  public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
     Subscription s = new Subscription(subscription.pk, subscription.playerId, subscription.servicePk,
         new Timestamp(Calendar.getInstance().getTime().getTime()), subscription.autoPay);
 

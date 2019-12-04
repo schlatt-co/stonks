@@ -1,7 +1,5 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.table.DatabaseTable;
-import dev.tycho.stonks.database.CompanyDaoImpl;
 import dev.tycho.stonks.db_new.Entity;
 import dev.tycho.stonks.model.service.Service;
 import org.bukkit.entity.Player;
@@ -9,7 +7,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@DatabaseTable(tableName = "company", daoClass = CompanyDaoImpl.class)
 public class Company extends Entity {
 
   public final String name;

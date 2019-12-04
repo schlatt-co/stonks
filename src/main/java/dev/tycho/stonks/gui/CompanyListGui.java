@@ -26,7 +26,7 @@ public class CompanyListGui extends CollectionGuiBase<Company> {
     return ClickableItem.of(ItemInfoHelper.companyDisplayItem(obj),
         e -> {
           CompanyInfoGui.getInventory(obj).open(player);
-          player.performCommand("stonks info " + obj.getName());
+          player.performCommand("stonks info " + obj.name);
         });
   }
 }
