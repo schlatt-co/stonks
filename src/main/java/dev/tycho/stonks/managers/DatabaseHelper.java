@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -535,7 +534,7 @@ public class DatabaseHelper extends SpigotModule {
               sendMessage(player, "Invalid company!");
               return;
             }
-            if (!company.hasMember(player)) {
+            if (!company.isMember(player)) {
               sendMessage(player, "You are not a member of that company!");
               return;
             }

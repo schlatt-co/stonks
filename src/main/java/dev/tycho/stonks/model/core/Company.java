@@ -80,7 +80,7 @@ public class Company extends Entity {
     return totalValue;
   }
 
-  public Boolean hasMember(Player player) {
+  public Boolean isMember(Player player) {
     for (Member member : members) {
       if (member.uuid.equals(player.getUniqueId())) {
         return true;

@@ -1,14 +1,13 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.ServiceInfoGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class ServiceInfoCommandSub extends CommandSub {
@@ -32,15 +31,12 @@ public class ServiceInfoCommandSub extends CommandSub {
       sendMessage(player, "Correct usage /" + alias + " serviceinfo <service_id>");
       return;
     }
-    try {
-      Service service = DatabaseHelper.getInstance().getDatabaseManager().getServiceDao().queryForId(Integer.parseInt(args[1]));
-      if (service == null) {
-        player.sendMessage("Service id not found");
-        return;
-      }
-      ServiceInfoGui.getInventory(service).open(player);
-    } catch (SQLException e) {
-      e.printStackTrace();
+
+    Service service = Repo.getInstance().services().get(Integer.parseInt(args[1]));
+    if (service == null) {
+      player.sendMessage("Service id not found");
+      return;
     }
+    ServiceInfoGui.getInventory(service, Repo.getInstance().accountWithId(service.accountPk)).open(player);
   }
 }

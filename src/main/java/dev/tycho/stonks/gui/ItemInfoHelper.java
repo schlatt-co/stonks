@@ -76,24 +76,24 @@ public class ItemInfoHelper {
 
   static ItemStack transactionDisplayItem(Transaction transaction) {
     List<String> lore = new ArrayList<>();
-    if (transaction.getPayee() != null) {
-      OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.getPayee());
+    if (transaction.payee != null) {
+      OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.payee);
       if (p.hasPlayedBefore()) lore.add("Made by " + ChatColor.YELLOW + p.getName());
     }
-    lore.add("On (EST) " + transaction.getTimestamp().toString());
-    if (transaction.getMessage() != null) {
+    lore.add("On (EST) " + transaction.timestamp.toString());
+    if (transaction.message != null) {
       lore.add("Message: ");
-      lore.add(ChatColor.ITALIC + transaction.getMessage());
+      lore.add(ChatColor.ITALIC + transaction.message);
     }
 
     Material itemMaterial = Material.CHEST;
-    if (transaction.getPayee() != null) {
-      itemMaterial = (transaction.getAmount() > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
+    if (transaction.payee != null) {
+      itemMaterial = (transaction.amount > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
 
-      if (transaction.getMessage() != null && transaction.getMessage().startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
+      if (transaction.message != null && transaction.message.startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
     }
     return Util.item(itemMaterial,
-        ((transaction.getAmount() > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.getAmount(),
+        ((transaction.amount > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.amount,
         lore);
   }
 

@@ -123,7 +123,7 @@ public class Repo {
   }
 
   public Collection<Member> getInvites(Player player) {
-    return memberStore.getAllWhere(member-> !member.acceptedInvite && member.uuid.equals(player.getUniqueId()));
+    return memberStore.getAllWhere(member -> !member.acceptedInvite && member.uuid.equals(player.getUniqueId()));
   }
 
   public Transaction createTransaction(Player player, Account account, String message, double amount) {
@@ -132,6 +132,31 @@ public class Repo {
         new Timestamp(Calendar.getInstance().getTime().getTime()));
     t = transactionStore.create(t);
     //Refresh the respective account object
+    refreshAccount(account);
+    //Update the company for the account we just updated
+    companyStore.refresh(account.companyPk);
+    return t;
+  }
+
+  public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
+    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, null, null, null);
+    ha = holdingsAccountStore.create(ha);
+
+    Holding h = new Holding(0, player.getUniqueId(), ha.pk, 1, 0);
+    h = holdingStore.create(h);
+    holdingsAccountStore.refresh(ha.pk);
+    companyStore.refresh(company.pk);
+    return ha;
+  }
+
+  public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
+    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, null, null, 0);
+    ca = companyAccountStore.create(ca);
+    companyStore.refresh(company.pk);
+    return ca;
+  }
+
+  private void refreshAccount(Account account) {
     account.accept(new IAccountVisitor() {
       @Override
       public void visit(CompanyAccount a) {
@@ -143,41 +168,20 @@ public class Repo {
         holdingsAccountStore.refresh(a.pk);
       }
     });
-    //Update the company for the account we just updated
-    companyStore.refresh(account.companyPk);
-    return t;
-  }
-
-  public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
-    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, null, null);
-    ha = holdingsAccountStore.create(ha);
-
-    Holding h = new Holding(0, player.getUniqueId(), ha.pk, 1, 0);
-    h = holdingStore.create(h);
-    holdingsAccountStore.refresh(ha.pk);
-    companyStore.refresh(company.pk);
-    return ha;
-  }
-
-  public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
-    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, null, 0);
-    ca = companyAccountStore.create(ca);
-    companyStore.refresh(company.pk);
-    return ca;
   }
 
   public Account renameAccount(Account account, String newName) {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.balance);
+        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.balance);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
         holdingsAccountStore.save(ha);
         val = ha;
       }
@@ -192,14 +196,14 @@ public class Repo {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.balance + amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance + amount);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
         double totalShare = ha.getTotalShare();
         //Add money proportionally to all holdings
         for (Holding h : ha.holdings) {
@@ -230,7 +234,7 @@ public class Repo {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.balance - amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
         companyAccountStore.save(ca);
         val = ca;
       }
@@ -272,6 +276,57 @@ public class Repo {
     }
     return false;
   }
+
+  public Service createService(String name, double duration, double cost, int maxSubscribers, Account account) {
+    Service service = new Service(0, name, duration, cost, maxSubscribers, account.pk, null);
+    service = serviceStore.create(service);
+    refreshAccount(account);
+    companyStore.refresh(account.companyPk);
+    return service;
+  }
+
+  public Service modifyService(Service s, String name, double duration, double cost, int maxSubscribers) {
+    Service service = new Service(s.pk, s.name, duration, cost, maxSubscribers, s.accountPk, s.subscriptions);
+    serviceStore.save(service);
+    Account a = accountWithId(service.accountPk);
+    refreshAccount(a);
+    companyStore.refresh(a.companyPk);
+    return service;
+  }
+
+  public Subscription createSubscription(Player player, Service service, boolean autoPay) {
+    Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new Timestamp(Calendar.getInstance().getTime().getTime()), autoPay);
+    subscription = subscriptionStore.create(subscription);
+    serviceStore.refresh(service.pk);
+    Account account = accountWithId(service.accountPk);
+    refreshAccount(account);
+    companyStore.refresh(account.companyPk);
+    return subscription;
+  }
+
+  public Subscription paySubscription(Player player, Subscription subscription, Service service) {
+    Subscription s = new Subscription(subscription.pk, subscription.playerId, subscription.servicePk,
+        new Timestamp(Calendar.getInstance().getTime().getTime()), subscription.autoPay);
+
+    subscriptionStore.save(s);
+    if (service.pk != s.servicePk) throw new IllegalArgumentException("Primary Key mismatch");
+    serviceStore.refresh(subscription.servicePk);
+    //This action also refreshes the account and company
+    payAccount(player, "Subscription payment (" + service.name + ")", accountWithId(service.accountPk), service.cost);
+    return s;
+  }
+
+  public boolean deleteSubscription(Subscription subscription, Service service) {
+    if (subscriptionStore.delete(subscription.pk)) {
+      serviceStore.refresh(service.pk);
+      Account account = accountWithId(service.accountPk);
+      refreshAccount(account);
+      companyStore.refresh(account.companyPk);
+      return true;
+    }
+    return false;
+  }
+
 
   public Store<Company> companies() {
     return companyStore;

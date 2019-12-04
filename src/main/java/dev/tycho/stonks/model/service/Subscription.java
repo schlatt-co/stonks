@@ -11,13 +11,14 @@ public class Subscription extends Entity {
   public final UUID playerId;
   public final int servicePk;
   public final Timestamp lastPaymentDate;
+  public final boolean autoPay;
 
-
-  public Subscription(int pk, UUID player, int servicePk, Timestamp lastPaymentDate) {
+  public Subscription(int pk, UUID player, int servicePk, Timestamp lastPaymentDate, boolean autoPay) {
     super(pk);
     this.playerId = player;
     this.servicePk = servicePk;
     this.lastPaymentDate = lastPaymentDate;
+    this.autoPay = autoPay;
   }
 
   public Subscription(Subscription subscription) {
@@ -25,6 +26,7 @@ public class Subscription extends Entity {
     this.playerId = subscription.playerId;
     this.servicePk = subscription.servicePk;
     this.lastPaymentDate = subscription.lastPaymentDate;
+    this.autoPay = subscription.autoPay;
   }
 
   public static boolean isOverdue(Service service, Subscription subscription) {

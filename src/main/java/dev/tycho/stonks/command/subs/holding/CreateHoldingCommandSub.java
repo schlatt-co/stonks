@@ -105,7 +105,7 @@ public class CreateHoldingCommandSub extends CommandSub {
       return;
     }
     //Check they are a member of that company
-    if (!company.hasMember(newHoldingOwner)) {
+    if (!company.isMember(newHoldingOwner)) {
       sendMessage(player, newHoldingOwner.getDisplayName() +  " isn't a member of the selected company");
       return;
     }
