@@ -1,4 +1,7 @@
-package dev.tycho.stonks.model.store;
+package dev.tycho.stonks.model.store_old;
+
+import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.db_new.Store;
 
 import java.util.Collection;
 import java.util.HashMap;

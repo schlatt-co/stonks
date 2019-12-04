@@ -1,4 +1,8 @@
-package dev.tycho.stonks.model.store;
+package dev.tycho.stonks.model.store_old;
+
+import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.db_new.Store;
+import dev.tycho.stonks.db_new.SyncStore;
 
 public class SyncManyToManyStore<P extends Entity, C extends Entity, I extends IntermediateEntity<P, C>> extends ManyToManyStore<P, C, I> {
   public SyncManyToManyStore(Store<P> parents, Store<C> components, DatabaseInterface<I> intermediateDBI) {

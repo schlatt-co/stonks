@@ -4,7 +4,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.AccountListGui;
 import dev.tycho.stonks.model.core.Company;
-import dev.tycho.stonks.model.store.Repo;
+import dev.tycho.stonks.db_new.Repo;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

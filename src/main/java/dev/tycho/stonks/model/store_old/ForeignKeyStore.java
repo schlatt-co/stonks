@@ -1,4 +1,6 @@
-package dev.tycho.stonks.model.store;
+package dev.tycho.stonks.model.store_old;
+
+import dev.tycho.stonks.db_new.Entity;
 
 import java.util.Collection;
 

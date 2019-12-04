@@ -1,4 +1,4 @@
-package dev.tycho.stonks.model.store;
+package dev.tycho.stonks.db_new;
 
 import com.google.common.collect.ImmutableList;
 
@@ -8,14 +8,19 @@ public interface Store<T extends Entity> {
 
   T get(int pk);
 
-  abstract void populate();
+  void populate();
 
   void save(T obj);
 
-  void create(T obj);
+  T create(T obj);
+
+  void refresh(int pk);
 
   ImmutableList<T> getAll();
 
+
   T getWhere(Predicate<T> p);
+
+  ImmutableList<T> getAllWhere(Predicate<T> p);
 
 }

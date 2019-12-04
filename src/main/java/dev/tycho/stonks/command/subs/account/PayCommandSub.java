@@ -7,7 +7,7 @@ import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
-import dev.tycho.stonks.model.store.Repo;
+import dev.tycho.stonks.db_new.Repo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

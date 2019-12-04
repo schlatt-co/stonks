@@ -1,34 +1,31 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
-import dev.tycho.stonks.model.store.Entity;
+import dev.tycho.stonks.db_new.Entity;
 
 import java.util.UUID;
 
 public abstract class Account extends Entity {
 
-  private UUID uuid;
+  public final int companyPk;
 
-  private String name;
+  public final UUID uuid;
 
-  public Account(String name, UUID uuid) {
+  public final String name;
+
+  public Account(int pk, String name, UUID uuid, int companyPk) {
+    super(pk);
     this.name = name;
     this.uuid = uuid;
+    this.companyPk = companyPk;
   }
 
-  public String getName() {
-    return name;
+  public Account(Account account) {
+    super(account.pk);
+    this.name = account.name;
+    this.uuid = account.uuid;
+    this.companyPk = account.companyPk;
   }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public UUID getUuid() {
-    return uuid;
-  }
-
-  public abstract void addBalance(double amount);
 
   public abstract double getTotalBalance();
 

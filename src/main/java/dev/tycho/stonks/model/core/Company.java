@@ -2,44 +2,62 @@ package dev.tycho.stonks.model.core;
 
 import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.database.CompanyDaoImpl;
+import dev.tycho.stonks.db_new.Entity;
 import dev.tycho.stonks.model.service.Service;
-import dev.tycho.stonks.model.store.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @DatabaseTable(tableName = "company", daoClass = CompanyDaoImpl.class)
 public class Company extends Entity {
 
-  private String name;
+  public final String name;
 
-  private String shopName;
+  public final String shopName;
 
-  private Collection<Member> members;
+  public final Collection<Member> members;
 
-  private Collection<AccountLink> accounts;
+  public final Collection<Account> accounts;
 
-  private Collection<Service> services;
+  public final Collection<Service> services;
 
-  private String logoMaterial;
+  public final String logoMaterial;
 
-  private Boolean verified;
+  public final Boolean verified;
 
-  private Boolean hidden;
+  public final Boolean hidden;
 
 
-  public Company(String name, String shopName, String logoMaterial, Boolean verified, Boolean hidden) {
+  public Company(int pk, String name, String shopName, Collection<Member> members, Collection<Account> accounts,
+                 Collection<Service> services, String logoMaterial, Boolean verified, Boolean hidden) {
+    super(pk);
     this.name = name;
     this.shopName = shopName;
+    this.members = members;
+    this.accounts = accounts;
+    this.services = services;
     this.logoMaterial = logoMaterial;
     //Companies default to unverified
     this.verified = verified;
     this.hidden = hidden;
   }
 
+  public Company(Company company) {
+    super(company.pk);
+    name = company.name;
+    shopName = company.shopName;
+    members = new ArrayList<>(company.members);
+    accounts = new ArrayList<>(company.accounts);
+    services = new ArrayList<>(company.services);
+    logoMaterial = company.logoMaterial;
+    verified = company.verified;
+    hidden = company.hidden;
+  }
+
   public Member getMember(Player player) {
     for (Member member : members) {
-      if (member.getUuid().equals(player.getUniqueId())) {
+      if (member.uuid.equals(player.getUniqueId())) {
         return member;
       }
     }
@@ -49,85 +67,25 @@ public class Company extends Entity {
   public int getNumAcceptedMembers() {
     int m = 0;
     for (Member member : members) {
-      if (member.getAcceptedInvite()) m++;
+      if (member.acceptedInvite) m++;
     }
     return m;
   }
 
   public double getTotalValue() {
     double totalValue = 0;
-    for (AccountLink accountLink : accounts) {
-      totalValue += accountLink.getAccount().getTotalBalance();
+    for (Account account : accounts) {
+      totalValue += account.getTotalBalance();
     }
     return totalValue;
   }
 
   public Boolean hasMember(Player player) {
     for (Member member : members) {
-      if (member.getUuid().equals(player.getUniqueId())) {
+      if (member.uuid.equals(player.getUniqueId())) {
         return true;
       }
     }
     return false;
-  }
-
-  public Boolean isVerified() {
-    return verified;
-  }
-
-  public void setVerified(Boolean verified) {
-    this.verified = verified;
-  }
-
-  public Boolean isHidden() {
-    return hidden;
-  }
-
-  public void setHidden(Boolean hidden) {
-    this.hidden = hidden;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getShopName() {
-    return shopName;
-  }
-
-  public String getLogoMaterial() {
-    return logoMaterial;
-  }
-
-  public void setLogoMaterial(String logoMaterial) {
-    this.logoMaterial = logoMaterial;
-  }
-
-  public Collection<Member> getMembers() {
-    return members;
-  }
-
-  public void setMembers(Collection<Member> members) {
-    this.members = members;
-  }
-
-  public Collection<AccountLink> getAccounts() {
-    return accounts;
-  }
-
-  public void setAccounts(Collection<AccountLink> accounts) {
-    this.accounts = accounts;
-  }
-
-  public Collection<Service> getServices() {
-    return services;
-  }
-
-  public void setServices(Collection<Service> services) {
-    this.services = services;
   }
 }

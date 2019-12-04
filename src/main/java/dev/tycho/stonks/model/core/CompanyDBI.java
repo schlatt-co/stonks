@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.model.store.JavaSqlDBI;
+import dev.tycho.stonks.model.store_old.JavaSqlDBI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

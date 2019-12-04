@@ -11,7 +11,7 @@ import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.AccountLink;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
-import dev.tycho.stonks.model.store.Repo;
+import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -65,7 +65,7 @@ public class CreateAccountCommandSub extends CommandSub {
     Stonks.newChain()
         .async(() -> {
           if (company == null) {
-            sendMessage(player, "Invalid company name!");
+            sendMessage(player, "Invalid company!");
             return;
           }
 
@@ -75,7 +75,7 @@ public class CreateAccountCommandSub extends CommandSub {
             return;
           }
 
-          Member member = Repo.getInstance().getCompanyMember(company, player);
+          Member member = company.getMember(player)
           if (member == null) {
             sendMessage(player, "You are not a member of this company!");
             return;

@@ -5,34 +5,26 @@ import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import java.util.UUID;
 
 public class CompanyAccount extends Account {
-  private double balance;
+    public final double balance;
 
-  public CompanyAccount(String name, UUID uuid) {
-    super(name, uuid);
-  }
-
-  @Override
-  public void addBalance(double amount) {
-    balance += amount;
-  }
-
-  @Override
-  public double getTotalBalance() {
-    return balance;
-  }
-
-  public Boolean subtractBalance(double amount) {
-    if (amount > balance) {
-      return false;
-    } else {
-      balance -= amount;
-      return true;
+    public CompanyAccount(int pk, String name, UUID uuid, int companyPk, double balance) {
+        super(pk, name, uuid, companyPk);
+        this.balance = balance;
     }
-  }
 
-  @Override
-  public void accept(IAccountVisitor visitor) {
-    visitor.visit(this);
-  }
+    public CompanyAccount(CompanyAccount companyAccount) {
+      super(companyAccount);
+      this.balance = companyAccount.balance;
+    }
+
+    @Override
+    public double getTotalBalance() {
+        return balance;
+    }
+
+    @Override
+    public void accept(IAccountVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

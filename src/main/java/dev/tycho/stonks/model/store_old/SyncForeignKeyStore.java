@@ -1,8 +1,10 @@
-package dev.tycho.stonks.model.store;
+package dev.tycho.stonks.model.store_old;
 
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.db_new.Store;
 
 import java.util.ArrayList;
 import java.util.Collection;
