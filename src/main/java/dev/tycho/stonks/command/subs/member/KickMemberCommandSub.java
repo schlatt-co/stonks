@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.member;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import org.bukkit.ChatColor;
@@ -54,7 +54,7 @@ public class KickMemberCommandSub extends CommandSub {
 
     Member sender = company.getMember(player);
     //If the the member is not kicking themselves and doesnt have management permission
-    if (sender == null || (!memberToKick.uuid.equals(sender.uuid) && !sender.hasManagamentPermission())) {
+    if (sender == null || (!memberToKick.playerUUID.equals(sender.playerUUID) && !sender.hasManagamentPermission())) {
       sendMessage(player, "You don't have permission to preform that action.");
       return;
     }

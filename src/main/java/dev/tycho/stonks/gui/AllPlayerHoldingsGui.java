@@ -1,6 +1,6 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Holding;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;

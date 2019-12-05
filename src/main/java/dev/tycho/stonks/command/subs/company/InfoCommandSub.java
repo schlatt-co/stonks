@@ -2,10 +2,8 @@ package dev.tycho.stonks.command.subs.company;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.gui.CompanyInfoGui;
 import dev.tycho.stonks.model.core.Company;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

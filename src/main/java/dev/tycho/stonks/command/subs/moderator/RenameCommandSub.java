@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.moderator;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import org.bukkit.ChatColor;

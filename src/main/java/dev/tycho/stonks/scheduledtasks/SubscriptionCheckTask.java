@@ -1,7 +1,7 @@
 package dev.tycho.stonks.scheduledtasks;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -35,7 +35,7 @@ public class SubscriptionCheckTask implements Runnable {
     Service service = Repo.getInstance().services().get(subscription.servicePk);
     Account account = Repo.getInstance().accountWithId(service.accountPk);
 
-    OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.playerId);
+    OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.playerUUID);
     Player onlinePlayer = null;
     if (player.isOnline()) onlinePlayer = player.getPlayer();
 
@@ -72,7 +72,7 @@ public class SubscriptionCheckTask implements Runnable {
 
   private void cancelSubscriptionIfOverdue(Subscription subscription) {
     Service service = Repo.getInstance().services().get(subscription.servicePk);
-    OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.playerId);
+    OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.playerUUID);
     //If it is still overdue (they didnt pay it or failed to pay it)
     if (Subscription.isOverdue(service, subscription)) {
       if (Subscription.getDaysOverdue(service, subscription) > service.duration) {

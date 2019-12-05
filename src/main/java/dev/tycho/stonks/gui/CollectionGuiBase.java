@@ -1,6 +1,5 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -17,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 public abstract class CollectionGuiBase<T> implements InventoryProvider {
-  public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
   private Collection<T> collection;
   private SmartInventory inventory;

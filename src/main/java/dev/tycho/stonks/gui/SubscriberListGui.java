@@ -31,9 +31,9 @@ public class SubscriberListGui extends CollectionGuiBase<Subscription> {
   @Override
   protected ClickableItem itemProvider(Player player, Subscription obj) {
     double dayDiff = Subscription.getDaysOverdue(service, obj);
-    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerId);
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerUUID);
     return ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer,
-        new DecimalFormat("#.#").format(Math.abs(dayDiff)) + " days " + ((dayDiff > 0) ? "overdue" : " remaining")
+        new DecimalFormat("#.#").format(Math.abs(dayDiff)) + " days " + ((dayDiff > 0) ? "overdue" : "remaining")
     ));
   }
 }

@@ -1,6 +1,5 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.util.Util;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Player;
 
 public class ServiceInfoGui implements InventoryProvider {
 
-  public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
 
   private Service service;

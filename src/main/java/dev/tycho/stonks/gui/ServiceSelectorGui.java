@@ -8,6 +8,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 public class ServiceSelectorGui extends CollectionGuiBase<Service> {
@@ -15,8 +16,8 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
   private Company company;
   private Consumer<Service> onServiceSelected;
 
-  public ServiceSelectorGui(Company company, String title, Consumer<Service> onServiceSelected, Player player) {
-    super(company.services, title);
+  public ServiceSelectorGui(Company company, Collection<Service> services, String title, Consumer<Service> onServiceSelected, Player player) {
+    super(services, title);
     this.company = company;
     this.onServiceSelected = onServiceSelected;
   }
@@ -39,6 +40,7 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
     private Company company = null;
     private String title = "";
     private Consumer<Service> onServiceSelected;
+    Collection<Service> services;
 
     public Builder() {
 
@@ -46,6 +48,11 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
 
     public ServiceSelectorGui.Builder company(Company company) {
       this.company = company;
+      return this;
+    }
+
+    public ServiceSelectorGui.Builder services(Collection<Service> services) {
+      this.services = services;
       return this;
     }
 
@@ -60,7 +67,7 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
     }
 
     public ServiceSelectorGui open(Player player) {
-      ServiceSelectorGui serviceSelectorGui = new ServiceSelectorGui(company, title, onServiceSelected, player);
+      ServiceSelectorGui serviceSelectorGui = new ServiceSelectorGui(company, services, title, onServiceSelected, player);
       serviceSelectorGui.show(player);
       return serviceSelectorGui;
     }

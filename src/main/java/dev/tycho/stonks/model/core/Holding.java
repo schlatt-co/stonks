@@ -9,29 +9,29 @@ import java.util.UUID;
 // A player can withdraw as much money as is in the holding
 public class Holding extends Entity {
 
-  public final UUID player;
-
+  public final UUID playerUUID;
+  public final int accountPk;
   public final double balance;
-
   public final double share;
 
-  public final int accountPk;
 
-  public Holding(int pk, UUID player, int accountPk, double share, double balance) {
+
+
+  public Holding(int pk, UUID playerUUID, double balance, double share, int accountPk) {
     super(pk);
     if (share <= 0) {
       share = 1;
       System.out.println("Holding created with a 0 share");
     }
     this.accountPk = accountPk;
-    this.player = player;
+    this.playerUUID = playerUUID;
     this.share = share;
     this.balance = balance;
   }
 
   public Holding(Holding holding) {
     super(holding.pk);
-    player = holding.player;
+    playerUUID = holding.playerUUID;
     balance = holding.balance;
     share = holding.share;
     accountPk = holding.accountPk;

@@ -2,12 +2,12 @@ package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.db_new.Entity;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.UUID;
 
 public class Member extends Entity {
 
-    public final UUID uuid;
+    public final UUID playerUUID;
     public final int companyPk;
     public final Date joinDate;
     public final Role role;
@@ -15,7 +15,7 @@ public class Member extends Entity {
 
     public Member(int pk, UUID player, int companyPk, Date joinDate, Role role, boolean acceptedInvite) {
       super(pk);
-      this.uuid = player;
+      this.playerUUID = player;
       this.companyPk = companyPk;
       this.joinDate = joinDate;
       this.role = role;
@@ -24,7 +24,7 @@ public class Member extends Entity {
 
     public Member(Member member) {
       super(member.pk);
-      this.uuid = member.uuid;
+      this.playerUUID = member.playerUUID;
       this.companyPk = member.companyPk;
       this.joinDate = member.joinDate;
       this.role = member.role;

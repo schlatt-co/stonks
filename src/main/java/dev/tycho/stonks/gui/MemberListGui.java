@@ -31,7 +31,7 @@ public class MemberListGui extends CollectionGuiBase<Member> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Member obj) {
-    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.uuid);
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerUUID);
     return ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " +
         obj.role.toString()), e -> player.performCommand("stonks memberinfo " + offlinePlayer.getName() + " " + company.name));
   }

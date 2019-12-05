@@ -2,20 +2,20 @@ package dev.tycho.stonks.model.service;
 
 import dev.tycho.stonks.db_new.Entity;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.Calendar;
 import java.util.UUID;
 
 public class Subscription extends Entity {
 
-  public final UUID playerId;
+  public final UUID playerUUID;
   public final int servicePk;
-  public final Timestamp lastPaymentDate;
+  public final Date lastPaymentDate;
   public final boolean autoPay;
 
-  public Subscription(int pk, UUID player, int servicePk, Timestamp lastPaymentDate, boolean autoPay) {
+  public Subscription(int pk, UUID player, int servicePk, Date lastPaymentDate, boolean autoPay) {
     super(pk);
-    this.playerId = player;
+    this.playerUUID = player;
     this.servicePk = servicePk;
     this.lastPaymentDate = lastPaymentDate;
     this.autoPay = autoPay;
@@ -23,7 +23,7 @@ public class Subscription extends Entity {
 
   public Subscription(Subscription subscription) {
     super(subscription.pk);
-    this.playerId = subscription.playerId;
+    this.playerUUID = subscription.playerUUID;
     this.servicePk = subscription.servicePk;
     this.lastPaymentDate = subscription.lastPaymentDate;
     this.autoPay = subscription.autoPay;

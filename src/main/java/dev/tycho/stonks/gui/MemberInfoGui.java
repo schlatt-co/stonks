@@ -1,6 +1,5 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.model.core.Role;
@@ -18,7 +17,6 @@ import org.bukkit.entity.Player;
 
 public class MemberInfoGui implements InventoryProvider {
 
-  public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
 
   private Member member;
@@ -27,7 +25,7 @@ public class MemberInfoGui implements InventoryProvider {
 
   public MemberInfoGui(Member member, Company company) {
     this.member = member;
-    this.offlinePlayer = Bukkit.getOfflinePlayer(member.uuid);
+    this.offlinePlayer = Bukkit.getOfflinePlayer(member.playerUUID);
     this.company = company;
   }
 
@@ -37,7 +35,7 @@ public class MemberInfoGui implements InventoryProvider {
         .provider(new MemberInfoGui(member, company))
         .manager(inventoryManager)
         .size(3, 9)
-        .title(Bukkit.getOfflinePlayer(member.uuid).getName())
+        .title(Bukkit.getOfflinePlayer(member.playerUUID).getName())
         .build();
   }
 

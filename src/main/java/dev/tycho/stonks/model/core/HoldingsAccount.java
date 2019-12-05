@@ -35,7 +35,7 @@ public class HoldingsAccount extends Account {
   //Returns the holding for the player entered, if none is found then return nothing
   public Holding getPlayerHolding(UUID player) {
     for (Holding h : holdings) {
-      if (h.player.equals(player)) {
+      if (h.playerUUID.equals(player)) {
         return h;
       }
     }

@@ -30,11 +30,11 @@ public class HoldingListGui extends CollectionGuiBase<Holding> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Holding obj) {
-    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.player);
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerUUID);
     List<String> lore = new ArrayList<>();
     lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(obj.balance));
     lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + obj.share);
-    if (player.getUniqueId().equals(obj.player))
+    if (player.getUniqueId().equals(obj.playerUUID))
       lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
     lore.add(ChatColor.RED + "Right click to delete holding.");
 
@@ -42,7 +42,7 @@ public class HoldingListGui extends CollectionGuiBase<Holding> {
         lore), e -> {
       if (e.getClick().isRightClick()) {
         player.performCommand("stonks removeholding " + holdingsAccount.pk + " " + offlinePlayer.getName());
-      } else if (e.getClick().isLeftClick() && player.getUniqueId().equals(obj.player)) {
+      } else if (e.getClick().isLeftClick() && player.getUniqueId().equals(obj.playerUUID)) {
         player.performCommand("stonks withdraw " + obj.balance + " " + holdingsAccount.pk);
       }
     });

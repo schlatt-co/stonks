@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.ServiceInfoGui;
 import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;

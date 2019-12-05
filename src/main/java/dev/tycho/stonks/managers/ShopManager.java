@@ -5,7 +5,6 @@ import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.db_new.Repo;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import org.bukkit.ChatColor;
@@ -20,11 +19,8 @@ import static com.Acrobot.ChestShop.Signs.ChestShopSign.PRICE_LINE;
 
 public class ShopManager extends SpigotModule {
 
-  private DatabaseManager databaseManager;
-
   public ShopManager(Stonks plugin) {
     super("Shop Manager", plugin);
-    databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
   }
 
   @EventHandler
@@ -52,7 +48,6 @@ public class ShopManager extends SpigotModule {
     if ((account = Repo.getInstance().accountWithId(accountId)) != null) {
       UUID accountUUID = account.uuid;
       Company company = Repo.getInstance().companies().get(account.companyPk);
-
       //If the sign is a sell sign don't allow holdings accounts
       //todo turn this into a visitor and remove the need for getAccountType
       if (priceLine.toLowerCase().contains("s") && account instanceof HoldingsAccount) {
@@ -213,7 +208,7 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player player = Stonks.essentials.getUser(member.uuid).getBase();
+        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
         if (player.isOnline()) {
           event.addTarget(player);
         }
@@ -231,7 +226,7 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player player = Stonks.essentials.getUser(member.uuid).getBase();
+        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
         if (player.isOnline()) {
           event.addTarget(player);
         }

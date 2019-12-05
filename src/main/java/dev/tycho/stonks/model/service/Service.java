@@ -9,16 +9,13 @@ import java.util.Collection;
 public class Service extends Entity {
 
   public final String name;
-
   //days
   public final double duration;
-
   public final double cost;
-
   //0 = no limit
   public final int maxSubscribers;
-
   public final int accountPk;
+
   public final Collection<Subscription> subscriptions;
 
   public Service(int pk, String name, double duration, double cost, int maxSubscribers, int accountPk, Collection<Subscription> subscriptions) {
@@ -46,7 +43,7 @@ public class Service extends Entity {
   //If none is found then return null
   public Subscription getSubscription(Player player) {
     for (Subscription s : subscriptions) {
-      if (s.playerId.equals(player.getUniqueId())) return s;
+      if (s.playerUUID.equals(player.getUniqueId())) return s;
     }
     return null;
   }

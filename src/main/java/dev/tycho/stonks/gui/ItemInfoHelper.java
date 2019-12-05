@@ -76,8 +76,8 @@ public class ItemInfoHelper {
 
   static ItemStack transactionDisplayItem(Transaction transaction) {
     List<String> lore = new ArrayList<>();
-    if (transaction.payee != null) {
-      OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.payee);
+    if (transaction.payeeUUID != null) {
+      OfflinePlayer p = Bukkit.getOfflinePlayer(transaction.payeeUUID);
       if (p.hasPlayedBefore()) lore.add("Made by " + ChatColor.YELLOW + p.getName());
     }
     lore.add("On (EST) " + transaction.timestamp.toString());
@@ -87,7 +87,7 @@ public class ItemInfoHelper {
     }
 
     Material itemMaterial = Material.CHEST;
-    if (transaction.payee != null) {
+    if (transaction.payeeUUID != null) {
       itemMaterial = (transaction.amount > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
 
       if (transaction.message != null && transaction.message.startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;

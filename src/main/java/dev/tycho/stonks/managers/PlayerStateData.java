@@ -12,6 +12,11 @@ public class PlayerStateData {
     }
     return instance;
   }
+
+  public PlayerStateData() {
+    instance = this;
+  }
+
   private HashMap<UUID, Long> createAccountCooldown = new HashMap<>();
   private HashMap<UUID, Long> createCompanyCooldown = new HashMap<>();
 

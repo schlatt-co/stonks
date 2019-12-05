@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.member;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.model.core.Role;
@@ -86,7 +86,7 @@ public class SetRoleCommandSub extends CommandSub {
     //Both players are a member of the company
     //Now check permissions
     //A player can't change their own role
-    if (changingMember.uuid.equals(memberToChange.uuid)) {
+    if (changingMember.playerUUID.equals(memberToChange.playerUUID)) {
       sendMessage(player, "You cannot change your own role!");
       return;
     }

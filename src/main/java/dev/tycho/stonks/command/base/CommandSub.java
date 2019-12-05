@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.base;
 
 import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;

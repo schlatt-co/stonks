@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.subs.moderator;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanyListGui;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

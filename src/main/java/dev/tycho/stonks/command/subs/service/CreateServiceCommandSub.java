@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.model.core.Account;
@@ -88,10 +88,12 @@ public class CreateServiceCommandSub extends CommandSub {
 
   void createService(Player player, double duration, double cost, int maxSubs, String name, Company company, Account account) {
     //Check for the same name
-    for (Service service : company.services) {
-      if (service.name.equals(name)) {
-        sendMessage(player, "A service with the same name already exists for this company");
-        return;
+    for (Account a : company.accounts) {
+      for (Service service : a.services) {
+        if (service.name.equals(name)) {
+          sendMessage(player, "A service with the same name already exists for this company");
+          return;
+        }
       }
     }
 

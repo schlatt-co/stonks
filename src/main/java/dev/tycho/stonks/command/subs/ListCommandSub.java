@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.subs;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
@@ -67,7 +67,12 @@ public class ListCommandSub extends CommandSub {
                         companies = Repo.getInstance().companies().getAll();
                         break;
                     case NOT_HIDDEN_OR_MEMBER:
-                        companies = Repo.getInstance().companies().getAllWhere(c -> !c.hidden || c.isMember(player));
+                        companies = Repo.getInstance().companies().getAllWhere(
+                            c ->
+                                !c.hidden ||
+                                    c.isMember(
+                                        player
+                                    ));
                         break;
                     case VERIFIED:
                         companies = Repo.getInstance().companies().getAllWhere(c -> c.verified);

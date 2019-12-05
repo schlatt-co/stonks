@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.subs.company;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerStateData;
 import dev.tycho.stonks.managers.SettingsManager;
@@ -50,8 +50,8 @@ public class CreateCommandSub extends CommandSub {
       sendMessage(player, "You cannot make a company for another " + Util.convertString(SettingsManager.COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId()))));
       return;
     }
-    Stonks.newChain()
-        .async(() -> {
+//    Stonks.newChain()
+//        .async(() -> {
 
           String name = companyName.trim();
 
@@ -79,6 +79,6 @@ public class CreateCommandSub extends CommandSub {
           } else {
             sendMessage(player, "Company creation failed");
           }
-        }).execute();
+//        }).execute();
   }
 }

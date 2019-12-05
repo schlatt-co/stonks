@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
@@ -110,7 +110,12 @@ public class CreateAccountCommandSub extends CommandSub {
           sendMessage(player, "Account creation successful!");
           sendMessage(player, "Account ID: " + ChatColor.YELLOW + newAccount.pk);
 
-          PlayerStateData.getInstance().setPlayerCreateAccountCooldown(player.getUniqueId(), System.currentTimeMillis());
+          PlayerStateData
+              .getInstance()
+              .setPlayerCreateAccountCooldown(
+                  player.getUniqueId(),
+                  System.currentTimeMillis()
+              );
         }).execute();
 
   }

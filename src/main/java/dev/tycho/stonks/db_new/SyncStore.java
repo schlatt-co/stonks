@@ -2,7 +2,6 @@ package dev.tycho.stonks.db_new;
 
 import com.google.common.collect.ImmutableList;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +12,26 @@ public class SyncStore<T extends Entity> implements Store<T> {
 
   private HashMap<Integer, T> entities = new HashMap<>();
   private Function<T, T> factory;
-  private DatabaseInterface<T> dbi;
+  private JavaSqlDBI<T> dbi;
 
-  public SyncStore(DatabaseInterface<T> dbi, Function<T, T> factory) {
+  public void setDbi(JavaSqlDBI<T> dbi) {
     this.dbi = dbi;
+    if (dbi.createTable()) System.out.println("Created table successfully");
+  }
+
+  public SyncStore(Function<T, T> factory) {
     this.factory = factory;
-    populate();
+  }
+
+  public void init() {
+    dbi.createTable();
   }
 
   @Override
   public void populate() {
-    try {
-      for (T e : dbi.loadAll()) {
-        entities.put(e.pk, e);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
+    for (T e : dbi.loadAll()) {
+      if (e == null) continue;
+      entities.put(e.pk, e);
     }
   }
 
@@ -36,18 +39,16 @@ public class SyncStore<T extends Entity> implements Store<T> {
   public void save(T obj) {
     if (!entities.containsKey(obj.pk))
       throw new IllegalArgumentException("Tried to save entity with PK not in entities");
-    try {
-      dbi.save(obj);
+    if (dbi.save(obj)) {
       entities.put(obj.pk, obj);
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
   }
 
   @Override
   public T get(int pk) {
-    if (entities.containsKey(pk))
+    if (entities.containsKey(pk)) {
       return factory.apply(entities.get(pk));
+    }
     return null;
   }
 
@@ -56,16 +57,15 @@ public class SyncStore<T extends Entity> implements Store<T> {
     if (obj.pk != 0) {
       throw new IllegalArgumentException("Entity to create already has a primary key");
     }
-    T created;
-    try {
-      created = dbi.create(obj);
-    } catch (SQLException e) {
-      e.printStackTrace();
+    T created = dbi.create(obj);
+    if (created == null || created.pk == 0) {
+      System.out.println("Error creating object");
       return null;
     }
     if (entities.containsKey(created.pk)) {
       throw new IllegalArgumentException("Created new entity but we already have the new pk stored");
     }
+
     entities.put(created.pk, created);
     return factory.apply(created);
   }
@@ -73,13 +73,9 @@ public class SyncStore<T extends Entity> implements Store<T> {
   @Override
   public boolean delete(int pk) {
     if (entities.containsKey(pk)) {
-      try {
-        if (dbi.delete(entities.get(pk))) {
-          entities.remove(pk);
-          return true;
-        }
-      } catch (SQLException e) {
-        e.printStackTrace();
+      if (dbi.delete(entities.get(pk))) {
+        entities.remove(pk);
+        return true;
       }
     }
     return false;
@@ -88,11 +84,7 @@ public class SyncStore<T extends Entity> implements Store<T> {
   @Override
   public void refresh(int pk) {
     if (entities.containsKey(pk)) {
-      try {
-        entities.put(pk, dbi.load(pk));
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
+      entities.put(pk, dbi.load(pk));
     }
   }
 

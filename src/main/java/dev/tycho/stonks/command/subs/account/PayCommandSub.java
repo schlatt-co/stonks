@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.db_new.Repo;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
@@ -78,7 +78,7 @@ public class PayCommandSub extends CommandSub {
           String ceoName = "[error lol]";
           for (Member m : company.members) {
             if (m.role.equals(CEO)) {
-              OfflinePlayer p = Bukkit.getOfflinePlayer(m.uuid);
+              OfflinePlayer p = Bukkit.getOfflinePlayer(m.playerUUID);
               if (p != null) ceoName = p.getName();
             }
           }
