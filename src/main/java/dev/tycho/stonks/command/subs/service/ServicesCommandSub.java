@@ -1,7 +1,10 @@
 package dev.tycho.stonks.command.subs.service;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.gui.ServicesListGui;
+import dev.tycho.stonks.model.core.Account;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,8 +33,16 @@ public class ServicesCommandSub extends CommandSub {
       sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " services <account id>");
       return;
     }
+    Account account = Repo.getInstance().accountWithId(Integer.parseInt(args[1]));
+    if (account == null) {
+      sendMessage(player, "Account id not found");
+      return;
+    }
 
-    DatabaseHelper.getInstance().openCompanyServices(player, Integer.parseInt(args[1]));
-
+    Stonks.newChain()
+        .asyncFirst(() -> new ServicesListGui(Repo.getInstance().companies().get(account.companyPk), account))
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 }

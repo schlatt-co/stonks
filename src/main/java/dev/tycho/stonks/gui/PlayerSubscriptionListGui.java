@@ -1,16 +1,20 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class PlayerSubscriptionListGui extends CollectionGuiBase<Subscription> {
-  Player player;
+import java.util.Collection;
 
-  public PlayerSubscriptionListGui(Player player) {
-    super(databaseManager.getSubscriptionDao().getPlayerSubscriptions(player), "Your Subscriptions");
+public class PlayerSubscriptionListGui extends CollectionGuiBase<Subscription> {
+
+  public PlayerSubscriptionListGui(Collection<Subscription> subscriptions) {
+    super(subscriptions, "Your Subscriptions");
   }
 
   @Override
@@ -18,25 +22,28 @@ public class PlayerSubscriptionListGui extends CollectionGuiBase<Subscription> {
 
   }
 
+  //TODO remove database calls from here
   @Override
   protected ClickableItem itemProvider(Player player, Subscription obj) {
-    if (obj.isOverdue()) {
-      return ClickableItem.of(ItemInfoHelper.subscriptionDisplayItem(obj,
+    Service service = Repo.getInstance().services().get(obj.servicePk);
+    Company company = Repo.getInstance().companies().get(Repo.getInstance().accountWithId(service.accountPk).companyPk);
+    if (Subscription.isOverdue(service, obj)) {
+      return ClickableItem.of(ItemInfoHelper.subscriptionDisplayItem(obj, service, company,
           ChatColor.GREEN + "Left click to pay subscription",
           ChatColor.RED + "Right click to cancel subscription"),
           e -> {
             if (e.getClick().isLeftClick()) {
-              player.performCommand("stonks paysubscription " + obj.getService().getId());
+              player.performCommand("stonks paysubscription " + obj.servicePk);
             } else if (e.getClick().isRightClick()) {
-              player.performCommand("stonks unsubscribe " + obj.getService().getId());
+              player.performCommand("stonks unsubscribe " + obj.servicePk);
             }
           });
     } else {
-      return ClickableItem.of(ItemInfoHelper.subscriptionDisplayItem(obj,
+      return ClickableItem.of(ItemInfoHelper.subscriptionDisplayItem(obj, service, company,
           ChatColor.RED + "Right click to cancel subscription"),
           e -> {
             if (e.getClick().isRightClick()) {
-              player.performCommand("stonks unsubscribe " + obj.getService().getId());
+              player.performCommand("stonks unsubscribe " + obj.servicePk);
             }
           });
     }

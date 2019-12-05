@@ -1,12 +1,15 @@
 package dev.tycho.stonks.command.subs.member;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.gui.MemberListGui;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MembersCommandSub extends CommandSub {
 
@@ -25,6 +28,16 @@ public class MembersCommandSub extends CommandSub {
       sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " members <company name>");
       return;
     }
-    DatabaseHelper.getInstance().openCompanyMembers(player, concatArgs(1, args));
+    Company company = companyFromName(concatArgs(1, args));
+    if (company == null) {
+      sendMessage(player, "That company doesn't exist!");
+      return;
+    }
+    Stonks.newChain()
+        .asyncFirst(() -> new MemberListGui(company,
+            company.members.stream().filter(m -> m.acceptedInvite).collect(Collectors.toList())))
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 }

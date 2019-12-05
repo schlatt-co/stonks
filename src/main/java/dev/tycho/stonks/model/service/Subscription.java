@@ -1,70 +1,41 @@
 package dev.tycho.stonks.model.service;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-import org.bukkit.entity.Player;
+import dev.tycho.stonks.db_new.Entity;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.Calendar;
 import java.util.UUID;
 
-@DatabaseTable(tableName = "subscription")
-public class Subscription {
-  @DatabaseField(generatedId = true)
-  private int id;
+public class Subscription extends Entity {
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private Service service;
+  public final UUID playerUUID;
+  public final int servicePk;
+  public final Date lastPaymentDate;
+  public final boolean autoPay;
 
-  @DatabaseField
-  private UUID playerId;
-
-  @DatabaseField
-  private Timestamp lastPaymentDate;
-
-
-  public Subscription() {
+  public Subscription(int pk, UUID player, int servicePk, Date lastPaymentDate, boolean autoPay) {
+    super(pk);
+    this.playerUUID = player;
+    this.servicePk = servicePk;
+    this.lastPaymentDate = lastPaymentDate;
+    this.autoPay = autoPay;
   }
 
-  public Subscription(Player player, Service service) {
-    this.playerId = player.getUniqueId();
-    this.service = service;
-    this.lastPaymentDate = new Timestamp(Calendar.getInstance().getTime().getTime());
+  public Subscription(Subscription subscription) {
+    super(subscription.pk);
+    this.playerUUID = subscription.playerUUID;
+    this.servicePk = subscription.servicePk;
+    this.lastPaymentDate = subscription.lastPaymentDate;
+    this.autoPay = subscription.autoPay;
   }
 
-  public boolean isOverdue() {
-    return (getDaysOverdue() > 0);
+  public static boolean isOverdue(Service service, Subscription subscription) {
+    return (getDaysOverdue(service, subscription) > 0);
   }
 
   //Will return negative for a non-overdue date
-  public double getDaysOverdue() {
-    long millisDifference = Calendar.getInstance().getTimeInMillis() - lastPaymentDate.getTime();
-    return ((double) millisDifference / 86400000) - service.getDuration();
+  public static double getDaysOverdue(Service service, Subscription subscription) {
+    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentDate.getTime();
+    return ((double) millisDifference / 86400000) - service.duration;
   }
-
-
-  public void registerPaid() {
-    this.lastPaymentDate = new Timestamp(Calendar.getInstance().getTime().getTime());
-  }
-
-  //Getters
-
-  public int getId() {
-    return id;
-  }
-
-  public Service getService() {
-    return service;
-  }
-
-  public UUID getPlayerId() {
-    return playerId;
-  }
-
-  public Timestamp getLastPaymentDate() {
-    return lastPaymentDate;
-  }
-
-
-
 }

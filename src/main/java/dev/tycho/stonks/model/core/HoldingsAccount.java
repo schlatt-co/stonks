@@ -1,71 +1,52 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.service.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
-@DatabaseTable(tableName = "holdingsaccount")
 public class HoldingsAccount extends Account {
 
-  @ForeignCollectionField(eager = true)
-  private ForeignCollection<Holding> holdings;
+  public final Collection<Holding> holdings;
 
-  public HoldingsAccount() {
+  public HoldingsAccount(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactionHistory,
+                         Collection<Service> services, Collection<Holding>holdings) {
+    super(pk, name, uuid, companyPk, transactionHistory, services);
+    this.holdings = holdings;
   }
 
-  public HoldingsAccount(String name) {
-    super(name);
+  public HoldingsAccount(HoldingsAccount holdingsAccount) {
+    super(holdingsAccount);
+    this.holdings = new ArrayList<>(holdingsAccount.holdings);
   }
 
-  private double getTotalShare() {
+
+  public double getTotalShare() {
     double total = 0;
     for (Holding h : holdings) {
-      total += h.getShare();
+      total += h.share;
     }
     return total;
-  }
-
-  public ForeignCollection<Holding> getHoldings() {
-    return holdings;
   }
 
   //Returns the holding for the player entered, if none is found then return nothing
   public Holding getPlayerHolding(UUID player) {
     for (Holding h : holdings) {
-      if (h.getPlayer().equals(player)) {
+      if (h.playerUUID.equals(player)) {
         return h;
       }
     }
     return null;
   }
-
-  public void addHolding(Holding holding) {
-    this.holdings.add(holding);
-  }
-
-  public void removeHolding(Holding holding) {
-    holdings.remove(holding);
-  }
-
-
-  @Override
-  public void addBalance(double amount) {
-    //Pay a fraction of the amount into each holding proportional to its share
-    for (Holding h : holdings) {
-      //Multiply the amount by the fractional share
-      h.payIn(amount * (h.getShare() / getTotalShare()));
-    }
-  }
-
   @Override
   public double getTotalBalance() {
     double total = 0;
 
     for (Holding h : holdings) {
-      total += h.getBalance();
+      total += h.balance;
     }
     return total;
   }

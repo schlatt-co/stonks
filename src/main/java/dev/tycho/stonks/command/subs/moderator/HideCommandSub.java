@@ -1,18 +1,13 @@
 package dev.tycho.stonks.command.subs.moderator;
 
-import com.j256.ormlite.stmt.QueryBuilder;
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
-import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class HideCommandSub extends CommandSub {
 
@@ -27,25 +22,14 @@ public class HideCommandSub extends CommandSub {
 
   @Override
   public void onCommand(Player player, String alias, String[] args) {
-    List<Company> companies = new ArrayList<>();
-    QueryBuilder<Company, UUID> queryBuilder = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().queryBuilder();
-    queryBuilder.orderBy("name", true);
-    try {
-      queryBuilder.where().eq("hidden", false);
-      companies = queryBuilder.query();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-
     new CompanySelectorGui.Builder()
         .title("Select company to hide")
-        .companies(companies)
+        .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
-            .title("Hide " + company.getName() + "?")
+            .title("Hide " + company.name + "?")
             .onChoiceMade(c -> {
-              if (c) {
-                DatabaseHelper.getInstance().changeHidden(player, company.getName(), true);
-              }
+              if (c)
+                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true);
             })
             .open(player))
         .open(player);

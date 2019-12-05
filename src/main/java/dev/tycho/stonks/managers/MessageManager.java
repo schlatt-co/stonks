@@ -2,6 +2,7 @@ package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,11 +12,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.Collection;
 
 public class MessageManager extends SpigotModule {
-  private DatabaseManager databaseManager;
 
   public MessageManager(Stonks plugin) {
     super("Message Manager", plugin);
-    this.databaseManager = (DatabaseManager) plugin.getModule("databaseManager");
   }
 
   public static void sendHelpMessage(Player player, String label) {
@@ -27,16 +26,17 @@ public class MessageManager extends SpigotModule {
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
-    Collection<Member> invites = databaseManager.getMemberDao().getInvites(event.getPlayer());
-    Collection<Subscription> subscriptions = databaseManager.getSubscriptionDao().getPlayerSubscriptions(event.getPlayer());
+    Collection<Member> invites = Repo.getInstance().getInvites(event.getPlayer());
+    Collection<Subscription> subscriptions = Repo.getInstance().subscriptions().getAllWhere(s->s.playerUUID.equals(event.getPlayer().getUniqueId()));
 
     if (invites.size() > 0) {
       event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.GREEN + invites.size() + ChatColor.AQUA + " open company invites! Do " + ChatColor.GREEN + "/stonks invites" + ChatColor.AQUA + " to view them.");
       event.getPlayer().sendMessage("============");
     }
     int numOverdue = 0;
-    for (Subscription s : subscriptions) {
-      if (s.isOverdue()) numOverdue++;
+    for (Subscription subscription : subscriptions) {
+      Service service = Repo.getInstance().services().get(subscription.servicePk);
+      if (Subscription.isOverdue(service, subscription)) numOverdue++;
     }
 
     if (numOverdue > 0) {

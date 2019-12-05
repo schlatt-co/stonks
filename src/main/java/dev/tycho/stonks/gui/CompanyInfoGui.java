@@ -1,6 +1,5 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.managers.DatabaseManager;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 
 public class CompanyInfoGui implements InventoryProvider {
 
-  public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
 
   private Company company;
@@ -28,7 +26,7 @@ public class CompanyInfoGui implements InventoryProvider {
         .provider(new CompanyInfoGui(company))
         .manager(inventoryManager)
         .size(5, 9)
-        .title(company.getName())
+        .title(company.name)
         .build();
   }
 
@@ -41,11 +39,11 @@ public class CompanyInfoGui implements InventoryProvider {
 
 
     contents.set(2, 3, ClickableItem.of(Util.item(Material.PLAYER_HEAD, "Members"),
-        e -> player.performCommand("stonks members " + company.getName())));
+        e -> player.performCommand("stonks members " + company.name)));
     contents.set(2, 4, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Accounts"),
-        e -> player.performCommand("stonks accounts " + company.getName())));
+        e -> player.performCommand("stonks accounts " + company.name)));
     contents.set(2, 5, ClickableItem.of(Util.item(Material.BOOKSHELF, "Services"),
-        e -> player.performCommand("stonks servicefolders " + company.getName())));
+        e -> player.performCommand("stonks servicefolders " + company.name)));
 
   }
 

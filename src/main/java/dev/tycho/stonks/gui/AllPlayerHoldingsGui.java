@@ -1,6 +1,6 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.model.core.AccountLink;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Holding;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;
@@ -11,19 +11,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
   private Player player;
-  HashMap<HoldingsAccount, AccountLink> linkLookup = new HashMap<>();
 
   public AllPlayerHoldingsGui(Player player) {
-    super(databaseManager.getHoldingsAccountDao().playerHoldingsAccounts(player), "All your holdings");
+    super(Repo.getInstance().holdingsAccounts().getAllWhere(a->a.getPlayerHolding(player.getUniqueId()) != null), "All your holdings");
     this.player = player;
-    for (HoldingsAccount holdingsAccount : getReadonlyCollection()) {
-      linkLookup.put(holdingsAccount, databaseManager.getAccountLinkDao().getAccountLink(holdingsAccount));
-    }
   }
 
 
@@ -34,13 +29,13 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
   @Override
   protected ClickableItem itemProvider(Player player, HoldingsAccount obj) {
     Holding holding = obj.getPlayerHolding(player.getUniqueId());
-    if (holding == null || !linkLookup.containsKey(obj) || linkLookup.get(obj) == null) {
+    if (holding == null) {
       return ClickableItem.empty(Util.item(Material.COBWEB, "Error :/"));
     }
 
     List<String> lore = new ArrayList<>();
-    lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(holding.getBalance()));
-    lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.getShare());
+    lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(holding.balance));
+    lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.share);
     lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
     lore.add(ChatColor.GREEN + "Right click to view this company");
 
@@ -49,18 +44,18 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
     Material material;
     //If the player has no money in the holding display it as an iron bar
     Holding playerHolding = obj.getPlayerHolding(player.getUniqueId());
-    if (playerHolding != null && playerHolding.getBalance() > 0.1) {
+    if (playerHolding != null && playerHolding.balance > 0.1) {
       material = Material.GOLD_INGOT;
     } else {
       material = Material.IRON_INGOT;
     }
 
-    return ClickableItem.of(Util.item(material, obj.getName(),
+    return ClickableItem.of(Util.item(material, obj.name,
         lore), e -> {
       if (e.getClick().isLeftClick()) {
-        player.performCommand("stonks withdraw " + holding.getBalance() + " " + linkLookup.get(obj).getId());
+        player.performCommand("stonks withdraw " + holding.balance + " " + obj.pk);
       } else if (e.getClick().isRightClick()) {
-        player.performCommand("stonks info " + linkLookup.get(obj).getCompany().getName());
+        player.performCommand("stonks info " + obj.companyPk);
       }
     });
   }

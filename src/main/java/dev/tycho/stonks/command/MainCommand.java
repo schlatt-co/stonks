@@ -22,9 +22,11 @@ public class MainCommand extends CommandBase {
   public MainCommand() {
     super("command", new ListCommandSub());
     addSubCommand("accounts", new AccountsCommandSub());
+    addSubCommand("acceptinvite", new AcceptInviteCommandSub());
     addSubCommand("createaccount", new CreateAccountCommandSub());
     addSubCommand("create", new CreateCommandSub());
     addSubCommand("createholding", new CreateHoldingCommandSub());
+    addSubCommand("declineinvite", new DeclineInviteCommandSub());
     addSubCommand("fees", new FeesCommandSub());
     addSubCommand("help", new HelpCommandSub());
     addSubCommand("hide", new HideCommandSub());

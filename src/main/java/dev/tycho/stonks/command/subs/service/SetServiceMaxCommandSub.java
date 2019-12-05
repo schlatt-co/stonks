@@ -1,10 +1,12 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ServiceSelectorGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,17 +32,33 @@ public class SetServiceMaxCommandSub extends CommandSub {
       return;
     }
     int maxSubs = Integer.parseInt(args[1]);
-    List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
-        .getAllCompaniesWhereManager(player, DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
+
     new CompanySelectorGui.Builder()
-        .companies(list)
+        .companies(Repo.getInstance().companiesWhereManager(player))
         .title("Select a company")
         .companySelected(company -> new ServiceSelectorGui.Builder()
             .company(company)
             .title("Select a service")
             .serviceSelected(
-                service -> DatabaseHelper.getInstance().changeServiceMaxSubs(player, maxSubs, service)
+                service -> changeServiceMaxSubs(player, maxSubs, company, service)
             ).open(player))
         .open(player);
+  }
+
+  private void changeServiceMaxSubs(Player player, int maxSubs, Company company, Service service) {
+    Member member = company.getMember(player);
+
+    if (member == null || !member.hasManagamentPermission()) {
+      sendMessage(player, "You don't have management perms for this company");
+      return;
+    }
+
+    if (maxSubs > 0 && maxSubs < service.subscriptions.size()) {
+      sendMessage(player, "You can't set the max subscriptions lower than the current number of subscriptions");
+      return;
+    }
+
+    Repo.getInstance().modifyService(service, service.name, service.duration, service.cost, maxSubs);
+      sendMessage(player, "Max subs updated to " + maxSubs);
   }
 }

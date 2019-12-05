@@ -1,7 +1,9 @@
 package dev.tycho.stonks.command.subs.service;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.gui.ServiceFoldersListGui;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,7 +25,16 @@ public class ServiceFoldersCommandSub extends CommandSub {
       sendMessage(player, "Correct usage /" + alias + " servicefolders <company_name>");
       return;
     }
-    DatabaseHelper.getInstance().openCompanyServiceFolders(player, concatArgs(1, args));
+    Company company = companyFromName(concatArgs(1, args));
 
+    if (company == null) {
+      sendMessage(player, "That company doesn't exist!");
+      return;
+    }
+    Stonks.newChain()
+        .asyncFirst(() -> new ServiceFoldersListGui(company))
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 }

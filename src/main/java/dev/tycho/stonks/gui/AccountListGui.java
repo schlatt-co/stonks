@@ -9,23 +9,22 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class AccountListGui extends CollectionGuiBase<AccountLink> {
+public class AccountListGui extends CollectionGuiBase<Account> {
   private Company company;
 
   public AccountListGui(Company company) {
-    super(company.getAccounts(), company.getName() + " accounts");
+    super(company.accounts, company.name + " accounts");
     this.company = company;
   }
 
   @Override
   protected void customInit(Player player, InventoryContents contents) {
-    contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.getName())));
-    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()), company.getName())));
+    contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"), e -> player.performCommand("stonks info " + company.name)));
+    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.logoMaterial), company.name)));
   }
 
   @Override
-  protected ClickableItem itemProvider(Player player, AccountLink obj) {
-    Account account = obj.getAccount();
+  protected ClickableItem itemProvider(Player player, Account obj) {
     ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
@@ -33,7 +32,7 @@ public class AccountListGui extends CollectionGuiBase<AccountLink> {
             ItemInfoHelper.accountDisplayItem(obj, player, ChatColor.YELLOW + "Right click to see history"),
             e -> {
               if (e.getClick().isRightClick()) {
-                player.performCommand("stonks history " + obj.getId());
+                player.performCommand("stonks history " + obj.pk);
               }
             });
       }
@@ -44,14 +43,14 @@ public class AccountListGui extends CollectionGuiBase<AccountLink> {
             ItemInfoHelper.accountDisplayItem(obj, player, ChatColor.DARK_PURPLE + "Left click to see holdings", ChatColor.YELLOW + "Right click to see history"),
             e -> {
               if (e.getClick().isLeftClick()) {
-                player.performCommand("stonks holdinginfo " + obj.getId());
+                player.performCommand("stonks holdinginfo " + obj.pk);
               } else if (e.getClick().isRightClick()) {
-                player.performCommand("stonks history " + obj.getId());
+                player.performCommand("stonks history " + obj.pk);
               }
             });
       }
     };
-    account.accept(visitor);
+    obj.accept(visitor);
     return visitor.getRecentVal();
   }
 }

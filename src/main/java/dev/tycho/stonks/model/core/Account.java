@@ -1,45 +1,40 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.field.DatabaseField;
+import dev.tycho.stonks.db_new.Entity;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.service.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
-public abstract class Account {
-  @DatabaseField(generatedId = true)
-  private int id;
+public abstract class Account extends Entity {
 
-  @DatabaseField
-  private UUID uuid;
+  public final String name;
+  public final UUID uuid;
+  public final int companyPk;
+  public final Collection<Transaction> transactions;
+  public final Collection<Service> services;
 
-  @DatabaseField
-  private String name;
 
-  public Account() {
-  }
-
-  public Account(String name) {
+  public Account(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactions, Collection<Service> services) {
+    super(pk);
     this.name = name;
-    this.uuid = UUID.randomUUID();
+    this.uuid = uuid;
+    this.companyPk = companyPk;
+    this.transactions = transactions;
+    this.services = services;
   }
 
-  public int getId() {
-    return id;
+  public Account(Account account) {
+    super(account.pk);
+    this.name = account.name;
+    this.uuid = account.uuid;
+    this.companyPk = account.companyPk;
+    this.transactions = new ArrayList<>(account.transactions);
+    this.services = new ArrayList<>(account.services);
   }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public UUID getUuid() {
-    return uuid;
-  }
-
-  public abstract void addBalance(double amount);
 
   public abstract double getTotalBalance();
 

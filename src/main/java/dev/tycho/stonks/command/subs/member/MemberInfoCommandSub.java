@@ -1,7 +1,10 @@
 package dev.tycho.stonks.command.subs.member;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.gui.MemberInfoGui;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +31,30 @@ public class MemberInfoCommandSub extends CommandSub {
       sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " memberinfo <player> <company>");
       return;
     }
+    Stonks.newChain()
+        .asyncFirst(() -> {
+            Player playerProfile = playerFromName(args[1]);
+            Company company = companyFromName(concatArgs(2, args));
 
-    DatabaseHelper.getInstance().openMemberInfo(player, args[1], concatArgs(2, args));
+            if (playerProfile == null) {
+              sendMessage(player, "Player not found");
+              return null;
+            }
+
+            if (company == null) {
+              sendMessage(player, "Company not found");
+              return null;
+            }
+
+            Member member = company.getMember(playerProfile);
+            if (member == null) {
+              sendMessage(player, "That player isn't a member of that company!");
+              return null;
+            }
+            return MemberInfoGui.getInventory(member, company);
+        })
+        .abortIfNull()
+        .sync((result) -> result.open(player))
+        .execute();
   }
 }

@@ -1,10 +1,10 @@
 package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import org.bukkit.Bukkit;
@@ -55,7 +55,7 @@ public class PayCommandSub extends CommandSub {
       return;
     }
 
-    List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().getAllCompanies();
+    List<Company> list = Repo.getInstance().companies().getAll();
     new CompanySelectorGui.Builder()
         .companies(list)
         .title("Select a company to pay")
@@ -65,7 +65,7 @@ public class PayCommandSub extends CommandSub {
               new AccountSelectorGui.Builder()
                   .company(company)
                   .title("Select which account to pay")
-                  .accountSelected(l -> DatabaseHelper.getInstance().payAccount(player, l.getId(), message, amount));
+                  .accountSelected(account -> Repo.getInstance().payAccount(player.getUniqueId(), message, account, amount));
           List<String> info = new ArrayList<>();
           info.add("You are trying to pay an unverified company!");
           info.add("Unverified companies might be pretending to be ");
@@ -76,16 +76,16 @@ public class PayCommandSub extends CommandSub {
           info.add("");
           info.add(ChatColor.GOLD + "The CEO of this company is ");
           String ceoName = "[error lol]";
-          for (Member m : company.getMembers()) {
-            if (m.getRole().equals(CEO)) {
-              OfflinePlayer p = Bukkit.getOfflinePlayer(m.getUuid());
+          for (Member m : company.members) {
+            if (m.role.equals(CEO)) {
+              OfflinePlayer p = Bukkit.getOfflinePlayer(m.playerUUID);
               if (p != null) ceoName = p.getName();
             }
           }
           info.add(ChatColor.GOLD + ceoName);
-          if (!company.isVerified()) {
+          if (!company.verified) {
             new ConfirmationGui.Builder()
-                .title(company.getName() + " is unverified")
+                .title(company.name + " is unverified")
                 .info(info)
                 .onChoiceMade(
                     c -> {

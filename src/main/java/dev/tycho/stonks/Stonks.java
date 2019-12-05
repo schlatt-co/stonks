@@ -3,6 +3,8 @@ package dev.tycho.stonks;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import com.earth2me.essentials.Essentials;
+import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import java.util.List;
 
 public class Stonks extends JavaPlugin {
 
+  public static Essentials essentials = null;
   public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
   private List<SpigotModule> loadedModules = new ArrayList<>();
@@ -32,17 +35,16 @@ public class Stonks extends JavaPlugin {
       return;
     }
     taskChainFactory = BukkitTaskChainFactory.create(this);
-
-    loadedModules.add(new DatabaseManager(this));
+    loadedModules.add(new Repo(this));
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
-//    loadedModules.add(new SignManager(this));
-
     if (!setupEconomy()) {
       return;
     }
-
+    if (!setupEssentials()) {
+      return;
+    }
     for (SpigotModule module : loadedModules) {
       module.onEnable();
     }
@@ -51,7 +53,9 @@ public class Stonks extends JavaPlugin {
 //    BukkitScheduler scheduler = getServer().getScheduler();
 //    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1000L, 6000L);
 
-
+    MainCommand command = new MainCommand();
+    getCommand("company").setTabCompleter(command);
+    getCommand("company").setExecutor(command);
     Bukkit.getLogger().info("Loaded!");
   }
 
@@ -76,7 +80,12 @@ public class Stonks extends JavaPlugin {
     if (economyProvider != null) {
       economy = economyProvider.getProvider();
     }
-
     return (economy != null);
+  }
+
+
+  private boolean setupEssentials() {
+    essentials = (Essentials)this.getServer().getPluginManager().getPlugin("Essentials");
+    return (essentials != null);
   }
 }

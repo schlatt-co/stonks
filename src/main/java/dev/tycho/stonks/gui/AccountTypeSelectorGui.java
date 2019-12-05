@@ -1,7 +1,5 @@
 package dev.tycho.stonks.gui;
 
-import dev.tycho.stonks.managers.DatabaseManager;
-import dev.tycho.stonks.model.core.AccountType;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -15,8 +13,6 @@ import org.bukkit.entity.Player;
 import java.util.function.Consumer;
 
 public class AccountTypeSelectorGui implements InventoryProvider {
-
-  public static DatabaseManager databaseManager;
   public static InventoryManager inventoryManager;
 
   private SmartInventory inventory;
@@ -80,4 +76,8 @@ public class AccountTypeSelectorGui implements InventoryProvider {
   }
 
 
+  public enum AccountType {
+    CompanyAccount,
+    HoldingsAccount
+  }
 }

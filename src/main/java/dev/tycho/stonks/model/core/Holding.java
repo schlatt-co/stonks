@@ -1,78 +1,40 @@
 package dev.tycho.stonks.model.core;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-import dev.tycho.stonks.database.HoldingDaoImpl;
+import dev.tycho.stonks.db_new.Entity;
 
 import java.util.UUID;
 
 // A holding represents a share of an account held by a player
 // This is done by ratio ( share1 : share2 : ...) so percentages do not need to be saved
 // A player can withdraw as much money as is in the holding
-@DatabaseTable(tableName = "holding", daoClass = HoldingDaoImpl.class)
-public class Holding {
-  @DatabaseField(generatedId = true)
-  private int id;
+public class Holding extends Entity {
 
-  @DatabaseField()
-  private UUID player;
+  public final UUID playerUUID;
+  public final int accountPk;
+  public final double balance;
+  public final double share;
 
-  @DatabaseField()
-  private double balance;
 
-  @DatabaseField()
-  private double share;
 
-  @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-  private HoldingsAccount holdingsAccount = null;
 
-  public Holding() {
-  }
-
-  public Holding(UUID player, double share, HoldingsAccount holdingsAccount) {
+  public Holding(int pk, UUID playerUUID, double balance, double share, int accountPk) {
+    super(pk);
     if (share <= 0) {
       share = 1;
       System.out.println("Holding created with a 0 share");
     }
-    this.player = player;
+    this.accountPk = accountPk;
+    this.playerUUID = playerUUID;
     this.share = share;
-    this.holdingsAccount = holdingsAccount;
+    this.balance = balance;
   }
 
-  public double getShare() {
-    return share;
-  }
-
-  public boolean setShare(double share) {
-    if (share > 0) {
-      this.share = share;
-      return true;
-    } else {
-      //Share must be positive and not 0
-      return false;
-    }
-  }
-
-  public void payIn(double amount) {
-    this.balance += amount;
-  }
-
-  public boolean subtractBalance(double amount) {
-    if (balance < amount) return false;
-    balance -= amount;
-    return true;
-  }
-
-  public double getBalance() {
-    return balance;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public UUID getPlayer() {
-    return player;
+  public Holding(Holding holding) {
+    super(holding.pk);
+    playerUUID = holding.playerUUID;
+    balance = holding.balance;
+    share = holding.share;
+    accountPk = holding.accountPk;
   }
 }
 

@@ -1,10 +1,12 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
+import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -69,19 +71,59 @@ public class CreateServiceCommandSub extends CommandSub {
     double cost = Double.parseDouble(args[2]);
     int maxSubs = Integer.parseInt(args[3]);
     String name = concatArgs(4, args);
-    List<Company> list = DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao()
-        .getAllCompaniesWhereManager(player, DatabaseHelper.getInstance().getDatabaseManager().getMemberDao().queryBuilder());
+
     new CompanySelectorGui.Builder()
-        .companies(list)
+        .companies(Repo.getInstance().companiesWhereManager(player))
         .title("Select a company")
         .companySelected(company -> {
           new AccountSelectorGui.Builder()
               .title("Select the account profits go to")
               .company(company)
               .accountSelected(
-                  accountLink -> DatabaseHelper.getInstance().createService(player, duration, cost, maxSubs, name, company, accountLink)
+                  account -> createService(player, duration, cost, maxSubs, name, company, account)
               ).open(player);
         })
         .open(player);
+  }
+
+  void createService(Player player, double duration, double cost, int maxSubs, String name, Company company, Account account) {
+    //Check for the same name
+    for (Account a : company.accounts) {
+      for (Service service : a.services) {
+        if (service.name.equals(name)) {
+          sendMessage(player, "A service with the same name already exists for this company");
+          return;
+        }
+      }
+    }
+
+    if (duration <= 0.5) {
+      sendMessage(player, "Service duration must be greater than 0.5 (12 hours)");
+      return;
+    }
+
+    if (cost < 0) {
+      sendMessage(player, "A service cannot have a negative cost. Nice try");
+      return;
+    }
+
+    if (!name.matches("[0-9a-zA-Z\\s&+]{2,40}")) {
+      sendMessage(player, "Invalid name. Please try again. You may have used special characters or it is too long");
+      return;
+    }
+
+    if (StringUtils.isNumeric(name)) {
+      sendMessage(player, "A company name cannot be a number!");
+      return;
+    }
+
+    //Only verified companies can create services
+    if (!company.verified) {
+      sendMessage(player, "Your company must be verified before you can create a service. Ask a moderator to consider verifying your company.");
+      return;
+    }
+
+    Repo.getInstance().createService(name, duration, cost, maxSubs, account);
+    sendMessage(player, "Service created!");
   }
 }

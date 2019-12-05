@@ -17,22 +17,22 @@ public class MemberListGui extends CollectionGuiBase<Member> {
   private Company company;
 
   public MemberListGui(Company company, List<Member> members) {
-    super(members, company.getName() + " Members");
+    super(members, company.name + " Members");
     this.company = company;
   }
 
   @Override
   protected void customInit(Player player, InventoryContents contents) {
     contents.set(0, 0, ClickableItem.of(Util.item(Material.BARRIER, "Back to info"),
-        e -> player.performCommand("stonks info " + company.getName())));
-    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.getLogoMaterial()),
-        company.getName())));
+        e -> player.performCommand("stonks info " + company.name)));
+    contents.set(0, 4, ClickableItem.empty(Util.item(Material.getMaterial(company.logoMaterial),
+        company.name)));
   }
 
   @Override
   protected ClickableItem itemProvider(Player player, Member obj) {
-    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.getUuid());
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerUUID);
     return ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " +
-        obj.getRole().toString()), e -> player.performCommand("stonks memberinfo " + offlinePlayer.getName() + " " + company.getName()));
+        obj.role.toString()), e -> player.performCommand("stonks memberinfo " + offlinePlayer.getName() + " " + company.name));
   }
 }

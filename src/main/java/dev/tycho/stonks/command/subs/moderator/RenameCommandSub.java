@@ -1,9 +1,9 @@
 package dev.tycho.stonks.command.subs.moderator;
 
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import dev.tycho.stonks.managers.DatabaseHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,13 +31,12 @@ public class RenameCommandSub extends CommandSub {
     String newName = concatArgs(1, args);
     new CompanySelectorGui.Builder()
         .title("Select company to rename")
-        .companies(DatabaseHelper.getInstance().getDatabaseManager().getCompanyDao().getAllCompanies())
+        .companies(Repo.getInstance().companies().getAll())
         .companySelected(company -> new ConfirmationGui.Builder()
-            .title("Rename " + company.getName() + " to" + newName + "?")
+            .title("Rename " + company.name + " to" + newName + "?")
             .onChoiceMade(c -> {
-              if (c) {
-                DatabaseHelper.getInstance().renameCompany(player, company.getName(), newName);
-              }
+              if (c)
+                Repo.getInstance().modifyCompany(company, newName, company.logoMaterial, company.verified, company.hidden);
             })
             .open(player))
         .open(player);
