@@ -21,7 +21,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
       connection.createStatement().executeUpdate(
           "CREATE TABLE IF NOT EXISTS subscription (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
-              " player_uuid varchar(54) DEFAULT NULL," +
+              " player_uuid varchar(36) DEFAULT NULL," +
               " service_pk int(11) DEFAULT NULL," +
               " last_payment_date datetime," +
               " auto_pay bit DEFAULT NULL," +

@@ -33,7 +33,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
           "CREATE TABLE IF NOT EXISTS holdings_account (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " name varchar(255) DEFAULT NULL," +
-              " uuid varchar(54) DEFAULT NULL," +
+              " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
               " PRIMARY KEY (pk) ) "
       );

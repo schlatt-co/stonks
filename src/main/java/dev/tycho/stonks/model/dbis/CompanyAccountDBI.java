@@ -30,7 +30,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
           "CREATE TABLE IF NOT EXISTS company_account (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " name varchar(255) DEFAULT NULL," +
-              " uuid varchar(54) DEFAULT NULL," +
+              " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
               " balance double NOT NULL DEFAULT 0," +
               " PRIMARY KEY (pk) ) "

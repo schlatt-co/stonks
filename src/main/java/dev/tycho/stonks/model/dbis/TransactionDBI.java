@@ -22,7 +22,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
           "CREATE TABLE IF NOT EXISTS transaction(" +
               "    pk INT(11) NOT NULL AUTO_INCREMENT," +
               "    account_pk INT(11) DEFAULT NULL," +
-              "    payee_uuid VARCHAR(54) DEFAULT NULL," +
+              "    payee_uuid VARCHAR(36) DEFAULT NULL," +
               "    message VARCHAR(255)," +
               "    amount double DEFAULT NULL," +
               "    timestamp datetime DEFAULT NULL," +

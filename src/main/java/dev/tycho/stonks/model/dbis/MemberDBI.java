@@ -22,7 +22,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
       connection.createStatement().executeUpdate(
           "CREATE TABLE IF NOT EXISTS member(" +
               "    pk INT(11) NOT NULL AUTO_INCREMENT," +
-              "    player_uuid VARCHAR(54) DEFAULT NULL," +
+              "    player_uuid VARCHAR(36) DEFAULT NULL," +
               "    company_pk INT(11) DEFAULT NULL," +
               "    join_date DATETIME," +
               "    role VARCHAR(20) DEFAULT NULL," +
