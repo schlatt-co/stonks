@@ -2,9 +2,6 @@ package dev.tycho.stonks.command.base;
 
 import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.managers.Repo;
-import dev.tycho.stonks.model.core.Company;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +10,6 @@ import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class CommandSub {
 
@@ -46,10 +42,6 @@ public abstract class CommandSub {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-  protected boolean validateDouble(String text) {
-    return Pattern.matches("([0-9]*)\\.?([0-9]*)?", text);
-  }
 
   protected String concatArgs(int startArg, String[] args) {
     StringBuilder concat = new StringBuilder();
@@ -72,17 +64,6 @@ public abstract class CommandSub {
     return copyPartialMatches(search, playerNames);
   }
 
-  protected Company companyFromName(String name) {
-    Company company;
-    if (StringUtils.isNumeric(name)) {
-      //Numeric name means we have a company ID
-      company = Repo.getInstance().companies().get(Integer.parseInt(name));
-    } else {
-      //String name means get value for the name
-      company = Repo.getInstance().companyWithName(name);
-    }
-    return company;
-  }
 
   protected Player playerFromName(String name) {
     User u = Stonks.essentials.getOfflineUser(name);
@@ -99,5 +80,9 @@ public abstract class CommandSub {
 
   boolean isAutoComplete() {
     return autoComplete;
+  }
+
+  public String getArgs() {
+    return "";
   }
 }

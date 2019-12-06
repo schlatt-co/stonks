@@ -25,6 +25,6 @@ public class CompanyValidator extends ArgumentValidator<Company> {
 
   @Override
   public String getPrompt() {
-    return "Company not found";
+    return "must be a valid company";
   }
 }

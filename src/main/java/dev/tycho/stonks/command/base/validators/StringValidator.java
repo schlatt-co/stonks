@@ -25,7 +25,7 @@ public class StringValidator extends ArgumentValidator<String> {
   @Override
   public String getPrompt() {
     if (value.length() > maxLength) {
-      return getName() + "Must be fewer than " + maxLength + " letters long";
+      return "Must be fewer than " + maxLength + " letters long";
     } else {
       return "Expected a string";
     }

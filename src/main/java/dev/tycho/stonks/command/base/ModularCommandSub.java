@@ -61,11 +61,17 @@ public abstract class ModularCommandSub extends CommandSub {
     execute(player);
   }
 
-  private final void sendCorrectUsage(Player player, String alias) {
-    String usage = "Correct usage:";
+  @Override
+  public String getArgs() {
+    String usage = "";
     for (ArgumentValidator argument : arguments) {
       usage += " " + argument.getUsage();
     }
+    return usage;
+  }
+
+  private final void sendCorrectUsage(Player player, String alias) {
+    String usage = "Correct usage: /" + alias + getArgs();
     sendMessage(player, usage);
   }
 

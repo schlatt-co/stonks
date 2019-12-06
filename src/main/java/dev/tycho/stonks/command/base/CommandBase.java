@@ -32,8 +32,10 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     }
     Player player = (Player) sender;
 
+
     if (args.length == 0) {
-      subCommands.get("default").onCommand(player, label, args);
+      showAllCommands(player);
+//      subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
       CommandSub sub = subCommands.get(args[0]);
       if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {
@@ -74,4 +76,12 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   private void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
+
+  public void showAllCommands(Player player) {
+    for (Map.Entry<String, CommandSub> e : subCommands.entrySet()) {
+      player.sendMessage("/stonks " + e.getKey() + e.getValue().getArgs());
+//      System.out.println("/stonks " + e.getKey() + e.getValue().getArgs());
+    }
+  }
+
 }

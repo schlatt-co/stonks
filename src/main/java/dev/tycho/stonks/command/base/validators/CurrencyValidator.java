@@ -18,6 +18,6 @@ public class CurrencyValidator extends ArgumentValidator<Double> {
 
   @Override
   public String getPrompt() {
-    return getName() + " must be a positive number";
+    return "must be a positive number";
   }
 }
