@@ -1,10 +1,13 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.Argument;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.CurrencyArgument;
+import dev.tycho.stonks.command.base.StringArgument;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import org.bukkit.Bukkit;
@@ -16,17 +19,20 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static dev.tycho.stonks.model.core.Role.CEO;
 
-public class PayCommandSub extends CommandSub {
+public class PayCommandSub extends ModularCommandSub {
 
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
       "1000",
       "10000");
+
+  protected PayCommandSub() {
+    super(new CurrencyArgument("amount"), Argument.optional(new StringArgument("Message", 200)));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -37,23 +43,9 @@ public class PayCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " pay <amount> [<message>]");
-      return;
-    }
-
-    if (!Pattern.matches("([0-9]*)\\.?([0-9]*)?", args[1])) {
-      sendMessage(player, "Invalid amount!");
-      return;
-    }
-    double amount = Double.parseDouble(args[1]);
-
-    String message = (args.length > 2) ? concatArgs(2, args) : "";
-    if (message.length() > 200) {
-      sendMessage(player, "Your message cannot be longer than 200 characters!");
-      return;
-    }
+  public void execute(Player player) {
+    double amount = getArgument("amount");
+    String message = getArgument("message");
 
     List<Company> list = Repo.getInstance().companies().getAll();
     new CompanySelectorGui.Builder()

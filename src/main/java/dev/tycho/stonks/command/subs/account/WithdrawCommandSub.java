@@ -1,13 +1,14 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.AccountArgument;
+import dev.tycho.stonks.command.base.Argument;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.CurrencyArgument;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,13 +16,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class WithdrawCommandSub extends CommandSub {
+public class WithdrawCommandSub extends ModularCommandSub {
 
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
       "1000",
       "10000");
+
+  protected WithdrawCommandSub(Argument argument, Argument... arguments) {
+    super(new CurrencyArgument("amount"), Argument.optional(new AccountArgument("account_id")));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -32,27 +37,15 @@ public class WithdrawCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " withdraw <amount> [<account id>]");
-      return;
-    }
+  public void execute(Player player) {
+    double amount = getArgument("amount");
+    Account account = getArgument("account_id");
 
-    if (!validateDouble(args[1])) {
-      sendMessage(player, "Invalid amount!");
-      return;
-    }
-    double amount = Double.parseDouble(args[1]);
-    if (args.length == 3) {
-      Account a;
-      if (StringUtils.isNumeric(args[2]) && (a = Repo.getInstance().accountWithId(Integer.parseInt(args[2]))) != null) {
-        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
+    if (account != null) {
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), account, amount);
         return;
-      } else {
-        sendMessage(player, "Invalid account id! Pulling up selector...");
-      }
     }
-    List<Company> list = new ArrayList<Company>(Repo.getInstance().companies().getAll());
+    List<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
     //We need a list of all companies with a withdrawable account for this player
     //Remove companies where the player is not a manager and doesn't have an account
     //todo remove this messy logic
