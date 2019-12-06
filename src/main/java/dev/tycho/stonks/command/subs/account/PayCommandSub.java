@@ -1,9 +1,9 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.Argument;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.ModularCommandSub;
-import dev.tycho.stonks.command.base.CurrencyArgument;
-import dev.tycho.stonks.command.base.StringArgument;
+import dev.tycho.stonks.command.base.validators.CurrencyValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
@@ -31,7 +31,7 @@ public class PayCommandSub extends ModularCommandSub {
       "10000");
 
   protected PayCommandSub() {
-    super(new CurrencyArgument("amount"), Argument.optional(new StringArgument("Message", 200)));
+    super(new CurrencyValidator("amount"), ArgumentValidator.optional(new StringValidator("Message", 200)));
   }
 
   @Override

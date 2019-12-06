@@ -1,11 +1,11 @@
-package dev.tycho.stonks.command.base;
+package dev.tycho.stonks.command.base.validators;
 
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 
-public class CompanyArgument extends Argument<Company> {
+public class CompanyValidator extends ArgumentValidator<Company> {
 
-  public CompanyArgument(String name) {
+  public CompanyValidator(String name) {
     super(name);
   }
 

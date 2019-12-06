@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
-import dev.tycho.stonks.command.base.StringArgument;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
@@ -21,7 +21,7 @@ import java.util.Collection;
 public class CreateAccountCommandSub extends ModularCommandSub {
 
   protected CreateAccountCommandSub() {
-    super(new StringArgument("account_name"));
+    super(new StringValidator("account_name"));
   }
 
   @Override

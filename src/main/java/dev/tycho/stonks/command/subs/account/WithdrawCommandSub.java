@@ -1,9 +1,9 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.AccountArgument;
-import dev.tycho.stonks.command.base.Argument;
+import dev.tycho.stonks.command.base.validators.AccountValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.ModularCommandSub;
-import dev.tycho.stonks.command.base.CurrencyArgument;
+import dev.tycho.stonks.command.base.validators.CurrencyValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.Repo;
@@ -24,8 +24,8 @@ public class WithdrawCommandSub extends ModularCommandSub {
       "1000",
       "10000");
 
-  protected WithdrawCommandSub(Argument argument, Argument... arguments) {
-    super(new CurrencyArgument("amount"), Argument.optional(new AccountArgument("account_id")));
+  protected WithdrawCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
+    super(new CurrencyValidator("amount"), ArgumentValidator.optional(new AccountValidator("account_id")));
   }
 
   @Override

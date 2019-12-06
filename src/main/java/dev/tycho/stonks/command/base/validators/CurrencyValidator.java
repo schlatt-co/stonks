@@ -1,9 +1,9 @@
-package dev.tycho.stonks.command.base;
+package dev.tycho.stonks.command.base.validators;
 
 import java.util.regex.Pattern;
 
-public class CurrencyArgument extends Argument<Double> {
-  public CurrencyArgument(String name) {
+public class CurrencyValidator extends ArgumentValidator<Double> {
+  public CurrencyValidator(String name) {
     super(name);
   }
 

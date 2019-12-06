@@ -1,14 +1,14 @@
-package dev.tycho.stonks.command.base;
+package dev.tycho.stonks.command.base.validators;
 
-public class StringArgument extends Argument<String> {
+public class StringValidator extends ArgumentValidator<String> {
   private final int maxLength;
 
-  public StringArgument(String name) {
+  public StringValidator(String name) {
     super(name);
     this.maxLength = 255;
   }
 
-  public StringArgument(String name, int maxLength) {
+  public StringValidator(String name, int maxLength) {
     super(name);
     this.maxLength = maxLength;
   }

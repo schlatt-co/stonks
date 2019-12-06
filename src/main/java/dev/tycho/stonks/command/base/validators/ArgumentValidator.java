@@ -1,12 +1,12 @@
-package dev.tycho.stonks.command.base;
+package dev.tycho.stonks.command.base.validators;
 
-public abstract class Argument<T> {
+public abstract class ArgumentValidator<T> {
   private final String name;
   private boolean concatIfLastArg;
   private boolean optional;
   protected T value;
 
-  public Argument(String name) {
+  public ArgumentValidator(String name) {
     this.name = name;
     this.concatIfLastArg = false;
     this.optional = false;
@@ -44,7 +44,7 @@ public abstract class Argument<T> {
   public abstract String getPrompt();
 
 
-  public static Argument optional(Argument arg) {
+  public static ArgumentValidator optional(ArgumentValidator arg) {
     arg.setOptional(true);
     return  arg ;
   }

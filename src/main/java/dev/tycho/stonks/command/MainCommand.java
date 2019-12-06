@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command;
 
-import dev.tycho.stonks.command.base.Argument;
 import dev.tycho.stonks.command.base.CommandBase;
 import dev.tycho.stonks.command.subs.FeesCommandSub;
 import dev.tycho.stonks.command.subs.HelpCommandSub;

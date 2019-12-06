@@ -1,15 +1,16 @@
 package dev.tycho.stonks.command.base;
 
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public abstract class ModularCommandSub extends CommandSub {
-  final Argument[] arguments;
+  final ArgumentValidator[] arguments;
 
-  protected ModularCommandSub(Argument argument, Argument... arguments) {
-    this.arguments = new Argument[arguments.length + 1];
+  protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
+    this.arguments = new ArgumentValidator[arguments.length + 1];
     this.arguments[0] = argument;
     for (int i = 1; i < this.arguments.length; i++) {
       this.arguments[i] = arguments[i - 1];
@@ -21,7 +22,7 @@ public abstract class ModularCommandSub extends CommandSub {
 
     //Validate each argument
     for (int i = 0; i < arguments.length; i++) {
-      Argument argument = arguments[i];
+      ArgumentValidator argument = arguments[i];
       if (i >= args.length - 1) {
         //We don't have enough args
         if (argument.isOptional()) {
@@ -52,14 +53,14 @@ public abstract class ModularCommandSub extends CommandSub {
 
   private final void sendCorrectUsage(Player player, String alias) {
     String usage = "Correct usage:";
-    for (Argument argument : arguments) {
+    for (ArgumentValidator argument : arguments) {
       usage += " " + argument.getUsage();
     }
   }
 
 
   protected final <T> T getArgument(String name) {
-    for (Argument argument : arguments) {
+    for (ArgumentValidator argument : arguments) {
       if (argument.getName().equals(name)) {
         return (T) argument.get();
       }

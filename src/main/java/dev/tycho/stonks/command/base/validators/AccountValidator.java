@@ -1,12 +1,12 @@
-package dev.tycho.stonks.command.base;
+package dev.tycho.stonks.command.base.validators;
 
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import org.apache.commons.lang.StringUtils;
 
-public class AccountArgument extends Argument<Account> {
+public class AccountValidator extends ArgumentValidator<Account> {
 
-  public AccountArgument(String name) {
+  public AccountValidator(String name) {
     super(name);
   }
 
