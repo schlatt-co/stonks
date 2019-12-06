@@ -20,6 +20,7 @@ import java.util.*;
 public class Repo extends SpigotModule {
 
   private static Repo instance;
+
   public static Repo getInstance() {
     return instance;
   }
@@ -117,6 +118,11 @@ public class Repo extends SpigotModule {
     subscriptionStore.setDbi(new SubscriptionDBI(conn));
     transactionStore.setDbi(new TransactionDBI(conn));
 
+    repopulateAll();
+  }
+
+
+  public void repopulateAll() {
     subscriptionStore.populate();
     serviceStore.populate();
     transactionStore.populate();
@@ -126,7 +132,6 @@ public class Repo extends SpigotModule {
     memberStore.populate();
     companyStore.populate();
   }
-
 
 
   public Collection<Company> companiesWhereManager(Player player) {
@@ -311,32 +316,18 @@ public class Repo extends SpigotModule {
     return a;
   }
 
-  public Account withdrawFromAccount(UUID player, Account account, double amount) {
+  public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount) {
     if (amount < 0) {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
     }
-
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
-      @Override
-      public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
-        companyAccountStore.save(ca);
-        val = ca;
-      }
-
-      @Override
-      public void visit(HoldingsAccount a) {
-        throw new IllegalArgumentException("Tried to withdraw from a holdings account");
-      }
-    };
-    account.accept(visitor);
-    Account a = visitor.getRecentVal();
+    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
+    companyAccountStore.save(ca);
     //Create a transaction log too
-    createTransaction(player, account, "withdraw", amount);
+    createTransaction(player, a, "withdraw", -amount);
     //We don't need to refresh the company because this is done when creating a transaction log
     //companyStore.refresh(a.companyPk);
-    return a;
+    return ca;
   }
 
   public Holding createHolding(UUID player, HoldingsAccount holdingsAccount, double share) {
@@ -349,6 +340,15 @@ public class Repo extends SpigotModule {
     //Update account and company to persist the new holding
     holdingsAccountStore.refresh(holding.accountPk);
     companyStore.refresh(holdingsAccount.companyPk);
+    return holding;
+  }
+
+  public Holding withdrawFromHolding(UUID player, Holding h, double amount) {
+    Holding holding = new Holding(h.pk, h.playerUUID, h.balance - amount, h.share, h.accountPk);
+    holdingStore.save(holding);
+    holdingsAccountStore.refresh(h.accountPk);
+
+    createTransaction(player, accountWithId(h.accountPk), "withdraw holding", -amount);
     return holding;
   }
 

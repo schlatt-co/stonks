@@ -161,7 +161,7 @@ public class ShopManager extends SpigotModule {
             event.setBalanceSufficient(false);
           } else {
             //We have enough money
-            Repo.getInstance().withdrawFromAccount(null, account, event.getAmountSent().doubleValue());
+            Repo.getInstance().withdrawFromAccount(null, a, event.getAmountSent().doubleValue());
             //Transaction success
           }
         }

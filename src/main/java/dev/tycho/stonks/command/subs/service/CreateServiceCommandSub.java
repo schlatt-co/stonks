@@ -99,8 +99,8 @@ public class CreateServiceCommandSub extends ModularCommandSub {
       return;
     }
 
-    if (!name.matches("[0-9a-zA-Z\\s&+]{2,40}")) {
-      sendMessage(player, "Invalid name. Please try again. You may have used special characters or it is too long");
+    if (!name.matches("[0-9a-zA-Z&+_]{2,40}")) {
+      sendMessage(player, "Invalid name. Please try  again. You may have used special characters or it is too long");
       return;
     }
 

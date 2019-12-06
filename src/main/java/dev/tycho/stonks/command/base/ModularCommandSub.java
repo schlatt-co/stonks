@@ -38,7 +38,7 @@ public abstract class ModularCommandSub extends CommandSub {
           //If it is optional then stop looking for more
           break;
         } else {
-          sendCorrectUsage(player, alias);
+          sendCorrectUsage(player, alias, args[0]);
           return;
         }
       }
@@ -52,7 +52,7 @@ public abstract class ModularCommandSub extends CommandSub {
         argString = args[i + 1];
       }
       if (!argument.provide(argString)) {
-        sendMessage(player, argument.getPrompt());
+        sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
         return;
       }
     }
@@ -70,8 +70,8 @@ public abstract class ModularCommandSub extends CommandSub {
     return usage;
   }
 
-  private final void sendCorrectUsage(Player player, String alias) {
-    String usage = "Correct usage: /" + alias + getArgs();
+  private final void sendCorrectUsage(Player player, String alias, String commandName) {
+    String usage = "Correct usage: /" + alias + " " + commandName + getArgs();
     sendMessage(player, usage);
   }
 

@@ -13,7 +13,9 @@ public abstract class ArgumentValidator<T> {
   }
 
   public T get() {
-    return value;
+    T ret = value;
+    value = null;
+    return ret;
   }
 
   public abstract boolean provide(String str);
