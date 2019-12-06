@@ -24,7 +24,7 @@ public class WithdrawCommandSub extends ModularCommandSub {
       "1000",
       "10000");
 
-  protected WithdrawCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
+  public WithdrawCommandSub() {
     super(new CurrencyValidator("amount"), ArgumentValidator.optional(new AccountValidator("account_id")));
   }
 

@@ -30,7 +30,7 @@ public class PayCommandSub extends ModularCommandSub {
       "1000",
       "10000");
 
-  protected PayCommandSub() {
+  public PayCommandSub() {
     super(new CurrencyValidator("amount"), ArgumentValidator.optional(new StringValidator("Message", 200)));
   }
 

@@ -20,7 +20,7 @@ import java.util.Collection;
 
 public class CreateAccountCommandSub extends ModularCommandSub {
 
-  protected CreateAccountCommandSub() {
+  public CreateAccountCommandSub() {
     super(new StringValidator("account_name"));
   }
 
