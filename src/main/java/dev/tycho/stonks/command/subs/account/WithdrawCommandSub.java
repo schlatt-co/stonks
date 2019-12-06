@@ -1,8 +1,8 @@
 package dev.tycho.stonks.command.subs.account;
 
+import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
-import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CurrencyValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;

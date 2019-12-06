@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.dbis;
 
-import dev.tycho.stonks.db_new.JavaSqlDBI;
+import dev.tycho.stonks.database.JavaSqlDBI;
 import dev.tycho.stonks.model.service.Subscription;
 
 import java.sql.*;

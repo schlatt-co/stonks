@@ -1,4 +1,4 @@
-package dev.tycho.stonks.db_new;
+package dev.tycho.stonks.database;
 
 import java.sql.Connection;
 import java.util.ArrayList;

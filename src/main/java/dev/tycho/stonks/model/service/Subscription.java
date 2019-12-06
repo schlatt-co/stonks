@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.service;
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 
 import java.sql.Date;
 import java.util.Calendar;

@@ -2,8 +2,8 @@ package dev.tycho.stonks.command.subs;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.gui.CompanyListGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

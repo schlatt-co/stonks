@@ -34,8 +34,8 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
 
     if (args.length == 0) {
-      showAllCommands(player);
-//      subCommands.get("default").onCommand(player, label, args);
+//      showAllCommands(player);
+      subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
       CommandSub sub = subCommands.get(args[0]);
       if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {

@@ -1,8 +1,8 @@
 package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.AccountListGui;
 import dev.tycho.stonks.model.core.Company;
 import org.bukkit.entity.Player;

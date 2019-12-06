@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

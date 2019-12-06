@@ -1,7 +1,7 @@
 package dev.tycho.stonks.model.dbis;
 
-import dev.tycho.stonks.db_new.JavaSqlDBI;
-import dev.tycho.stonks.db_new.Store;
+import dev.tycho.stonks.database.JavaSqlDBI;
+import dev.tycho.stonks.database.Store;
 import dev.tycho.stonks.model.core.*;
 
 import java.sql.*;

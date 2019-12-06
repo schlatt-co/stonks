@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;

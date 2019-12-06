@@ -1,8 +1,8 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.db_new.Store;
-import dev.tycho.stonks.db_new.SyncStore;
+import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
