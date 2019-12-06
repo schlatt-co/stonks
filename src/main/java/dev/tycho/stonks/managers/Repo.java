@@ -13,9 +13,7 @@ import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 //The repo has a store for each entity we want to save in the database
@@ -61,6 +59,35 @@ public class Repo extends SpigotModule {
     Connection conn = DriverManager.getConnection(url, connectionProps);
     System.out.println("Connected to database");
     return conn;
+  }
+
+  //todo this could be in a better place than repo
+  public int getNextAccountPk() {
+    try {
+      int companyAccountPk = -1;
+      int holdingsAccountPk = -1;
+      PreparedStatement statement = conn.prepareStatement(
+          "SHOW TABLE STATUS LIKE 'company_account'");
+      ResultSet results = statement.executeQuery();
+      while (results.next()) {
+        companyAccountPk = results.getInt("Auto_increment");
+      }
+      statement = conn.prepareStatement(
+          "SHOW TABLE STATUS LIKE 'holdings_account'");
+      results = statement.executeQuery();
+      while (results.next()) {
+        holdingsAccountPk = results.getInt("Auto_increment");
+      }
+      if (holdingsAccountPk == -1 || companyAccountPk == -1) {
+        System.out.println("Couldn't get a primary key for an account");
+        return -1;
+      }
+
+      return Math.max(companyAccountPk, holdingsAccountPk);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return -1;
+    }
   }
 
   @Override
