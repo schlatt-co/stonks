@@ -16,8 +16,7 @@ public class AccountValidator extends ArgumentValidator<Account> {
       return false;
     }
     value = Repo.getInstance().accountWithId(Integer.parseInt(str));
-    if (value == null) return false;
-    return true;
+    return value != null;
   }
 
   @Override

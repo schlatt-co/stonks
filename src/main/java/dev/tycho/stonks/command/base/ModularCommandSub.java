@@ -9,6 +9,15 @@ import java.util.List;
 public abstract class ModularCommandSub extends CommandSub {
   final ArgumentValidator[] arguments;
 
+  protected ModularCommandSub(String perms, ArgumentValidator argument, ArgumentValidator... arguments) {
+    super(perms);
+    this.arguments = new ArgumentValidator[arguments.length + 1];
+    this.arguments[0] = argument;
+    for (int i = 1; i < this.arguments.length; i++) {
+      this.arguments[i] = arguments[i - 1];
+    }
+  }
+
   protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
     this.arguments[0] = argument;
@@ -26,6 +35,7 @@ public abstract class ModularCommandSub extends CommandSub {
       if (i >= args.length - 1) {
         //We don't have enough args
         if (argument.isOptional()) {
+          //If it is optional then stop looking for more
           break;
         } else {
           sendCorrectUsage(player, alias);
@@ -42,7 +52,7 @@ public abstract class ModularCommandSub extends CommandSub {
         argString = args[i + 1];
       }
       if (!argument.provide(argString)) {
-        sendMessage(player, argument.getUsage());
+        sendMessage(player, argument.getPrompt());
         return;
       }
     }
@@ -56,6 +66,7 @@ public abstract class ModularCommandSub extends CommandSub {
     for (ArgumentValidator argument : arguments) {
       usage += " " + argument.getUsage();
     }
+    sendMessage(player, usage);
   }
 
 
@@ -65,7 +76,7 @@ public abstract class ModularCommandSub extends CommandSub {
         return (T) argument.get();
       }
     }
-    throw new IllegalArgumentException("Argument with name not found");
+    throw new IllegalArgumentException("Argument with name " + name + " not found");
   }
 
   public abstract void execute(Player player);

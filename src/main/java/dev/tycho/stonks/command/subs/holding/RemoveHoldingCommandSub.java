@@ -1,20 +1,20 @@
 package dev.tycho.stonks.command.subs.holding;
 
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.AccountValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.*;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class RemoveHoldingCommandSub extends CommandSub {
+public class RemoveHoldingCommandSub extends ModularCommandSub {
 
 
   public RemoveHoldingCommandSub() {
-    super(false);
+    super(new AccountValidator("account"), new StringValidator("player_name"));
   }
 
   @Override
@@ -25,20 +25,12 @@ public class RemoveHoldingCommandSub extends CommandSub {
     return null;
   }
 
+
+
+
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 3) {
-      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " removeholding <account id> <player>");
-      return;
-    }
-
-    if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " removeholding <account id> <player>");
-      return;
-    }
-
-    Account account = Repo.getInstance().accountWithId(Integer.parseInt(args[1]));
-    removeHolding(player, account, args[2]);
+  public void execute(Player player) {
+    removeHolding(player, getArgument("account"), getArgument("player_name"));
   }
 
   private void removeHolding(Player player, Account account, String playerName) {

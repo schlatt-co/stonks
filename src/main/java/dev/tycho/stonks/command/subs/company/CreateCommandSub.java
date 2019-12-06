@@ -1,38 +1,31 @@
 package dev.tycho.stonks.command.subs.company;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerStateData;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.managers.SettingsManager;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class CreateCommandSub extends CommandSub {
+public class CreateCommandSub extends ModularCommandSub {
 
   private final static double CREATION_FEE = Bukkit.getPluginManager().getPlugin("Stonks").getConfig().getDouble("fees.companycreation");
 
-  @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
+  public CreateCommandSub() {
+    super(ArgumentValidator.concatIfLast(new StringValidator("company_name")));
   }
 
-  @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " create <company name>");
-      return;
-    }
 
-    String companyName = concatArgs(1, args);
+  @Override
+  public void execute(Player player) {
+    String companyName = getArgument("company_name");
     new ConfirmationGui.Builder()
         .title("Accept $" + CREATION_FEE + " creation fee?")
         .onChoiceMade(aBoolean -> {

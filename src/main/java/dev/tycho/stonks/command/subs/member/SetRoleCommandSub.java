@@ -1,6 +1,9 @@
 package dev.tycho.stonks.command.subs.member;
 
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
@@ -15,7 +18,7 @@ import java.util.List;
 import static dev.tycho.stonks.model.core.Role.CEO;
 import static dev.tycho.stonks.model.core.Role.Manager;
 
-public class SetRoleCommandSub extends CommandSub {
+public class SetRoleCommandSub extends ModularCommandSub {
 
   private static final List<String> ROLES = Arrays.asList(
       "CEO",
@@ -24,7 +27,23 @@ public class SetRoleCommandSub extends CommandSub {
       "Intern");
 
   public SetRoleCommandSub() {
-    super(false);
+    super(new StringValidator("player_name"),
+        new ArgumentValidator<Role>("role") {
+          @Override
+          public boolean provide(String str) {
+            try {
+              value = Role.valueOf(str);
+              return true;
+            } catch (IllegalArgumentException e) {
+              return false;
+            }
+          }
+
+          @Override
+          public String getPrompt() {
+            return "must be a valid role (CEO, Manager, Employee, Intern)";
+          }
+        }, new CompanyValidator("company"));
   }
 
   @Override
@@ -38,28 +57,15 @@ public class SetRoleCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 4) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " setrole <player> <role> <company>");
-      return;
-    }
-    String playerName = args[1];
-    String roleString = args[2];
-    Company company = companyFromName(concatArgs(3, args));
-    setRole(player, playerName, roleString, company);
+  public void execute(Player player) {
+    String playerName = getArgument("player_name");
+    Role role = getArgument("role");
+    Company company = getArgument("company");
+    setRole(player, playerName, role, company);
   }
 
-  private void setRole(Player player, String playerName, String roleString, Company company) {
-    //Try and parse the role
-    Role newRole;
-    try {
-      newRole = Role.valueOf(roleString);
-    } catch (IllegalArgumentException e) {
-      sendMessage(player, "Invalid role!");
-      return;
-    }
-
-    //Now see if the player to promote exists
+  private void setRole(Player player, String playerName, Role newRole, Company company) {
+    //See if the player to promote exists
     Player playerToChange = playerFromName(playerName);
     if (playerToChange == null) {
       sendMessage(player, "That player has never played on the server!");
@@ -91,7 +97,7 @@ public class SetRoleCommandSub extends CommandSub {
       return;
     }
     if (!changingMember.canChangeRole(memberToChange, newRole)) {
-      sendMessage(player, "You do not have the permissions to promote that user to " + ChatColor.YELLOW + roleString);
+      sendMessage(player, "You do not have the permissions to promote that user to " + ChatColor.YELLOW + newRole.name());
       return;
     }
     //If we are promoting them to a ceo then demote us

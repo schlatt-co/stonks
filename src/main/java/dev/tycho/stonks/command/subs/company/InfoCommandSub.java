@@ -1,39 +1,21 @@
 package dev.tycho.stonks.command.subs.company;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.CompanyInfoGui;
 import dev.tycho.stonks.model.core.Company;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class InfoCommandSub extends CommandSub {
+public class InfoCommandSub extends ModularCommandSub {
 
   public InfoCommandSub() {
-    super(false);
+    super(new CompanyValidator("company"));
   }
-
+  
   @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
-
-  @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " info <company name>");
-      return;
-    }
-    String name = concatArgs(1, args);
-    Company company = companyFromName(name);
-
-    if (company == null) {
-      sendMessage(player, "Company not found.");
-      return;
-    }
+  public void execute(Player player) {
+    Company company = getArgument("company");
     Stonks.newChain()
         .asyncFirst(() -> CompanyInfoGui.getInventory(company))
         .abortIfNull()

@@ -1,37 +1,23 @@
 package dev.tycho.stonks.command.subs.service;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.IntegerValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ServiceSelectorGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.model.service.Service;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+public class SetServiceMaxCommandSub extends ModularCommandSub {
 
-public class SetServiceMaxCommandSub extends CommandSub {
-
-  @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
+  public SetServiceMaxCommandSub() {
+    super(new IntegerValidator("max_subs"));
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 2) {
-      sendMessage(player, "Correct usage:" + ChatColor.YELLOW + "/" + alias + " setservicemax <max_subs (0=unlimited)>");
-      return;
-    }
-    if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Correct usage:" + ChatColor.YELLOW + "/" + alias + " setservicemax <max_subs (0=unlimited)>");
-      return;
-    }
-    int maxSubs = Integer.parseInt(args[1]);
+  public void execute(Player player) {
 
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWhereManager(player))
@@ -40,7 +26,7 @@ public class SetServiceMaxCommandSub extends CommandSub {
             .company(company)
             .title("Select a service")
             .serviceSelected(
-                service -> changeServiceMaxSubs(player, maxSubs, company, service)
+                service -> changeServiceMaxSubs(player, getArgument("max_subs"), company, service)
             ).open(player))
         .open(player);
   }

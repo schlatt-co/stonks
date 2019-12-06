@@ -1,14 +1,17 @@
 package dev.tycho.stonks.command.subs.service;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CurrencyValidator;
+import dev.tycho.stonks.command.base.validators.DoubleValidator;
+import dev.tycho.stonks.command.base.validators.IntegerValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -17,7 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CreateServiceCommandSub extends CommandSub {
+public class CreateServiceCommandSub extends ModularCommandSub {
+
+  public CreateServiceCommandSub() {
+    super(new DoubleValidator("duration"), new CurrencyValidator("cost"), new IntegerValidator("max_subs"), new StringValidator("name", 40));
+  }
+
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
@@ -50,27 +58,11 @@ public class CreateServiceCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 5) {
-      sendMessage(player, ChatColor.RED + "Correct usage: /" + alias + " createservice <duration (days)> <cost> <max_subs (0=unlimited)> <name>");
-      return;
-    }
-    if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Please enter an integer for duration");
-      return;
-    }
-    if (!validateDouble(args[2])) {
-      sendMessage(player, "Please enter a number for cost");
-      return;
-    }
-    if (!StringUtils.isNumeric(args[3])) {
-      sendMessage(player, "Please enter an integer for max subs");
-      return;
-    }
-    double duration = Double.parseDouble(args[1]);
-    double cost = Double.parseDouble(args[2]);
-    int maxSubs = Integer.parseInt(args[3]);
-    String name = concatArgs(4, args);
+  public void execute(Player player) {
+    double duration = getArgument("duration");
+    double cost = getArgument("cost");
+    int maxSubs = getArgument("max_subs");
+    String name = getArgument("name");
 
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWhereManager(player))

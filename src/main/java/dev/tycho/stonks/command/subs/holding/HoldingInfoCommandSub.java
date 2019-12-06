@@ -1,46 +1,23 @@
 package dev.tycho.stonks.command.subs.holding;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.AccountValidator;
 import dev.tycho.stonks.gui.HoldingListGui;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.HoldingsAccount;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+public class HoldingInfoCommandSub extends ModularCommandSub {
 
-public class HoldingInfoCommandSub extends CommandSub {
 
   public HoldingInfoCommandSub() {
-    super(false);
+    super(new AccountValidator("account"));
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
-
-  @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " holdinginfo <account id>");
-      return;
-    }
-
-    if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Invalid account id!");
-      return;
-    }
-
-    Account account = Repo.getInstance().accountWithId(Integer.parseInt(args[1]));
-    if (account == null) {
-      sendMessage(player, "Account with id does not exist!");
-      return;
-    }
+  public void execute(Player player) {
+    Account account = getArgument("account");
     Stonks.newChain()
         .asyncFirst(() -> {
             if (!(account instanceof HoldingsAccount)) {
