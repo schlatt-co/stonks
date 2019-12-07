@@ -2,7 +2,7 @@ package dev.tycho.stonks.model.service;
 
 import dev.tycho.stonks.database.Entity;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -10,14 +10,14 @@ public class Subscription extends Entity {
 
   public final UUID playerUUID;
   public final int servicePk;
-  public final Date lastPaymentDate;
+  public final Timestamp lastPaymentTimestamp;
   public final boolean autoPay;
 
-  public Subscription(int pk, UUID player, int servicePk, Date lastPaymentDate, boolean autoPay) {
+  public Subscription(int pk, UUID player, int servicePk, Timestamp lastPaymentTimestamp, boolean autoPay) {
     super(pk);
     this.playerUUID = player;
     this.servicePk = servicePk;
-    this.lastPaymentDate = lastPaymentDate;
+    this.lastPaymentTimestamp = lastPaymentTimestamp;
     this.autoPay = autoPay;
   }
 
@@ -25,7 +25,7 @@ public class Subscription extends Entity {
     super(subscription.pk);
     this.playerUUID = subscription.playerUUID;
     this.servicePk = subscription.servicePk;
-    this.lastPaymentDate = subscription.lastPaymentDate;
+    this.lastPaymentTimestamp = subscription.lastPaymentTimestamp;
     this.autoPay = subscription.autoPay;
   }
 
@@ -35,7 +35,7 @@ public class Subscription extends Entity {
 
   //Will return negative for a non-overdue date
   public static double getDaysOverdue(Service service, Subscription subscription) {
-    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentDate.getTime();
+    long millisDifference = Calendar.getInstance().getTimeInMillis() - subscription.lastPaymentTimestamp.getTime();
     return ((double) millisDifference / 86400000) - service.duration;
   }
 }

@@ -2,7 +2,7 @@ package dev.tycho.stonks.model.logging;
 
 import dev.tycho.stonks.database.Entity;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public class Transaction extends Entity {
@@ -11,10 +11,10 @@ public class Transaction extends Entity {
   public final String message;
   //negative amount represents money withdrawn
   public final double amount;
-  public final Date timestamp;
+  public final Timestamp timestamp;
 
 
-  public Transaction(int pk, int accountPk, UUID payeeUUID, String message, double amount, Date timestamp) {
+  public Transaction(int pk, int accountPk, UUID payeeUUID, String message, double amount, Timestamp timestamp) {
     super(pk);
     this.accountPk = accountPk;
     this.payeeUUID = payeeUUID;

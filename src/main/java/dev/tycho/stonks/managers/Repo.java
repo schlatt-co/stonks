@@ -174,8 +174,7 @@ public class Repo extends SpigotModule {
     );
     c = companyStore.create(c);
 
-    java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-    Member ceo = new Member(0, player.getUniqueId(), c.pk, currentDate, Role.CEO, true);
+    Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
     ceo = memberStore.create(ceo);
     companyStore.refresh(c.pk);
     return c;
@@ -190,15 +189,14 @@ public class Repo extends SpigotModule {
   }
 
   public Member createMember(Company company, Player player) {
-    java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-    Member newMember = new Member(0, player.getUniqueId(), company.pk, currentDate, Role.Employee, false);
+    Member newMember = new Member(0, player.getUniqueId(), company.pk, new Timestamp(System.currentTimeMillis()), Role.Employee, false);
     newMember = memberStore.create(newMember);
     companyStore.refresh(newMember.pk);
     return newMember;
   }
 
   public Member modifyMember(Member m, Role newRole, boolean newAcceptedInvite) {
-    Member member = new Member(m.pk, m.playerUUID, m.companyPk, m.joinDate, newRole, newAcceptedInvite);
+    Member member = new Member(m.pk, m.playerUUID, m.companyPk, m.joinTimestamp, newRole, newAcceptedInvite);
     memberStore.save(member);
     companyStore.refresh(m.companyPk);
     return member;
@@ -220,7 +218,7 @@ public class Repo extends SpigotModule {
   public Transaction createTransaction(UUID player, Account account, String message, double amount) {
     //Create the new transaction
     Transaction t = new Transaction(0, account.pk, player, message, amount,
-        new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+        new Timestamp(System.currentTimeMillis()));
     t = transactionStore.create(t);
     //Refresh the respective account object
     refreshAccount(account);
@@ -381,7 +379,7 @@ public class Repo extends SpigotModule {
   }
 
   public Subscription createSubscription(Player player, Service service, boolean autoPay) {
-    Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new java.sql.Date(Calendar.getInstance().getTime().getTime()), autoPay);
+    Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new Timestamp(System.currentTimeMillis()), autoPay);
     subscription = subscriptionStore.create(subscription);
     serviceStore.refresh(service.pk);
     Account account = accountWithId(service.accountPk);
@@ -392,7 +390,7 @@ public class Repo extends SpigotModule {
 
   public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
     Subscription s = new Subscription(subscription.pk, subscription.playerUUID, subscription.servicePk,
-        new java.sql.Date(Calendar.getInstance().getTime().getTime()), subscription.autoPay);
+    new Timestamp(System.currentTimeMillis()), subscription.autoPay);
 
     subscriptionStore.save(s);
     if (service.pk != s.servicePk) throw new IllegalArgumentException("Primary Key mismatch");

@@ -24,7 +24,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
               "    pk INT(11) NOT NULL AUTO_INCREMENT," +
               "    player_uuid VARCHAR(36) DEFAULT NULL," +
               "    company_pk INT(11) DEFAULT NULL," +
-              "    join_date DATETIME," +
+              "    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ," +
               "    role VARCHAR(20) DEFAULT NULL," +
               "    accepted_invite BIT DEFAULT NULL," +
               "    PRIMARY KEY(pk))"
@@ -45,14 +45,14 @@ public class MemberDBI extends JavaSqlDBI<Member> {
           Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.companyPk);
-      statement.setDate(3, obj.joinDate);
+      statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
       statement.setBoolean(5, obj.acceptedInvite);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int newPk = rs.getInt(1);
-        return new Member(newPk, obj.playerUUID, obj.companyPk, obj.joinDate, obj.role, obj.acceptedInvite);
+        return new Member(newPk, obj.playerUUID, obj.companyPk, obj.joinTimestamp, obj.role, obj.acceptedInvite);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -81,7 +81,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
           "UPDATE holding SET player_uuid = ?, company_pk = ?, join_date = ?, role = ?, accepted_invite = ? WHERE pk = ?");
       statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.companyPk);
-      statement.setDate(3, obj.joinDate);
+      statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
       statement.setBoolean(5, obj.acceptedInvite);
       statement.setInt(6, obj.pk);
@@ -114,7 +114,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
             pk,
             UUID.fromString(results.getString("player_uuid")),
             results.getInt("company_pk"),
-            results.getDate("join_date"),
+            results.getTimestamp("join_date"),
             newRole,
             results.getBoolean("accepted_invite"));
       }
@@ -147,7 +147,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
             pk,
             UUID.fromString(results.getString("player_uuid")),
             results.getInt("company_pk"),
-            results.getDate("join_date"),
+            results.getTimestamp("join_date"),
             newRole,
             results.getBoolean("accepted_invite")));
       }

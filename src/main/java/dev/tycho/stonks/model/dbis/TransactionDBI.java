@@ -25,7 +25,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
               "    payee_uuid VARCHAR(36) DEFAULT NULL," +
               "    message VARCHAR(255)," +
               "    amount double DEFAULT NULL," +
-              "    timestamp datetime DEFAULT NULL," +
+              "    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ," +
               "    PRIMARY KEY(pk))"
       );
       return true;
@@ -46,7 +46,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
       statement.setString(2, obj.payeeUUID.toString());
       statement.setString(3, obj.message);
       statement.setDouble(4, obj.amount);
-      statement.setDate(5, obj.timestamp);
+      statement.setTimestamp(5, obj.timestamp);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
@@ -82,7 +82,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
       statement.setString(2, obj.payeeUUID.toString());
       statement.setString(3, obj.message);
       statement.setDouble(4, obj.amount);
-      statement.setDate(5, obj.timestamp);
+      statement.setTimestamp(5, obj.timestamp);
       statement.setInt(6, obj.pk);
       statement.executeUpdate();
       return true;
@@ -106,7 +106,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
             UUID.fromString(results.getString("payee_uuid")),
             results.getString("message"),
             results.getDouble("amount"),
-            results.getDate("timestamp"));
+            results.getTimestamp("timestamp"));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -130,7 +130,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
             UUID.fromString(results.getString("payee_uuid")),
             results.getString("message"),
             results.getDouble("amount"),
-            results.getDate("timestamp")));
+            results.getTimestamp("timestamp")));
       }
     } catch (SQLException e) {
       e.printStackTrace();

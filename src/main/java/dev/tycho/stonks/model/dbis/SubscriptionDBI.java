@@ -23,7 +23,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " player_uuid varchar(36) DEFAULT NULL," +
               " service_pk int(11) DEFAULT NULL," +
-              " last_payment_date datetime," +
+              " last_payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ," +
               " auto_pay bit DEFAULT NULL," +
               " PRIMARY KEY (pk) ) "
       );
@@ -42,13 +42,13 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
           Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, obj.playerUUID.toString());
       statement.setInt(2, obj.servicePk);
-      statement.setDate(3, obj.lastPaymentDate);
+      statement.setTimestamp(3, obj.lastPaymentTimestamp);
       statement.setBoolean(4, obj.autoPay);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int newPk = rs.getInt(1);
-        return new Subscription(newPk, obj.playerUUID, obj.servicePk, obj.lastPaymentDate, obj.autoPay);
+        return new Subscription(newPk, obj.playerUUID, obj.servicePk, obj.lastPaymentTimestamp, obj.autoPay);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -77,7 +77,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
           "UPDATE subscription SET player_uuid = ?, service_pk = ?, last_payment_date = ?, auto_pay = ? WHERE pk = ?");
       statement.setString(1, obj.playerUUID.toString());
       statement.setInt(2, obj.servicePk);
-      statement.setDate(3, obj.lastPaymentDate);
+      statement.setTimestamp(3, obj.lastPaymentTimestamp);
       statement.setBoolean(4, obj.autoPay);
       statement.setInt(5, obj.pk);
       statement.executeUpdate();
@@ -100,7 +100,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
             pk,
             UUID.fromString(results.getString("player_uuid")),
             results.getInt("service_pk"),
-            results.getDate("last_payment_date"),
+            results.getTimestamp("last_payment_date"),
             results.getBoolean("auto_pay")
         );
       }
@@ -125,7 +125,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
                 pk,
                 UUID.fromString(results.getString("player_uuid")),
                 results.getInt("service_pk"),
-                results.getDate("last_payment_date"),
+                results.getTimestamp("last_payment_date"),
                 results.getBoolean("auto_pay")
             ));
       }
