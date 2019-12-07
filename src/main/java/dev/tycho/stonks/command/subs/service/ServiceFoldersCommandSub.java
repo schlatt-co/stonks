@@ -1,36 +1,20 @@
 package dev.tycho.stonks.command.subs.service;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.ServiceFoldersListGui;
 import dev.tycho.stonks.model.core.Company;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class ServiceFoldersCommandSub extends CommandSub {
+public class ServiceFoldersCommandSub extends ModularCommandSub {
   public ServiceFoldersCommandSub() {
-    super(false);
+    super(new CompanyValidator("company"));
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
-
-  @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 2) {
-      sendMessage(player, "Correct usage /" + alias + " servicefolders <company_name>");
-      return;
-    }
-    Company company = companyFromName(concatArgs(1, args));
-
-    if (company == null) {
-      sendMessage(player, "That company doesn't exist!");
-      return;
-    }
+  public void execute(Player player) {
+    Company company = getArgument("company");
     Stonks.newChain()
         .asyncFirst(() -> new ServiceFoldersListGui(company))
         .abortIfNull()

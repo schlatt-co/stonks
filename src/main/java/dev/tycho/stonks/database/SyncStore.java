@@ -1,4 +1,4 @@
-package dev.tycho.stonks.db_new;
+package dev.tycho.stonks.database;
 
 import com.google.common.collect.ImmutableList;
 
@@ -29,6 +29,7 @@ public class SyncStore<T extends Entity> implements Store<T> {
 
   @Override
   public void populate() {
+    entities.clear();
     for (T e : dbi.loadAll()) {
       if (e == null) continue;
       entities.put(e.pk, e);

@@ -1,8 +1,9 @@
 package dev.tycho.stonks.command.subs.member;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import org.bukkit.ChatColor;
@@ -12,7 +13,12 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.List;
 
-public class InviteCommandSub extends CommandSub {
+public class InviteCommandSub extends ModularCommandSub {
+
+
+  public InviteCommandSub() {
+    super(new StringValidator("player_name"));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -23,16 +29,13 @@ public class InviteCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " invite <player>");
-      return;
-    }
+  public void execute(Player player) {
+
     Collection<Company> list = Repo.getInstance().companiesWhereManager(player);
     new CompanySelectorGui.Builder()
         .companies(list)
         .title("Select a company to invite to")
-        .companySelected((company -> invitePlayerToCompany(player, company, args[1])))
+        .companySelected((company -> invitePlayerToCompany(player, company, getArgument("player_name"))))
         .open(player);
   }
 

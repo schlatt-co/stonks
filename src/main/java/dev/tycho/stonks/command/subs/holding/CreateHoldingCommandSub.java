@@ -1,14 +1,15 @@
 package dev.tycho.stonks.command.subs.holding;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.DoubleValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.core.Member;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class CreateHoldingCommandSub extends CommandSub {
+public class CreateHoldingCommandSub extends ModularCommandSub {
 
 
   private static final List<String> RATIOS = Arrays.asList(
@@ -24,6 +25,10 @@ public class CreateHoldingCommandSub extends CommandSub {
       "1",
       "1.5",
       "3");
+
+  public CreateHoldingCommandSub() {
+    super(new StringValidator("player_name"), new DoubleValidator("share"));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -36,13 +41,10 @@ public class CreateHoldingCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 3) {
-      sendMessage(player, "Correct user: " + ChatColor.YELLOW + "/" + alias + " createholding <player> <share>");
-      return;
-    }
+  public void execute(Player player) {
+    double share = getArgument("share");
+    String otherPlayer = getArgument("player_name");
 
-    double share = Double.parseDouble(args[2]);
     Collection<Company> companies = Repo.getInstance().companiesWhereManager(player);
     new CompanySelectorGui.Builder()
         .companies(companies)
@@ -51,7 +53,7 @@ public class CreateHoldingCommandSub extends CommandSub {
             new AccountSelectorGui.Builder()
                 .company(company)
                 .title("Select an account")
-                .accountSelected(l -> createHolding(player, l, args[1], share))
+                .accountSelected(l -> createHolding(player, l, otherPlayer, share))
                 .open(player)))
         .open(player);
   }

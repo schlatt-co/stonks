@@ -1,39 +1,32 @@
 package dev.tycho.stonks.command.subs.account;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerStateData;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.managers.SettingsManager;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.util.Util;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.List;
 
-public class CreateAccountCommandSub extends CommandSub {
+public class CreateAccountCommandSub extends ModularCommandSub {
 
-  @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
+  public CreateAccountCommandSub() {
+    super(new StringValidator("account_name"));
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " createaccount <account name>");
-      return;
-    }
-    String accountName = concatArgs(1, args);
-
+  public void execute(Player player) {
+    String accountName = getArgument("account_name");
     new AccountTypeSelectorGui.Builder()
         .title("Select an account type")
         .typeSelected(type -> {

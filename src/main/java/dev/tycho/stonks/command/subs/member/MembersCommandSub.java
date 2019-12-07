@@ -1,20 +1,20 @@
 package dev.tycho.stonks.command.subs.member;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.MemberListGui;
 import dev.tycho.stonks.model.core.Company;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MembersCommandSub extends CommandSub {
+public class MembersCommandSub extends ModularCommandSub {
 
   public MembersCommandSub() {
-    super(false);
+    super(new CompanyValidator("company"));
   }
 
   @Override
@@ -23,12 +23,9 @@ public class MembersCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " members <company name>");
-      return;
-    }
-    Company company = companyFromName(concatArgs(1, args));
+  public void execute(Player player) {
+
+    Company company = getArgument("company");
     if (company == null) {
       sendMessage(player, "That company doesn't exist!");
       return;

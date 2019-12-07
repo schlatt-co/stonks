@@ -1,23 +1,23 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public class Member extends Entity {
 
     public final UUID playerUUID;
     public final int companyPk;
-    public final Date joinDate;
+    public final Timestamp joinTimestamp;
     public final Role role;
     public final boolean acceptedInvite;
 
-    public Member(int pk, UUID player, int companyPk, Date joinDate, Role role, boolean acceptedInvite) {
+    public Member(int pk, UUID player, int companyPk, Timestamp joinTimestamp, Role role, boolean acceptedInvite) {
       super(pk);
       this.playerUUID = player;
       this.companyPk = companyPk;
-      this.joinDate = joinDate;
+      this.joinTimestamp = joinTimestamp;
       this.role = role;
       this.acceptedInvite = acceptedInvite;
     }
@@ -26,7 +26,7 @@ public class Member extends Entity {
       super(member.pk);
       this.playerUUID = member.playerUUID;
       this.companyPk = member.companyPk;
-      this.joinDate = member.joinDate;
+      this.joinTimestamp = member.joinTimestamp;
       this.role = member.role;
       this.acceptedInvite = member.acceptedInvite;
     }

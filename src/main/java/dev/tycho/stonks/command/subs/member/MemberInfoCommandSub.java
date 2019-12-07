@@ -1,20 +1,21 @@
 package dev.tycho.stonks.command.subs.member;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.MemberInfoGui;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class MemberInfoCommandSub extends CommandSub {
+public class MemberInfoCommandSub extends ModularCommandSub {
 
   public MemberInfoCommandSub() {
-    super(false);
+    super(new StringValidator("player_name"), new CompanyValidator("company"));
   }
 
   @Override
@@ -26,15 +27,12 @@ public class MemberInfoCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 3) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " memberinfo <player> <company>");
-      return;
-    }
+  public void execute(Player player) {
+
     Stonks.newChain()
         .asyncFirst(() -> {
-            Player playerProfile = playerFromName(args[1]);
-            Company company = companyFromName(concatArgs(2, args));
+            Player playerProfile = playerFromName(getArgument("player_name"));
+            Company company = getArgument("company");
 
             if (playerProfile == null) {
               sendMessage(player, "Player not found");

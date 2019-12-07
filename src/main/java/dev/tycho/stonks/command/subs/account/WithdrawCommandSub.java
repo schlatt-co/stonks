@@ -1,13 +1,16 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.AccountValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.CurrencyValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
+import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,13 +18,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class WithdrawCommandSub extends CommandSub {
+public class WithdrawCommandSub extends ModularCommandSub {
 
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
       "1000",
       "10000");
+
+  public WithdrawCommandSub() {
+    super(new CurrencyValidator("amount"), ArgumentValidator.optional(new AccountValidator("account_id")));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -32,27 +39,15 @@ public class WithdrawCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " withdraw <amount> [<account id>]");
-      return;
-    }
+  public void execute(Player player) {
+    double amount = getArgument("amount");
+    Account account = getArgument("account_id");
 
-    if (!validateDouble(args[1])) {
-      sendMessage(player, "Invalid amount!");
+    if (account != null) {
+      withdrawFromAccount(player, account, amount);
       return;
     }
-    double amount = Double.parseDouble(args[1]);
-    if (args.length == 3) {
-      Account a;
-      if (StringUtils.isNumeric(args[2]) && (a = Repo.getInstance().accountWithId(Integer.parseInt(args[2]))) != null) {
-        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
-        return;
-      } else {
-        sendMessage(player, "Invalid account id! Pulling up selector...");
-      }
-    }
-    List<Company> list = new ArrayList<Company>(Repo.getInstance().companies().getAll());
+    List<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
     //We need a list of all companies with a withdrawable account for this player
     //Remove companies where the player is not a manager and doesn't have an account
     //todo remove this messy logic
@@ -91,9 +86,64 @@ public class WithdrawCommandSub extends CommandSub {
             new AccountSelectorGui.Builder()
                 .company(company)
                 .title("Select an account to withdraw from")
-                .accountSelected(acc -> Repo.getInstance().withdrawFromAccount(player.getUniqueId(), acc, amount))
+                .accountSelected(acc -> withdrawFromAccount(player, acc, amount))
                 .open(player)))
         .open(player);
   }
 
+  public void withdrawFromAccount(Player player, Account account, double amount) {
+    Stonks.newChain()
+        .async(() -> {
+          //We have a valid account
+          //First check they are a member of the company
+          Company company = Repo.getInstance().companies().get(account.companyPk);
+          Member member = company.getMember(player);
+          if (member == null) {
+            sendMessage(player, "You are not a member of the company the account is in!");
+            return;
+          }
+          if (amount < 0) {
+            sendMessage(player, "You cannot withdraw a negative number");
+            return;
+          }
+          IAccountVisitor visitor = new IAccountVisitor() {
+            @Override
+            public void visit(CompanyAccount a) {
+              //With a company account we need to verify they have withdraw permission
+              if (!member.hasManagamentPermission()) {
+                sendMessage(player, "You have insufficient permissions to withdraw money from this account!");
+                return;
+              }
+              if (a.getTotalBalance() < amount) {
+                sendMessage(player, "That account doesn't have enough funds to complete this transaction!");
+                return;
+              }
+
+              Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
+              Stonks.economy.depositPlayer(player, amount);
+              sendMessage(player, "Money withdrawn successfully!");
+            }
+
+            @Override
+            public void visit(HoldingsAccount a) {
+              //Check to see if they own a holding in this holdingsaccount
+              Holding h = a.getPlayerHolding(player.getUniqueId());
+              if (h == null) {
+                sendMessage(player, "You do not have a holding in this account!");
+                return;
+              }
+
+              if (h.balance < amount) {
+                sendMessage(player, "That holding doesn't have enough funds to complete this transaction!");
+                return;
+              }
+
+              Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h, amount);
+              Stonks.economy.depositPlayer(player, amount);
+              sendMessage(player, "Money withdrawn successfully!");
+            }
+          };
+          account.accept(visitor);
+        }).execute();
+  }
 }

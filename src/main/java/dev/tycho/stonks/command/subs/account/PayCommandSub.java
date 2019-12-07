@@ -1,12 +1,18 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.CurrencyValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
+import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -16,17 +22,20 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static dev.tycho.stonks.model.core.Role.CEO;
 
-public class PayCommandSub extends CommandSub {
+public class PayCommandSub extends ModularCommandSub {
 
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
       "1000",
       "10000");
+
+  public PayCommandSub() {
+    super(new CurrencyValidator("amount"), ArgumentValidator.optionalAndConcatIfLast(new StringValidator("message", 200)));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -37,23 +46,9 @@ public class PayCommandSub extends CommandSub {
   }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " pay <amount> [<message>]");
-      return;
-    }
-
-    if (!Pattern.matches("([0-9]*)\\.?([0-9]*)?", args[1])) {
-      sendMessage(player, "Invalid amount!");
-      return;
-    }
-    double amount = Double.parseDouble(args[1]);
-
-    String message = (args.length > 2) ? concatArgs(2, args) : "";
-    if (message.length() > 200) {
-      sendMessage(player, "Your message cannot be longer than 200 characters!");
-      return;
-    }
+  public void execute(Player player) {
+    double amount = getArgument("amount");
+    String message = getArgument("message");
 
     List<Company> list = Repo.getInstance().companies().getAll();
     new CompanySelectorGui.Builder()
@@ -65,7 +60,7 @@ public class PayCommandSub extends CommandSub {
               new AccountSelectorGui.Builder()
                   .company(company)
                   .title("Select which account to pay")
-                  .accountSelected(account -> Repo.getInstance().payAccount(player.getUniqueId(), message, account, amount));
+                  .accountSelected(account -> payAccount(player, account, message, amount));
           List<String> info = new ArrayList<>();
           info.add("You are trying to pay an unverified company!");
           info.add("Unverified companies might be pretending to be ");
@@ -97,5 +92,34 @@ public class PayCommandSub extends CommandSub {
           }
         }))
         .open(player);
+  }
+
+  public void payAccount(Player sender, Account account, String message, double amount) {
+    Stonks.newChain()
+        .async(() -> {
+          if (amount < 0) {
+            sendMessage(sender, "You cannot pay a negative number");
+            return;
+          }
+
+          if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
+            sendMessage(sender, "Insufficient funds!");
+            return;
+          }
+          Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
+          Company company = Repo.getInstance().companies().get(account.companyPk);
+          //Tell the user we paid the account
+          sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
+
+          //Send a message to all managers in the company that are online that the company got paid
+          for (Member member : company.members) {
+            if (member.hasManagamentPermission()) {
+              Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
+              if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
+                sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
+              }
+            }
+          }
+        }).execute();
   }
 }

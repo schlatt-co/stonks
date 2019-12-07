@@ -1,34 +1,22 @@
 package dev.tycho.stonks.command.subs.moderator;
 
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import dev.tycho.stonks.managers.Repo;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class RenameCommandSub extends CommandSub {
+public class RenameCommandSub extends ModularCommandSub {
 
   public RenameCommandSub() {
-    super("trevor.mod");
+    super("trevor.mod", ArgumentValidator.concatIfLast(new StringValidator("new_name")));
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
-
-  @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length == 1) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " rename <new name>");
-      return;
-    }
-
-    String newName = concatArgs(1, args);
+  public void execute(Player player) {
+    String newName = getArgument("new_name");
     new CompanySelectorGui.Builder()
         .title("Select company to rename")
         .companies(Repo.getInstance().companies().getAll())

@@ -1,19 +1,21 @@
 package dev.tycho.stonks.command;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.subs.*;
+import dev.tycho.stonks.command.subs.FeesCommandSub;
+import dev.tycho.stonks.command.subs.HelpCommandSub;
+import dev.tycho.stonks.command.subs.ListCommandSub;
+import dev.tycho.stonks.command.subs.TopCommandSub;
 import dev.tycho.stonks.command.subs.account.*;
 import dev.tycho.stonks.command.subs.company.CreateCommandSub;
-import dev.tycho.stonks.command.subs.FeesCommandSub;
 import dev.tycho.stonks.command.subs.company.InfoCommandSub;
 import dev.tycho.stonks.command.subs.company.InvitesCommandSub;
 import dev.tycho.stonks.command.subs.company.LogoCommandSub;
+import dev.tycho.stonks.command.subs.holding.CreateHoldingCommandSub;
 import dev.tycho.stonks.command.subs.holding.HoldingInfoCommandSub;
 import dev.tycho.stonks.command.subs.holding.MyHoldingsCommandSub;
 import dev.tycho.stonks.command.subs.holding.RemoveHoldingCommandSub;
 import dev.tycho.stonks.command.subs.member.*;
 import dev.tycho.stonks.command.subs.moderator.*;
-import dev.tycho.stonks.command.subs.holding.CreateHoldingCommandSub;
 import dev.tycho.stonks.command.subs.service.*;
 import dev.tycho.stonks.command.subs.service.subscription.*;
 
@@ -43,6 +45,7 @@ public class MainCommand extends CommandBase {
     addSubCommand("members", new MembersCommandSub());
     addSubCommand("myholdings", new MyHoldingsCommandSub());
     addSubCommand("pay", new PayCommandSub());
+    addSubCommand("refresh", new RefreshCommandSub());
     addSubCommand("removeholding", new RemoveHoldingCommandSub());
     addSubCommand("rename", new RenameCommandSub());
     addSubCommand("setrole", new SetRoleCommandSub());

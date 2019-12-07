@@ -1,19 +1,20 @@
 package dev.tycho.stonks.command.subs.member;
 
-import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
+import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class KickMemberCommandSub extends CommandSub {
+public class KickMemberCommandSub extends ModularCommandSub {
 
   public KickMemberCommandSub() {
-    super(false);
+    super(new StringValidator("player_name"), new CompanyValidator("company"));
   }
 
   @Override
@@ -24,14 +25,11 @@ public class KickMemberCommandSub extends CommandSub {
     return null;
   }
 
+
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 3) {
-      sendMessage(player, "Correct usage: " + ChatColor.YELLOW + "/" + alias + " kickmember <player> <company>");
-      return;
-    }
-    Company company = companyFromName(concatArgs(2, args));
-    kickMember(player, company, args[1]);
+  public void execute(Player player) {
+    Company company = getArgument("company");
+    kickMember(player, company, getArgument("player_name"));
   }
 
   private void kickMember(Player player, Company company, String playerName) {

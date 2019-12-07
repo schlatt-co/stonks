@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -36,13 +36,13 @@ public class Company extends Entity {
 
   public Company(Company company) {
     super(company.pk);
-    name = company.name;
-    shopName = company.shopName;
-    members = new ArrayList<>(company.members);
-    accounts = new ArrayList<>(company.accounts);
-    logoMaterial = company.logoMaterial;
-    verified = company.verified;
-    hidden = company.hidden;
+    this.name = company.name;
+    this.shopName = company.shopName;
+    this.members = new ArrayList<>(company.members);
+    this.accounts = new ArrayList<>(company.accounts);
+    this.logoMaterial = company.logoMaterial;
+    this.verified = company.verified;
+    this.hidden = company.hidden;
   }
 
   public Member getMember(Player player) {

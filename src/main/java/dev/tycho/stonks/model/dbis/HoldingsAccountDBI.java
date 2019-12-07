@@ -1,7 +1,8 @@
 package dev.tycho.stonks.model.dbis;
 
-import dev.tycho.stonks.db_new.JavaSqlDBI;
-import dev.tycho.stonks.db_new.Store;
+import dev.tycho.stonks.database.JavaSqlDBI;
+import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Holding;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.logging.Transaction;
@@ -32,7 +33,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
           "CREATE TABLE IF NOT EXISTS holdings_account (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " name varchar(255) DEFAULT NULL," +
-              " uuid varchar(54) DEFAULT NULL," +
+              " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
               " PRIMARY KEY (pk) ) "
       );
@@ -48,16 +49,19 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
     PreparedStatement statement = null;
     try {
       statement = connection.prepareStatement(
-          "INSERT INTO holdings_account (name, uuid, company_pk) VALUES (?, ?, ?)",
+          "INSERT INTO holdings_account (pk, name, uuid, company_pk) VALUES (?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, obj.name);
-      statement.setString(2, uuidToStr(obj.uuid));
-      statement.setInt(3, obj.companyPk);
+      int newPk = Repo.getInstance().getNextAccountPk();
+      if (newPk < 0) return null;
+      statement.setInt(1, newPk);
+      statement.setString(2, obj.name);
+      statement.setString(3, uuidToStr(obj.uuid));
+      statement.setInt(4, obj.companyPk);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
-        int newPk = rs.getInt(1);
-        return new HoldingsAccount(newPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        int createdPk = rs.getInt(1);
+        return new HoldingsAccount(createdPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
       }
     } catch (SQLException e) {
       e.printStackTrace();

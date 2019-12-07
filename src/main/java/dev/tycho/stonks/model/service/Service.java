@@ -1,7 +1,7 @@
 package dev.tycho.stonks.model.service;
 
 
-import dev.tycho.stonks.db_new.Entity;
+import dev.tycho.stonks.database.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.dbis;
 
-import dev.tycho.stonks.db_new.JavaSqlDBI;
+import dev.tycho.stonks.database.JavaSqlDBI;
 import dev.tycho.stonks.model.core.Holding;
 
 import java.sql.*;
@@ -21,7 +21,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
       connection.createStatement().executeUpdate(
           "CREATE TABLE IF NOT EXISTS holding (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
-              " player_uuid varchar(54) DEFAULT NULL," +
+              " player_uuid varchar(36) DEFAULT NULL," +
               " balance double NOT NULL DEFAULT 0," +
               " share double NOT NULL DEFAULT 0," +
               " account_pk int(11) DEFAULT NULL," +

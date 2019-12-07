@@ -1,7 +1,10 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
-import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.core.Account;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;

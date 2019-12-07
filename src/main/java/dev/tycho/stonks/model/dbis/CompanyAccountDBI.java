@@ -1,7 +1,8 @@
 package dev.tycho.stonks.model.dbis;
 
-import dev.tycho.stonks.db_new.JavaSqlDBI;
-import dev.tycho.stonks.db_new.Store;
+import dev.tycho.stonks.database.JavaSqlDBI;
+import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.CompanyAccount;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
@@ -29,7 +30,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
           "CREATE TABLE IF NOT EXISTS company_account (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " name varchar(255) DEFAULT NULL," +
-              " uuid varchar(54) DEFAULT NULL," +
+              " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
               " balance double NOT NULL DEFAULT 0," +
               " PRIMARY KEY (pk) ) "
@@ -46,17 +47,20 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
     PreparedStatement statement = null;
     try {
       statement = connection.prepareStatement(
-          "INSERT INTO company_account (name, uuid, company_pk, balance) VALUES (?, ?, ?, ?)",
+          "INSERT INTO company_account (pk, name, uuid, company_pk, balance) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, obj.name);
-      statement.setString(2, uuidToStr(obj.uuid));
-      statement.setInt(3, obj.companyPk);
-      statement.setDouble(4, obj.balance);
+      int newPk = Repo.getInstance().getNextAccountPk();
+      if (newPk < 0) return null;
+      statement.setInt(1, newPk);
+      statement.setString(2, obj.name);
+      statement.setString(3, uuidToStr(obj.uuid));
+      statement.setInt(4, obj.companyPk);
+      statement.setDouble(5, obj.balance);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
-        int newPk = rs.getInt(1);
-        return new CompanyAccount(newPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), obj.balance);
+        int createdPk = rs.getInt(1);
+        return new CompanyAccount(createdPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), obj.balance);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -137,4 +141,5 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
     }
     return objects;
   }
+
 }

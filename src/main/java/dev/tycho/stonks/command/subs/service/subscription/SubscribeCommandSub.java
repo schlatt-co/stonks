@@ -1,45 +1,23 @@
 package dev.tycho.stonks.command.subs.service.subscription;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.command.base.CommandSub;
-import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ServiceValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.service.Service;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class SubscribeCommandSub extends CommandSub {
+public class SubscribeCommandSub extends ModularCommandSub {
 
   public SubscribeCommandSub() {
-    super(false);
+    super(new ServiceValidator("service"));
   }
 
-  @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
 
   @Override
-  public void onCommand(Player player, String alias, String[] args) {
-    if (args.length < 2) {
-      sendMessage(player, "Correct usage: /stonks subscribe <service_id>");
-      return;
-    }
-    if (!StringUtils.isNumeric(args[1])) {
-      sendMessage(player, "Correct usage: /stonks subscribe <service_id>");
-      return;
-    }
-    Service service = Repo.getInstance().services().get(Integer.parseInt(args[1]));
-    if (service == null) {
-      sendMessage(player, "Service id not found");
-      return;
-    }
-
-    subscribe(player, service, true);
-
+  public void execute(Player player) {
+    subscribe(player, getArgument("service"), true);
 //    List<String> info = new ArrayList<>();
 //    info.add("Automatic billing will automatically renew your");
 //    info.add("subscription to this service.");
@@ -54,7 +32,6 @@ public class SubscribeCommandSub extends CommandSub {
 
 
   private void subscribe(Player player, Service service, boolean autoPay) {
-
     if (service.maxSubscribers > 0 && service.subscriptions.size() >= service.maxSubscribers) {
       sendMessage(player, "That service has the maximum number of subscriptions");
       return;

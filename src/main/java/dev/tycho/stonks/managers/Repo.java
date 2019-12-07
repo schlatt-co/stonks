@@ -1,8 +1,8 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.db_new.Store;
-import dev.tycho.stonks.db_new.SyncStore;
+import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -13,15 +13,14 @@ import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
 
   private static Repo instance;
+
   public static Repo getInstance() {
     return instance;
   }
@@ -63,6 +62,35 @@ public class Repo extends SpigotModule {
     return conn;
   }
 
+  //todo this could be in a better place than repo
+  public int getNextAccountPk() {
+    try {
+      int companyAccountPk = -1;
+      int holdingsAccountPk = -1;
+      PreparedStatement statement = conn.prepareStatement(
+          "SHOW TABLE STATUS LIKE 'company_account'");
+      ResultSet results = statement.executeQuery();
+      while (results.next()) {
+        companyAccountPk = results.getInt("Auto_increment");
+      }
+      statement = conn.prepareStatement(
+          "SHOW TABLE STATUS LIKE 'holdings_account'");
+      results = statement.executeQuery();
+      while (results.next()) {
+        holdingsAccountPk = results.getInt("Auto_increment");
+      }
+      if (holdingsAccountPk == -1 || companyAccountPk == -1) {
+        System.out.println("Couldn't get a primary key for an account");
+        return -1;
+      }
+
+      return Math.max(companyAccountPk, holdingsAccountPk);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return -1;
+    }
+  }
+
   @Override
   public void enable() {
     try {
@@ -90,6 +118,11 @@ public class Repo extends SpigotModule {
     subscriptionStore.setDbi(new SubscriptionDBI(conn));
     transactionStore.setDbi(new TransactionDBI(conn));
 
+    repopulateAll();
+  }
+
+
+  public void repopulateAll() {
     subscriptionStore.populate();
     serviceStore.populate();
     transactionStore.populate();
@@ -99,7 +132,6 @@ public class Repo extends SpigotModule {
     memberStore.populate();
     companyStore.populate();
   }
-
 
 
   public Collection<Company> companiesWhereManager(Player player) {
@@ -142,8 +174,7 @@ public class Repo extends SpigotModule {
     );
     c = companyStore.create(c);
 
-    java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-    Member ceo = new Member(0, player.getUniqueId(), c.pk, currentDate, Role.CEO, true);
+    Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
     ceo = memberStore.create(ceo);
     companyStore.refresh(c.pk);
     return c;
@@ -158,15 +189,14 @@ public class Repo extends SpigotModule {
   }
 
   public Member createMember(Company company, Player player) {
-    java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-    Member newMember = new Member(0, player.getUniqueId(), company.pk, currentDate, Role.Employee, false);
+    Member newMember = new Member(0, player.getUniqueId(), company.pk, new Timestamp(System.currentTimeMillis()), Role.Employee, false);
     newMember = memberStore.create(newMember);
     companyStore.refresh(newMember.pk);
     return newMember;
   }
 
   public Member modifyMember(Member m, Role newRole, boolean newAcceptedInvite) {
-    Member member = new Member(m.pk, m.playerUUID, m.companyPk, m.joinDate, newRole, newAcceptedInvite);
+    Member member = new Member(m.pk, m.playerUUID, m.companyPk, m.joinTimestamp, newRole, newAcceptedInvite);
     memberStore.save(member);
     companyStore.refresh(m.companyPk);
     return member;
@@ -188,7 +218,7 @@ public class Repo extends SpigotModule {
   public Transaction createTransaction(UUID player, Account account, String message, double amount) {
     //Create the new transaction
     Transaction t = new Transaction(0, account.pk, player, message, amount,
-        new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+        new Timestamp(System.currentTimeMillis()));
     t = transactionStore.create(t);
     //Refresh the respective account object
     refreshAccount(account);
@@ -284,32 +314,18 @@ public class Repo extends SpigotModule {
     return a;
   }
 
-  public Account withdrawFromAccount(UUID player, Account account, double amount) {
+  public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount) {
     if (amount < 0) {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
     }
-
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
-      @Override
-      public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
-        companyAccountStore.save(ca);
-        val = ca;
-      }
-
-      @Override
-      public void visit(HoldingsAccount a) {
-        throw new IllegalArgumentException("Tried to withdraw from a holdings account");
-      }
-    };
-    account.accept(visitor);
-    Account a = visitor.getRecentVal();
+    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
+    companyAccountStore.save(ca);
     //Create a transaction log too
-    createTransaction(player, account, "withdraw", amount);
+    createTransaction(player, a, "withdraw", -amount);
     //We don't need to refresh the company because this is done when creating a transaction log
     //companyStore.refresh(a.companyPk);
-    return a;
+    return ca;
   }
 
   public Holding createHolding(UUID player, HoldingsAccount holdingsAccount, double share) {
@@ -322,6 +338,15 @@ public class Repo extends SpigotModule {
     //Update account and company to persist the new holding
     holdingsAccountStore.refresh(holding.accountPk);
     companyStore.refresh(holdingsAccount.companyPk);
+    return holding;
+  }
+
+  public Holding withdrawFromHolding(UUID player, Holding h, double amount) {
+    Holding holding = new Holding(h.pk, h.playerUUID, h.balance - amount, h.share, h.accountPk);
+    holdingStore.save(holding);
+    holdingsAccountStore.refresh(h.accountPk);
+
+    createTransaction(player, accountWithId(h.accountPk), "withdraw holding", -amount);
     return holding;
   }
 
@@ -354,7 +379,7 @@ public class Repo extends SpigotModule {
   }
 
   public Subscription createSubscription(Player player, Service service, boolean autoPay) {
-    Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new java.sql.Date(Calendar.getInstance().getTime().getTime()), autoPay);
+    Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new Timestamp(System.currentTimeMillis()), autoPay);
     subscription = subscriptionStore.create(subscription);
     serviceStore.refresh(service.pk);
     Account account = accountWithId(service.accountPk);
@@ -365,7 +390,7 @@ public class Repo extends SpigotModule {
 
   public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
     Subscription s = new Subscription(subscription.pk, subscription.playerUUID, subscription.servicePk,
-        new java.sql.Date(Calendar.getInstance().getTime().getTime()), subscription.autoPay);
+    new Timestamp(System.currentTimeMillis()), subscription.autoPay);
 
     subscriptionStore.save(s);
     if (service.pk != s.servicePk) throw new IllegalArgumentException("Primary Key mismatch");
