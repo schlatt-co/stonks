@@ -118,6 +118,11 @@ public class ShopManager extends SpigotModule {
     //Find the account for this id
     dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(accountId);
 
+    if (account == null) {
+      //Account id doesn't exist
+      return;
+    }
+
     //Check if the player is a member of this company
     Company company = Repo.getInstance().companies().get(account.companyPk);
     Member member = company.getMember(event.getPlayer());
