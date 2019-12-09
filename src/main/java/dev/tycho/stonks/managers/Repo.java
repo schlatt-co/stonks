@@ -1,6 +1,7 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
 import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
@@ -14,7 +15,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Properties;
+import java.util.UUID;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
@@ -26,14 +30,14 @@ public class Repo extends SpigotModule {
   }
 
   private Connection conn;
-  private SyncStore<Company> companyStore;
-  private SyncStore<CompanyAccount> companyAccountStore;
-  private SyncStore<HoldingsAccount> holdingsAccountStore;
-  private SyncStore<Holding> holdingStore;
-  private SyncStore<Member> memberStore;
-  private SyncStore<Service> serviceStore;
-  private SyncStore<Subscription> subscriptionStore;
-  private SyncStore<Transaction> transactionStore;
+  private DatabaseStore<Company> companyStore;
+  private DatabaseStore<CompanyAccount> companyAccountStore;
+  private DatabaseStore<HoldingsAccount> holdingsAccountStore;
+  private DatabaseStore<Holding> holdingStore;
+  private DatabaseStore<Member> memberStore;
+  private DatabaseStore<Service> serviceStore;
+  private DatabaseStore<Subscription> subscriptionStore;
+  private DatabaseStore<Transaction> transactionStore;
 
   private final Stonks plugin;
 

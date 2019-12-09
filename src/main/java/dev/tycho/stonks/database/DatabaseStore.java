@@ -16,7 +16,7 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
 
   public void setDbi(JavaSqlDBI<T> dbi) {
     this.dbi = dbi;
-    if (dbi.createTable()) System.out.println("Created table for " + dbi.getClass().getName().replace("DBI", ""));
+    if (dbi.createTable()) System.out.println("Created table for " + dbi.getClass().getSimpleName().replace("DBI", ""));
   }
 
   public DatabaseStore(Function<T, T> factory) {
