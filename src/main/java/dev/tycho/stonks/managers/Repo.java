@@ -1,9 +1,9 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.database.AsyncSaveStore;
 import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
-import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -104,14 +104,14 @@ public class Repo extends SpigotModule {
       return;
     }
 
-    companyStore = new SyncStore<>(Company::new);
-    companyAccountStore = new SyncStore<>(CompanyAccount::new);
-    holdingsAccountStore = new SyncStore<>(HoldingsAccount::new);
-    holdingStore = new SyncStore<>(Holding::new);
-    memberStore = new SyncStore<>(Member::new);
-    serviceStore = new SyncStore<>(Service::new);
-    subscriptionStore = new SyncStore<>(Subscription::new);
-    transactionStore = new SyncStore<>(Transaction::new);
+    companyStore = new AsyncSaveStore<>(Company::new);
+    companyAccountStore = new AsyncSaveStore<>(CompanyAccount::new);
+    holdingsAccountStore = new AsyncSaveStore<>(HoldingsAccount::new);
+    holdingStore = new AsyncSaveStore<>(Holding::new);
+    memberStore = new AsyncSaveStore<>(Member::new);
+    serviceStore = new AsyncSaveStore<>(Service::new);
+    subscriptionStore = new AsyncSaveStore<>(Subscription::new);
+    transactionStore = new AsyncSaveStore<>(Transaction::new);
 
     companyStore.setDbi(new CompanyDBI(conn, memberStore, companyAccountStore, holdingsAccountStore));
     companyAccountStore.setDbi(new CompanyAccountDBI(conn, transactionStore, serviceStore));
