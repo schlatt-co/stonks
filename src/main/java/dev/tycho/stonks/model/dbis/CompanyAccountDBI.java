@@ -53,7 +53,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       if (newPk < 0) return null;
       statement.setInt(1, newPk);
       statement.setString(2, obj.name);
-      statement.setString(3, uuidToStr(obj.uuid));
+      statement.setString(3, obj.uuid.toString());
       statement.setInt(4, obj.companyPk);
       statement.setDouble(5, obj.balance);
       statement.executeUpdate();
@@ -81,7 +81,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       statement = connection.prepareStatement(
           "UPDATE company_account SET name = ?, uuid = ?, company_pk = ?, balance = ? WHERE pk = ?");
       statement.setString(1, obj.name);
-      statement.setString(2, uuidToStr(obj.uuid));
+      statement.setString(2, obj.uuid.toString());
       statement.setInt(3, obj.companyPk);
       statement.setDouble(4, obj.balance);
       statement.setInt(5, obj.pk);
@@ -114,6 +114,18 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public CompanyAccount refreshRelations(CompanyAccount obj) {
+    return new CompanyAccount(
+        obj.pk,
+        obj.name,
+        obj.uuid,
+        obj.companyPk,
+        new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == obj.pk)),
+        new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
+        obj.balance);
   }
 
   @Override

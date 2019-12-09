@@ -16,15 +16,11 @@ public class SyncStore<T extends Entity> implements Store<T> {
 
   public void setDbi(JavaSqlDBI<T> dbi) {
     this.dbi = dbi;
-    if (dbi.createTable()) System.out.println("Created table successfully");
+    if (dbi.createTable()) System.out.println("Created table for " + dbi.getClass().getName().replace("DBI", ""));
   }
 
   public SyncStore(Function<T, T> factory) {
     this.factory = factory;
-  }
-
-  public void init() {
-    dbi.createTable();
   }
 
   @Override
@@ -83,9 +79,9 @@ public class SyncStore<T extends Entity> implements Store<T> {
   }
 
   @Override
-  public void refresh(int pk) {
+  public void refreshRelations(int pk) {
     if (entities.containsKey(pk)) {
-      entities.put(pk, dbi.load(pk));
+      entities.put(pk, dbi.refreshRelations(entities.get(pk)));
     }
   }
 

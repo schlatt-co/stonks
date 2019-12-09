@@ -176,13 +176,13 @@ public class Repo extends SpigotModule {
 
     Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
     ceo = memberStore.create(ceo);
-    companyStore.refresh(c.pk);
+    companyStore.refreshRelations(c.pk);
     return c;
   }
 
   public Company modifyCompany(Company c, String newName, String newLogo, boolean newVerified, boolean newHidden) {
     Company company = new Company(c.pk, newName, "S" + newName,
-        newLogo, newHidden, newVerified, c.accounts, c.members
+        newLogo, newVerified, newHidden, c.accounts, c.members
     );
     companyStore.save(company);
     return company;
@@ -191,21 +191,21 @@ public class Repo extends SpigotModule {
   public Member createMember(Company company, Player player) {
     Member newMember = new Member(0, player.getUniqueId(), company.pk, new Timestamp(System.currentTimeMillis()), Role.Employee, false);
     newMember = memberStore.create(newMember);
-    companyStore.refresh(newMember.pk);
+    companyStore.refreshRelations(newMember.pk);
     return newMember;
   }
 
   public Member modifyMember(Member m, Role newRole, boolean newAcceptedInvite) {
     Member member = new Member(m.pk, m.playerUUID, m.companyPk, m.joinTimestamp, newRole, newAcceptedInvite);
     memberStore.save(member);
-    companyStore.refresh(m.companyPk);
+    companyStore.refreshRelations(m.companyPk);
     return member;
   }
 
   public boolean deleteMember(Member m) {
     if (memberStore.delete(m.pk)) {
       //Update the company for this to remove the member
-      companyStore.refresh(m.companyPk);
+      companyStore.refreshRelations(m.companyPk);
       return true;
     }
     return false;
@@ -223,7 +223,7 @@ public class Repo extends SpigotModule {
     //Refresh the respective account object
     refreshAccount(account);
     //Update the company for the account we just updated
-    companyStore.refresh(account.companyPk);
+    companyStore.refreshRelations(account.companyPk);
     return t;
   }
 
@@ -233,15 +233,15 @@ public class Repo extends SpigotModule {
 
     Holding h = new Holding(0, player.getUniqueId(), 0, 1, ha.pk);
     h = holdingStore.create(h);
-    holdingsAccountStore.refresh(ha.pk);
-    companyStore.refresh(company.pk);
+    holdingsAccountStore.refreshRelations(ha.pk);
+    companyStore.refreshRelations(company.pk);
     return ha;
   }
 
   public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
     CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), 0);
     ca = companyAccountStore.create(ca);
-    companyStore.refresh(company.pk);
+    companyStore.refreshRelations(company.pk);
     return ca;
   }
 
@@ -249,12 +249,12 @@ public class Repo extends SpigotModule {
     account.accept(new IAccountVisitor() {
       @Override
       public void visit(CompanyAccount a) {
-        companyAccountStore.refresh(a.pk);
+        companyAccountStore.refreshRelations(a.pk);
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        holdingsAccountStore.refresh(a.pk);
+        holdingsAccountStore.refreshRelations(a.pk);
       }
     });
   }
@@ -277,7 +277,7 @@ public class Repo extends SpigotModule {
     };
     account.accept(visitor);
     Account a = visitor.getRecentVal();
-    companyStore.refresh(a.companyPk);
+    companyStore.refreshRelations(a.companyPk);
     return a;
   }
 
@@ -301,7 +301,7 @@ public class Repo extends SpigotModule {
         }
         holdingsAccountStore.save(ha);
         //Refresh to account for holding changes
-        holdingsAccountStore.refresh(ha.pk);
+        holdingsAccountStore.refreshRelations(ha.pk);
         val = holdingsAccountStore.get(ha.pk);
       }
     };
@@ -336,15 +336,15 @@ public class Repo extends SpigotModule {
       return null;
     }
     //Update account and company to persist the new holding
-    holdingsAccountStore.refresh(holding.accountPk);
-    companyStore.refresh(holdingsAccount.companyPk);
+    holdingsAccountStore.refreshRelations(holding.accountPk);
+    companyStore.refreshRelations(holdingsAccount.companyPk);
     return holding;
   }
 
   public Holding withdrawFromHolding(UUID player, Holding h, double amount) {
     Holding holding = new Holding(h.pk, h.playerUUID, h.balance - amount, h.share, h.accountPk);
     holdingStore.save(holding);
-    holdingsAccountStore.refresh(h.accountPk);
+    holdingsAccountStore.refreshRelations(h.accountPk);
 
     createTransaction(player, accountWithId(h.accountPk), "withdraw holding", -amount);
     return holding;
@@ -353,9 +353,9 @@ public class Repo extends SpigotModule {
   public boolean deleteHolding(Holding holding) {
     if (memberStore.delete(holding.pk)) {
       //Update the company and account
-      holdingsAccountStore.refresh(holding.accountPk);
+      holdingsAccountStore.refreshRelations(holding.accountPk);
       HoldingsAccount ha = holdingsAccountStore.get(holding.accountPk);
-      companyStore.refresh(ha.companyPk);
+      companyStore.refreshRelations(ha.companyPk);
       return true;
     }
     return false;
@@ -365,7 +365,7 @@ public class Repo extends SpigotModule {
     Service service = new Service(0, name, duration, cost, maxSubscribers, account.pk, new ArrayList<>());
     service = serviceStore.create(service);
     refreshAccount(account);
-    companyStore.refresh(account.companyPk);
+    companyStore.refreshRelations(account.companyPk);
     return service;
   }
 
@@ -374,17 +374,17 @@ public class Repo extends SpigotModule {
     serviceStore.save(service);
     Account a = accountWithId(service.accountPk);
     refreshAccount(a);
-    companyStore.refresh(a.companyPk);
+    companyStore.refreshRelations(a.companyPk);
     return service;
   }
 
   public Subscription createSubscription(Player player, Service service, boolean autoPay) {
     Subscription subscription = new Subscription(0, player.getUniqueId(), service.pk, new Timestamp(System.currentTimeMillis()), autoPay);
     subscription = subscriptionStore.create(subscription);
-    serviceStore.refresh(service.pk);
+    serviceStore.refreshRelations(service.pk);
     Account account = accountWithId(service.accountPk);
     refreshAccount(account);
-    companyStore.refresh(account.companyPk);
+    companyStore.refreshRelations(account.companyPk);
     return subscription;
   }
 
@@ -394,7 +394,7 @@ public class Repo extends SpigotModule {
 
     subscriptionStore.save(s);
     if (service.pk != s.servicePk) throw new IllegalArgumentException("Primary Key mismatch");
-    serviceStore.refresh(subscription.servicePk);
+    serviceStore.refreshRelations(subscription.servicePk);
     //This action also refreshes the account and company
     payAccount(player, "Subscription payment (" + service.name + ")", accountWithId(service.accountPk), service.cost);
     return s;
@@ -402,10 +402,10 @@ public class Repo extends SpigotModule {
 
   public boolean deleteSubscription(Subscription subscription, Service service) {
     if (subscriptionStore.delete(subscription.pk)) {
-      serviceStore.refresh(service.pk);
+      serviceStore.refreshRelations(service.pk);
       Account account = accountWithId(service.accountPk);
       refreshAccount(account);
-      companyStore.refresh(account.companyPk);
+      companyStore.refreshRelations(account.companyPk);
       return true;
     }
     return false;

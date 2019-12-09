@@ -22,7 +22,7 @@ public class Company extends Entity {
 
 
 
-  public Company(int pk, String name, String shopName, String logoMaterial, Boolean hidden, Boolean verified,
+  public Company(int pk, String name, String shopName, String logoMaterial, Boolean verified, Boolean hidden,
                  Collection<Account> accounts, Collection<Member> members) {
     super(pk);
     this.name = name;

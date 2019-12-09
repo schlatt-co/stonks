@@ -97,7 +97,7 @@ public class ServiceDBI extends JavaSqlDBI<Service> {
       statement.setInt(1, pk);
       ResultSet results = statement.executeQuery();
       if (results.next()) {
-        Service company = new Service(
+        return new Service(
             pk,
             results.getString("name"),
             results.getDouble("duration"),
@@ -105,12 +105,23 @@ public class ServiceDBI extends JavaSqlDBI<Service> {
             results.getInt("max_subscribers"),
             results.getInt("account_pk"),
             new ArrayList<>(subscriptionStore.getAllWhere(s -> s.servicePk == pk)));
-        return company;
       }
     } catch (SQLException e) {
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public Service refreshRelations(Service obj) {
+    return new Service(
+        obj.pk,
+        obj.name,
+        obj.duration,
+        obj.cost,
+        obj.maxSubscribers,
+        obj.accountPk,
+        new ArrayList<>(subscriptionStore.getAllWhere(s -> s.servicePk == obj.pk)));
   }
 
   @Override

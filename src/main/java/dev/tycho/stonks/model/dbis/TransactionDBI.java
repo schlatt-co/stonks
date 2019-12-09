@@ -115,6 +115,11 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
   }
 
   @Override
+  public Transaction refreshRelations(Transaction obj) {
+    return new Transaction(obj);
+  }
+
+  @Override
   public Collection<Transaction> loadAll() {
     Collection<Transaction> objects = new ArrayList<>();
     try {

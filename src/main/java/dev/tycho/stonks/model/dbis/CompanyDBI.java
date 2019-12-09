@@ -29,8 +29,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
           "CREATE TABLE IF NOT EXISTS company (" +
               " pk int(11) NOT NULL AUTO_INCREMENT," +
               " name varchar(255) DEFAULT NULL," +
-              " shopName varchar(255) DEFAULT NULL," +
-              " logoMaterial varchar(255) DEFAULT NULL," +
+              " shop_name varchar(255) DEFAULT NULL," +
+              " logo_material varchar(255) DEFAULT NULL," +
               " verified bit NOT NULL DEFAULT 0," +
               " hidden bit NOT NULL DEFAULT 0," +
               " PRIMARY KEY (pk) ) "
@@ -47,7 +47,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
     PreparedStatement statement = null;
     try {
       statement = connection.prepareStatement(
-          "INSERT INTO company (name, shopName, logoMaterial, verified, hidden) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO company (name, shop_name, logo_material, verified, hidden) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, obj.name);
       statement.setString(2, obj.shopName);
@@ -58,7 +58,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int newPk = rs.getInt(1);
-        return new Company(newPk, obj.name, obj.shopName, obj.logoMaterial, obj.hidden, obj.verified, new ArrayList<>(), new ArrayList<>()
+        return new Company(newPk, obj.name, obj.shopName, obj.logoMaterial, obj.verified, obj.hidden, new ArrayList<>(), new ArrayList<>()
         );
       }
     } catch (SQLException e) {
@@ -78,7 +78,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
     PreparedStatement statement = null;
     try {
       statement = connection.prepareStatement(
-          "UPDATE company SET name = ?, shopName = ?, logoMaterial = ?, verified = ?, hidden = ? WHERE pk = ?");
+          "UPDATE company SET name = ?, shop_name = ?, logo_material = ?, verified = ?, hidden = ? WHERE pk = ?");
       statement.setString(1, obj.name);
       statement.setString(2, obj.shopName);
       statement.setString(3, obj.logoMaterial);
@@ -97,7 +97,7 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
   public Company load(int pk) {
     try {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT name, shopName, logoMaterial, verified, hidden FROM company WHERE pk = ?");
+          "SELECT name, shop_name, logo_material, verified, hidden FROM company WHERE pk = ?");
       statement.setInt(1, pk);
       ResultSet results = statement.executeQuery();
       if (results.next()) {
@@ -109,8 +109,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
         Company company = new Company(
             pk,
             results.getString("name"),
-            results.getString("shopName"),
-            results.getString("logoMaterial"),
+            results.getString("shop_name"),
+            results.getString("logo_material"),
             results.getBoolean("verified"),
             results.getBoolean("hidden"),
             accounts, new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == pk))
@@ -124,11 +124,31 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
   }
 
   @Override
+  public Company refreshRelations(Company obj) {
+    //Get all accounts
+    Collection<Account> accounts = new ArrayList<>();
+    accounts.addAll(companyAccountStore.getAllWhere(a -> a.companyPk == obj.pk));
+    accounts.addAll(holdingsAccountStore.getAllWhere(a -> a.companyPk == obj.pk));
+
+    Company company = new Company(
+        obj.pk,
+        obj.name,
+        obj.shopName,
+        obj.logoMaterial,
+        obj.verified,
+        obj.hidden,
+        accounts,
+        new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == obj.pk))
+    );
+    return company;
+  }
+
+  @Override
   public Collection<Company> loadAll() {
     Collection<Company> objects = new ArrayList<>();
     try {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT pk, name, shopName, logoMaterial, verified, hidden FROM company");
+          "SELECT pk, name, shop_name, logo_material, verified, hidden FROM company");
 
       ResultSet results = statement.executeQuery();
       while (results.next()) {
@@ -141,8 +161,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
             new Company(
                 pk,
                 results.getString("name"),
-                results.getString("shopName"),
-                results.getString("logoMaterial"),
+                results.getString("shop_name"),
+                results.getString("logo_material"),
                 results.getBoolean("verified"),
                 results.getBoolean("hidden"),
                 accounts,

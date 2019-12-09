@@ -11,5 +11,9 @@ public interface DatabaseInterface<T extends Entity> {
 
   T load(int pk);
 
+  T refreshRelations(T obj);
+
   Collection<T> loadAll();
+
+
 }

@@ -55,7 +55,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       if (newPk < 0) return null;
       statement.setInt(1, newPk);
       statement.setString(2, obj.name);
-      statement.setString(3, uuidToStr(obj.uuid));
+      statement.setString(3, obj.uuid.toString());
       statement.setInt(4, obj.companyPk);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
@@ -82,7 +82,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       statement = connection.prepareStatement(
           "UPDATE holdings_account SET name = ?, uuid = ?, company_pk = ? WHERE pk = ?");
       statement.setString(1, obj.name);
-      statement.setString(2, uuidToStr(obj.uuid));
+      statement.setString(2, obj.uuid.toString());
       statement.setInt(3, obj.companyPk);
       statement.setInt(4, obj.pk);
       statement.executeUpdate();
@@ -114,6 +114,18 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public HoldingsAccount refreshRelations(HoldingsAccount obj) {
+    return new HoldingsAccount(
+        obj.pk,
+        obj.name,
+        obj.uuid,
+        obj.companyPk,
+        new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == obj.pk)),
+        new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
+        new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == obj.pk)));
   }
 
   @Override

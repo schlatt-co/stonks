@@ -111,6 +111,11 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
   }
 
   @Override
+  public Subscription refreshRelations(Subscription obj) {
+    return new Subscription(obj);
+  }
+
+  @Override
   public Collection<Subscription> loadAll() {
     Collection<Subscription> objects = new ArrayList<>();
     try {

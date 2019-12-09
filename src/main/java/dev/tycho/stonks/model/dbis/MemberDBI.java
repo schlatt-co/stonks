@@ -43,7 +43,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
       statement = connection.prepareStatement(
           "INSERT INTO member (player_uuid, company_pk, join_date, role, accepted_invite) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, uuidToStr(obj.playerUUID));
+      statement.setString(1, obj.playerUUID.toString());
       statement.setInt(2, obj.companyPk);
       statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
@@ -79,7 +79,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
     try {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE holding SET player_uuid = ?, company_pk = ?, join_date = ?, role = ?, accepted_invite = ? WHERE pk = ?");
-      statement.setString(1, uuidToStr(obj.playerUUID));
+      statement.setString(1, obj.playerUUID.toString());
       statement.setInt(2, obj.companyPk);
       statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
@@ -122,6 +122,12 @@ public class MemberDBI extends JavaSqlDBI<Member> {
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public Member refreshRelations(Member obj) {
+    //No foreign relations to update
+    return new Member(obj);
   }
 
   @Override
