@@ -2,7 +2,6 @@ package dev.tycho.stonks.scheduledtasks;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.managers.Repo;
-import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.Bukkit;
@@ -33,7 +32,6 @@ public class SubscriptionCheckTask implements Runnable {
 
   private void renewSubscription(Subscription subscription) {
     Service service = Repo.getInstance().services().get(subscription.servicePk);
-    Account account = Repo.getInstance().accountWithId(service.accountPk);
 
     OfflinePlayer player = Bukkit.getOfflinePlayer(subscription.playerUUID);
     Player onlinePlayer = null;
