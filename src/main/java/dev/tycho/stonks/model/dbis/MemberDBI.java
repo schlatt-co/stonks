@@ -43,7 +43,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
       statement = connection.prepareStatement(
           "INSERT INTO member (player_uuid, company_pk, join_date, role, accepted_invite) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.companyPk);
       statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
@@ -79,7 +79,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
     try {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE holding SET player_uuid = ?, company_pk = ?, join_date = ?, role = ?, accepted_invite = ? WHERE pk = ?");
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.companyPk);
       statement.setTimestamp(3, obj.joinTimestamp);
       statement.setString(4, obj.role.name());
@@ -112,7 +112,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
 
         return new Member(
             pk,
-            UUID.fromString(results.getString("player_uuid")),
+            uuidFromString(results.getString("player_uuid")),
             results.getInt("company_pk"),
             results.getTimestamp("join_date"),
             newRole,
@@ -151,7 +151,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
 
         objects.add(new Member(
             pk,
-            UUID.fromString(results.getString("player_uuid")),
+            uuidFromString(results.getString("player_uuid")),
             results.getInt("company_pk"),
             results.getTimestamp("join_date"),
             newRole,

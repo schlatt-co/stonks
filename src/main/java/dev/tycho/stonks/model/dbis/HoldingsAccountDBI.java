@@ -55,7 +55,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       if (newPk < 0) return null;
       statement.setInt(1, newPk);
       statement.setString(2, obj.name);
-      statement.setString(3, obj.uuid.toString());
+      statement.setString(3, uuidToStr(obj.uuid));
       statement.setInt(4, obj.companyPk);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
@@ -82,7 +82,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       statement = connection.prepareStatement(
           "UPDATE holdings_account SET name = ?, uuid = ?, company_pk = ? WHERE pk = ?");
       statement.setString(1, obj.name);
-      statement.setString(2, obj.uuid.toString());
+      statement.setString(2, uuidToStr(obj.uuid));
       statement.setInt(3, obj.companyPk);
       statement.setInt(4, obj.pk);
       statement.executeUpdate();
@@ -104,7 +104,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
         return new HoldingsAccount(
             pk,
             results.getString("name"),
-            UUID.fromString(results.getString("uuid")),
+            uuidFromString(results.getString("uuid")),
             results.getInt("company_pk"),
             new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
             new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
@@ -142,7 +142,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
             new HoldingsAccount(
                 pk,
                 results.getString("name"),
-                UUID.fromString(results.getString("uuid")),
+                uuidFromString(results.getString("uuid")),
                 results.getInt("company_pk"),
                 new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),

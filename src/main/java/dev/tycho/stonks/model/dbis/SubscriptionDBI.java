@@ -40,7 +40,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
       PreparedStatement statement = connection.prepareStatement(
           "INSERT INTO subscription (player_uuid, service_pk, last_payment_date, auto_pay) VALUES (?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.servicePk);
       statement.setTimestamp(3, obj.lastPaymentTimestamp);
       statement.setBoolean(4, obj.autoPay);
@@ -75,7 +75,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
     try {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE subscription SET player_uuid = ?, service_pk = ?, last_payment_date = ?, auto_pay = ? WHERE pk = ?");
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setInt(2, obj.servicePk);
       statement.setTimestamp(3, obj.lastPaymentTimestamp);
       statement.setBoolean(4, obj.autoPay);
@@ -98,7 +98,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
       if (results.next()) {
         return new Subscription(
             pk,
-            UUID.fromString(results.getString("player_uuid")),
+            uuidFromString(results.getString("player_uuid")),
             results.getInt("service_pk"),
             results.getTimestamp("last_payment_date"),
             results.getBoolean("auto_pay")
@@ -128,7 +128,7 @@ public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
         objects.add(
             new Subscription(
                 pk,
-                UUID.fromString(results.getString("player_uuid")),
+                uuidFromString(results.getString("player_uuid")),
                 results.getInt("service_pk"),
                 results.getTimestamp("last_payment_date"),
                 results.getBoolean("auto_pay")

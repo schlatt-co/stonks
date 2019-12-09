@@ -43,7 +43,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
           "INSERT INTO transaction (account_pk, payee_uuid, message, amount, timestamp) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
       statement.setInt(1, obj.accountPk);
-      statement.setString(2, obj.payeeUUID.toString());
+      statement.setString(2, uuidToStr(obj.payeeUUID));
       statement.setString(3, obj.message);
       statement.setDouble(4, obj.amount);
       statement.setTimestamp(5, obj.timestamp);
@@ -79,7 +79,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE transaction SET account_pk = ?, payee_uuid = ?, message = ?, amount = ?, timestamp = ? WHERE pk = ?");
       statement.setInt(1, obj.accountPk);
-      statement.setString(2, obj.payeeUUID.toString());
+      statement.setString(2, uuidToStr(obj.payeeUUID));
       statement.setString(3, obj.message);
       statement.setDouble(4, obj.amount);
       statement.setTimestamp(5, obj.timestamp);
@@ -103,7 +103,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
         return new Transaction(
             pk,
             results.getInt("account_pk"),
-            UUID.fromString(results.getString("payee_uuid")),
+            uuidFromString(results.getString("payee_uuid")),
             results.getString("message"),
             results.getDouble("amount"),
             results.getTimestamp("timestamp"));
@@ -132,7 +132,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
         objects.add(new Transaction(
             pk,
             results.getInt("account_pk"),
-            UUID.fromString(results.getString("payee_uuid")),
+            uuidFromString(results.getString("payee_uuid")),
             results.getString("message"),
             results.getDouble("amount"),
             results.getTimestamp("timestamp")));

@@ -41,7 +41,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
       statement = connection.prepareStatement(
           "INSERT INTO holding (player_uuid, balance, share, account_pk) VALUES (?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setDouble(2, obj.balance);
       statement.setDouble(3, obj.share);
       statement.setInt(4, obj.accountPk);
@@ -76,7 +76,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
     try {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE holding SET player_uuid = ?, balance = ?, share = ?, account_pk = ? WHERE pk = ?");
-      statement.setString(1, obj.playerUUID.toString());
+      statement.setString(1, uuidToStr(obj.playerUUID));
       statement.setDouble(2, obj.balance);
       statement.setDouble(3, obj.share);
       statement.setInt(4, obj.accountPk);
@@ -99,7 +99,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
       if (results.next()) {
         return new Holding(
             pk,
-            UUID.fromString(results.getString("player_uuid")),
+            uuidFromString(results.getString("player_uuid")),
             results.getDouble("balance"),
             results.getDouble("share"),
             results.getInt("account_pk")
@@ -130,7 +130,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
         objects.add(
             new Holding(
                 pk,
-                UUID.fromString(results.getString("player_uuid")),
+                uuidFromString(results.getString("player_uuid")),
                 results.getDouble("balance"),
                 results.getDouble("share"),
                 results.getInt("account_pk")

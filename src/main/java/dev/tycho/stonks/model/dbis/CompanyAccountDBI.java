@@ -53,7 +53,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       if (newPk < 0) return null;
       statement.setInt(1, newPk);
       statement.setString(2, obj.name);
-      statement.setString(3, obj.uuid.toString());
+      statement.setString(3, uuidToStr(obj.uuid));
       statement.setInt(4, obj.companyPk);
       statement.setDouble(5, obj.balance);
       statement.executeUpdate();
@@ -81,7 +81,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       statement = connection.prepareStatement(
           "UPDATE company_account SET name = ?, uuid = ?, company_pk = ?, balance = ? WHERE pk = ?");
       statement.setString(1, obj.name);
-      statement.setString(2, obj.uuid.toString());
+      statement.setString(2, uuidToStr(obj.uuid));
       statement.setInt(3, obj.companyPk);
       statement.setDouble(4, obj.balance);
       statement.setInt(5, obj.pk);
@@ -104,7 +104,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
         return new CompanyAccount(
             pk,
             results.getString("name"),
-            UUID.fromString(results.getString("uuid")),
+            uuidFromString(results.getString("uuid")),
             results.getInt("company_pk"),
             new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
             new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
@@ -142,7 +142,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
             new CompanyAccount(
                 pk,
                 results.getString("name"),
-                UUID.fromString(results.getString("uuid")),
+                uuidFromString(results.getString("uuid")),
                 results.getInt("company_pk"),
                 new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
