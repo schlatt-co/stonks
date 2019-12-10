@@ -210,6 +210,10 @@ public class ShopManager extends SpigotModule {
       return;
     }
     dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
+    if (account == null) {
+      event.setCancelled(true);
+      return;
+    }
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
@@ -228,6 +232,10 @@ public class ShopManager extends SpigotModule {
       return;
     }
     dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
+    if (account == null) {
+      event.setCancelled(true);
+      return;
+    }
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
