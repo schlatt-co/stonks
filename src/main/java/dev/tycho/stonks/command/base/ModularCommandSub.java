@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public abstract class ModularCommandSub extends CommandSub {
   final ArgumentValidator[] arguments;
 
@@ -63,14 +64,14 @@ public abstract class ModularCommandSub extends CommandSub {
 
   @Override
   public String getArgs() {
-    String usage = "";
+    StringBuilder usage = new StringBuilder();
     for (ArgumentValidator argument : arguments) {
-      usage += " " + argument.getUsage();
+      usage.append(" ").append(argument.getUsage());
     }
-    return usage;
+    return usage.toString();
   }
 
-  private final void sendCorrectUsage(Player player, String alias, String commandName) {
+  private void sendCorrectUsage(Player player, String alias, String commandName) {
     String usage = "Correct usage: /" + alias + " " + commandName + getArgs();
     sendMessage(player, usage);
   }
