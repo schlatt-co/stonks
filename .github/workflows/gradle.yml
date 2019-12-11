@@ -18,3 +18,7 @@ jobs:
         chmod +x gradlew
         ./gradlew assemble
         ./gradlew shadowJar
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Stonks.jar
+        path: build/libs/stonks-all.jar

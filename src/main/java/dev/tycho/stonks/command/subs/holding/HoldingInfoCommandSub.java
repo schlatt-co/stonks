@@ -20,11 +20,11 @@ public class HoldingInfoCommandSub extends ModularCommandSub {
     Account account = getArgument("account");
     Stonks.newChain()
         .asyncFirst(() -> {
-            if (!(account instanceof HoldingsAccount)) {
-              sendMessage(player, "You can only view holdings of holding accounts!");
-              return null;
-            }
-            return new HoldingListGui((HoldingsAccount)account);
+          if (!(account instanceof HoldingsAccount)) {
+            sendMessage(player, "You can only view holdings of holding accounts!");
+            return null;
+          }
+          return new HoldingListGui((HoldingsAccount) account);
         })
         .abortIfNull()
         .sync(gui -> gui.show(player))

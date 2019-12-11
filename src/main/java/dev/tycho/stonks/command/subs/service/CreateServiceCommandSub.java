@@ -22,10 +22,6 @@ import java.util.List;
 
 public class CreateServiceCommandSub extends ModularCommandSub {
 
-  public CreateServiceCommandSub() {
-    super(new DoubleValidator("duration"), new CurrencyValidator("cost"), new IntegerValidator("max_subs"), new StringValidator("name", 40));
-  }
-
   private static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
@@ -42,7 +38,9 @@ public class CreateServiceCommandSub extends ModularCommandSub {
       "5",
       "10",
       "20");
-
+  public CreateServiceCommandSub() {
+    super(new DoubleValidator("duration"), new CurrencyValidator("cost"), new IntegerValidator("max_subs"), new StringValidator("name", 40));
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
@@ -67,14 +65,12 @@ public class CreateServiceCommandSub extends ModularCommandSub {
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWhereManager(player))
         .title("Select a company")
-        .companySelected(company -> {
-          new AccountSelectorGui.Builder()
-              .title("Select the account profits go to")
-              .company(company)
-              .accountSelected(
-                  account -> createService(player, duration, cost, maxSubs, name, company, account)
-              ).open(player);
-        })
+        .companySelected(company -> new AccountSelectorGui.Builder()
+            .title("Select the account profits go to")
+            .company(company)
+            .accountSelected(
+                account -> createService(player, duration, cost, maxSubs, name, company, account)
+            ).open(player))
         .open(player);
   }
 

@@ -27,7 +27,7 @@ public class MessageManager extends SpigotModule {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     Collection<Member> invites = Repo.getInstance().getInvites(event.getPlayer());
-    Collection<Subscription> subscriptions = Repo.getInstance().subscriptions().getAllWhere(s->s.playerUUID.equals(event.getPlayer().getUniqueId()));
+    Collection<Subscription> subscriptions = Repo.getInstance().subscriptions().getAllWhere(s -> s.playerUUID.equals(event.getPlayer().getUniqueId()));
 
     if (invites.size() > 0) {
       event.getPlayer().sendMessage(ChatColor.AQUA + "You have " + ChatColor.GREEN + invites.size() + ChatColor.AQUA + " open company invites! Do " + ChatColor.GREEN + "/stonks invites" + ChatColor.AQUA + " to view them.");

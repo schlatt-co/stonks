@@ -38,8 +38,8 @@ public class LogoCommandSub extends CommandSub {
     Stonks.newChain()
         .async(() -> {
           String newLogoMaterial = itemInHand.getType().name();
-            Repo.getInstance().modifyCompany(company, company.name, newLogoMaterial, company.verified, company.hidden);
-            sendMessage(player, "Company logo updated successfully!");
+          Repo.getInstance().modifyCompany(company, company.name, newLogoMaterial, company.verified, company.hidden);
+          sendMessage(player, "Company logo updated successfully!");
         })
         .execute();
   }

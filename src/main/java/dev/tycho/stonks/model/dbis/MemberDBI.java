@@ -7,7 +7,6 @@ import dev.tycho.stonks.model.core.Role;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class MemberDBI extends JavaSqlDBI<Member> {
 
@@ -38,7 +37,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
 
   @Override
   public Member create(Member obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "INSERT INTO member (player_uuid, company_pk, join_date, role, accepted_invite) VALUES (?, ?, ?, ?, ?)",

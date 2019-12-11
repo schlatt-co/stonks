@@ -24,11 +24,7 @@ import java.util.UUID;
 public class Repo extends SpigotModule {
 
   private static Repo instance;
-
-  public static Repo getInstance() {
-    return instance;
-  }
-
+  private final Stonks plugin;
   private Connection conn;
   private DatabaseStore<Company> companyStore;
   private DatabaseStore<CompanyAccount> companyAccountStore;
@@ -39,12 +35,14 @@ public class Repo extends SpigotModule {
   private DatabaseStore<Subscription> subscriptionStore;
   private DatabaseStore<Transaction> transactionStore;
 
-  private final Stonks plugin;
-
   public Repo(Stonks stonks) {
-    super("Repository", stonks);
+    super("Database Manager", stonks);
     instance = this;
     this.plugin = stonks;
+  }
+
+  public static Repo getInstance() {
+    return instance;
   }
 
   private Connection createConnection() throws SQLException {
@@ -264,7 +262,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account renameAccount(Account account, String newName) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.balance);
@@ -286,7 +284,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account payAccount(UUID player, String message, Account account, double amount) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance + amount);
@@ -394,7 +392,7 @@ public class Repo extends SpigotModule {
 
   public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
     Subscription s = new Subscription(subscription.pk, subscription.playerUUID, subscription.servicePk,
-    new Timestamp(System.currentTimeMillis()), subscription.autoPay);
+        new Timestamp(System.currentTimeMillis()), subscription.autoPay);
 
     subscriptionStore.save(s);
     if (service.pk != s.servicePk) throw new IllegalArgumentException("Primary Key mismatch");

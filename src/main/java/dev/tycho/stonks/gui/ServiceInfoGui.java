@@ -17,6 +17,7 @@ public class ServiceInfoGui implements InventoryProvider {
 
   private Service service;
   private Account account;
+
   private ServiceInfoGui(Service service, Account account) {
     this.service = service;
     this.account = account;

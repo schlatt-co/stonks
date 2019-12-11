@@ -9,7 +9,7 @@ public class GuiManager extends SpigotModule {
   private InventoryManager inventoryManager;
 
   public GuiManager(Stonks plugin) {
-    super("guiManager", plugin);
+    super("GUI Manager", plugin);
     this.inventoryManager = new InventoryManager(plugin);
     inventoryManager.init();
   }

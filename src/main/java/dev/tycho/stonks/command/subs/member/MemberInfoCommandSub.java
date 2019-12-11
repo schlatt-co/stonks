@@ -31,25 +31,25 @@ public class MemberInfoCommandSub extends ModularCommandSub {
 
     Stonks.newChain()
         .asyncFirst(() -> {
-            Player playerProfile = playerFromName(getArgument("player_name"));
-            Company company = getArgument("company");
+          Player playerProfile = playerFromName(getArgument("player_name"));
+          Company company = getArgument("company");
 
-            if (playerProfile == null) {
-              sendMessage(player, "Player not found");
-              return null;
-            }
+          if (playerProfile == null) {
+            sendMessage(player, "Player not found");
+            return null;
+          }
 
-            if (company == null) {
-              sendMessage(player, "Company not found");
-              return null;
-            }
+          if (company == null) {
+            sendMessage(player, "Company not found");
+            return null;
+          }
 
-            Member member = company.getMember(playerProfile);
-            if (member == null) {
-              sendMessage(player, "That player isn't a member of that company!");
-              return null;
-            }
-            return MemberInfoGui.getInventory(member, company);
+          Member member = company.getMember(playerProfile);
+          if (member == null) {
+            sendMessage(player, "That player isn't a member of that company!");
+            return null;
+          }
+          return MemberInfoGui.getInventory(member, company);
         })
         .abortIfNull()
         .sync((result) -> result.open(player))

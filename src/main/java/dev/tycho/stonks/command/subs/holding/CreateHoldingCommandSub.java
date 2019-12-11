@@ -81,8 +81,8 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
       return;
     }
 
-    Member member =  company.getMember(player);
-    HoldingsAccount holdingsAccount = (HoldingsAccount)account;
+    Member member = company.getMember(player);
+    HoldingsAccount holdingsAccount = (HoldingsAccount) account;
     //Is the player a member of that company
     if (member == null) {
       sendMessage(player, "You are not a member of that company!");
@@ -103,12 +103,12 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
     }
     //Check they are a member of that company
     if (!company.isMember(newHoldingOwner)) {
-      sendMessage(player, newHoldingOwner.getDisplayName() +  " isn't a member of the selected company");
+      sendMessage(player, newHoldingOwner.getDisplayName() + " isn't a member of the selected company");
       return;
     }
 
     if (holdingsAccount.getPlayerHolding(newHoldingOwner.getUniqueId()) != null) {
-      sendMessage(player, newHoldingOwner.getDisplayName() +  " already has a holding in this holding account!");
+      sendMessage(player, newHoldingOwner.getDisplayName() + " already has a holding in this holding account!");
       return;
     }
     //We can make a holding

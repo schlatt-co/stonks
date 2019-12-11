@@ -19,9 +19,6 @@ public class Company extends Entity {
   public final Collection<Account> accounts;
 
 
-
-
-
   public Company(int pk, String name, String shopName, String logoMaterial, Boolean verified, Boolean hidden,
                  Collection<Account> accounts, Collection<Member> members) {
     super(pk);
