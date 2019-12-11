@@ -10,8 +10,8 @@ import java.util.UUID;
 public class CompanyAccount extends Account {
   public final double balance;
 
-  public CompanyAccount(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactionHistory, Collection<Service> services, double balance) {
-    super(pk, name, uuid, companyPk, transactionHistory, services);
+  public CompanyAccount(int pk, String name, UUID uuid, int companyPk, boolean profitAccount, Collection<Transaction> transactionHistory, Collection<Service> services, double balance) {
+    super(pk, name, uuid, companyPk, profitAccount, transactionHistory, services);
     this.balance = balance;
   }
 

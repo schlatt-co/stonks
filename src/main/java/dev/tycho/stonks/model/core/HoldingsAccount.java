@@ -12,9 +12,9 @@ public class HoldingsAccount extends Account {
 
   public final Collection<Holding> holdings;
 
-  public HoldingsAccount(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactionHistory,
-                         Collection<Service> services, Collection<Holding> holdings) {
-    super(pk, name, uuid, companyPk, transactionHistory, services);
+  public HoldingsAccount(int pk, String name, UUID uuid, int companyPk, boolean profitAccount,
+                         Collection<Transaction> transactionHistory, Collection<Service> services, Collection<Holding> holdings) {
+    super(pk, name, uuid, companyPk, profitAccount, transactionHistory, services);
     this.holdings = holdings;
   }
 

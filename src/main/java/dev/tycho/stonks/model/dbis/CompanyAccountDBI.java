@@ -32,6 +32,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
               " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
               " balance double NOT NULL DEFAULT 0," +
+              " profit_account BIT NOT DEFAULT NULL," +
               " PRIMARY KEY (pk) ) "
       );
       return true;
@@ -46,7 +47,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
     PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
-          "INSERT INTO company_account (pk, name, uuid, company_pk, balance) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO company_account (pk, name, uuid, company_pk, balance, profit_account) VALUES (?, ?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
       int newPk = Repo.getInstance().getNextAccountPk();
       if (newPk < 0) return null;
@@ -55,11 +56,12 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       statement.setString(3, uuidToStr(obj.uuid));
       statement.setInt(4, obj.companyPk);
       statement.setDouble(5, obj.balance);
+      statement.setBoolean(6, obj.profitAccount);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int createdPk = rs.getInt(1);
-        return new CompanyAccount(createdPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), obj.balance);
+        return new CompanyAccount(createdPk, obj.name, obj.uuid, obj.companyPk, obj.profitAccount, new ArrayList<>(), new ArrayList<>(), obj.balance);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -78,12 +80,13 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
     PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
-          "UPDATE company_account SET name = ?, uuid = ?, company_pk = ?, balance = ? WHERE pk = ?");
+          "UPDATE company_account SET name = ?, uuid = ?, company_pk = ?, balance = ?, profit_account = ? WHERE pk = ?");
       statement.setString(1, obj.name);
       statement.setString(2, uuidToStr(obj.uuid));
       statement.setInt(3, obj.companyPk);
       statement.setDouble(4, obj.balance);
-      statement.setInt(5, obj.pk);
+      statement.setBoolean(5, obj.profitAccount);
+      statement.setInt(6, obj.pk);
       statement.executeUpdate();
       return true;
     } catch (SQLException e) {
@@ -96,7 +99,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
   public CompanyAccount load(int pk) {
     try {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT name, uuid, company_pk, balance FROM company_account WHERE pk = ?");
+          "SELECT name, uuid, company_pk, balance, profit_account FROM company_account WHERE pk = ?");
       statement.setInt(1, pk);
       ResultSet results = statement.executeQuery();
       if (results.next()) {
@@ -105,6 +108,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
             results.getString("name"),
             uuidFromString(results.getString("uuid")),
             results.getInt("company_pk"),
+            results.getBoolean("profit_account"),
             new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
             new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
             results.getDouble("balance"));
@@ -122,6 +126,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
         obj.name,
         obj.uuid,
         obj.companyPk,
+        obj.profitAccount,
         new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == obj.pk)),
         new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
         obj.balance);
@@ -132,7 +137,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
     Collection<CompanyAccount> objects = new ArrayList<>();
     try {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT pk, name, uuid, company_pk, balance FROM company_account");
+          "SELECT pk, name, uuid, company_pk, balance, profit_account FROM company_account");
 
       ResultSet results = statement.executeQuery();
       while (results.next()) {
@@ -143,6 +148,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
                 results.getString("name"),
                 uuidFromString(results.getString("uuid")),
                 results.getInt("company_pk"),
+                results.getBoolean("profit_account"),
                 new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
                 results.getDouble("balance")));

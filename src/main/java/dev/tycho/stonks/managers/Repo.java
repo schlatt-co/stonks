@@ -230,7 +230,7 @@ public class Repo extends SpigotModule {
   }
 
   public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
-    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, false, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     ha = holdingsAccountStore.create(ha);
 
     Holding h = new Holding(0, player.getUniqueId(), 0, 1, ha.pk);
@@ -241,7 +241,7 @@ public class Repo extends SpigotModule {
   }
 
   public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
-    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), 0);
+    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, false, new ArrayList<>(), new ArrayList<>(), 0);
     ca = companyAccountStore.create(ca);
     companyStore.refreshRelations(company.pk);
     return ca;
@@ -265,14 +265,14 @@ public class Repo extends SpigotModule {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.balance);
+        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, false, a.transactions, a.services, a.balance);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, false, a.transactions, a.services, a.holdings);
         holdingsAccountStore.save(ha);
         val = ha;
       }
@@ -287,14 +287,14 @@ public class Repo extends SpigotModule {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance + amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, false, a.transactions, a.services, a.balance + amount);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, false, a.transactions, a.services, a.holdings);
         double totalShare = ha.getTotalShare();
         //Add money proportionally to all holdings
         for (Holding h : ha.holdings) {
@@ -321,7 +321,7 @@ public class Repo extends SpigotModule {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
     }
-    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
+    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, false, a.transactions, a.services, a.balance - amount);
     companyAccountStore.save(ca);
     //Create a transaction log too
     createTransaction(player, a, "withdraw", -amount);

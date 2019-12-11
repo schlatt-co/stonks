@@ -34,6 +34,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
               " name varchar(255) DEFAULT NULL," +
               " uuid varchar(36) DEFAULT NULL," +
               " company_pk int(11) DEFAULT NULL," +
+              " profit_account BIT NOT DEFAULT NULL," +
               " PRIMARY KEY (pk) ) "
       );
       return true;
@@ -48,7 +49,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
     PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
-          "INSERT INTO holdings_account (pk, name, uuid, company_pk) VALUES (?, ?, ?, ?)",
+          "INSERT INTO holdings_account (pk, name, uuid, company_pk, profit_account) VALUES (?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
       int newPk = Repo.getInstance().getNextAccountPk();
       if (newPk < 0) return null;
@@ -56,11 +57,12 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
       statement.setString(2, obj.name);
       statement.setString(3, uuidToStr(obj.uuid));
       statement.setInt(4, obj.companyPk);
+      statement.setBoolean(5, obj.profitAccount);
       statement.executeUpdate();
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int createdPk = rs.getInt(1);
-        return new HoldingsAccount(createdPk, obj.name, obj.uuid, obj.companyPk, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        return new HoldingsAccount(createdPk, obj.name, obj.uuid, obj.companyPk, obj.profitAccount, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -79,11 +81,12 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
     PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
-          "UPDATE holdings_account SET name = ?, uuid = ?, company_pk = ? WHERE pk = ?");
+          "UPDATE holdings_account SET name = ?, uuid = ?, company_pk = ?, profit_account = ? WHERE pk = ?");
       statement.setString(1, obj.name);
       statement.setString(2, uuidToStr(obj.uuid));
       statement.setInt(3, obj.companyPk);
-      statement.setInt(4, obj.pk);
+      statement.setBoolean(4, obj.profitAccount);
+      statement.setInt(5, obj.pk);
       statement.executeUpdate();
       return true;
     } catch (SQLException e) {
@@ -96,7 +99,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
   public HoldingsAccount load(int pk) {
     try {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT name, uuid, company_pk FROM holdings_account WHERE pk = ?");
+          "SELECT name, uuid, company_pk, profit_account FROM holdings_account WHERE pk = ?");
       statement.setInt(1, pk);
       ResultSet results = statement.executeQuery();
       if (results.next()) {
@@ -105,6 +108,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
             results.getString("name"),
             uuidFromString(results.getString("uuid")),
             results.getInt("company_pk"),
+            results.getBoolean("profit_account"),
             new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
             new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
             new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == pk)));
@@ -122,6 +126,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
         obj.name,
         obj.uuid,
         obj.companyPk,
+        obj.profitAccount,
         new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == obj.pk)),
         new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
         new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == obj.pk)));
@@ -143,6 +148,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
                 results.getString("name"),
                 uuidFromString(results.getString("uuid")),
                 results.getInt("company_pk"),
+                results.getBoolean("profit_account"),
                 new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
                 new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == pk))));
