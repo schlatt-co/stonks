@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.member;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.MemberListGui;
@@ -24,17 +23,7 @@ public class MembersCommandSub extends ModularCommandSub {
 
   @Override
   public void execute(Player player) {
-
     Company company = getArgument("company");
-    if (company == null) {
-      sendMessage(player, "That company doesn't exist!");
-      return;
-    }
-    Stonks.newChain()
-        .asyncFirst(() -> new MemberListGui(company,
-            company.members.stream().filter(m -> m.acceptedInvite).collect(Collectors.toList())))
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
+    new MemberListGui(company, company.members.stream().filter(m -> m.acceptedInvite).collect(Collectors.toList())).show(player);
   }
 }

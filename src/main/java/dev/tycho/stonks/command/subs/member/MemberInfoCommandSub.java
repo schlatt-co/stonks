@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.member;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
@@ -29,30 +28,13 @@ public class MemberInfoCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
 
-    Stonks.newChain()
-        .asyncFirst(() -> {
-          Player playerProfile = playerFromName(getArgument("player_name"));
-          Company company = getArgument("company");
-
-          if (playerProfile == null) {
-            sendMessage(player, "Player not found");
-            return null;
-          }
-
-          if (company == null) {
-            sendMessage(player, "Company not found");
-            return null;
-          }
-
-          Member member = company.getMember(playerProfile);
-          if (member == null) {
-            sendMessage(player, "That player isn't a member of that company!");
-            return null;
-          }
-          return MemberInfoGui.getInventory(member, company);
-        })
-        .abortIfNull()
-        .sync((result) -> result.open(player))
-        .execute();
+    Player playerProfile = playerFromName(getArgument("player_name"));
+    Company company = getArgument("company");
+    Member member = company.getMember(playerProfile);
+    if (member == null) {
+      sendMessage(player, "That player isn't a member of that company!");
+      return;
+    }
+    MemberInfoGui.getInventory(member, company).open(player);
   }
 }

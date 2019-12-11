@@ -46,10 +46,6 @@ public class InviteCommandSub extends ModularCommandSub {
       sendMessage(player, playerToInvite + " has never played on the server before!");
       return;
     }
-    if (company == null) {
-      sendMessage(player, "That company doesn't exist");
-      return;
-    }
     //Make sure player has invite permissions
     if (company.getMember(player) == null || !company.getMember(player).hasManagamentPermission()) {
       sendMessage(player, "You don't have permission to do that!");

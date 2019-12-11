@@ -95,31 +95,28 @@ public class PayCommandSub extends ModularCommandSub {
   }
 
   public void payAccount(Player sender, Account account, String message, double amount) {
-    Stonks.newChain()
-        .async(() -> {
-          if (amount < 0) {
-            sendMessage(sender, "You cannot pay a negative number");
-            return;
-          }
+    if (amount < 0) {
+      sendMessage(sender, "You cannot pay a negative number");
+      return;
+    }
 
-          if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
-            sendMessage(sender, "Insufficient funds!");
-            return;
-          }
-          Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
-          Company company = Repo.getInstance().companies().get(account.companyPk);
-          //Tell the user we paid the account
-          sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
+    if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
+      sendMessage(sender, "Insufficient funds!");
+      return;
+    }
+    Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    //Tell the user we paid the account
+    sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
 
-          //Send a message to all managers in the company that are online that the company got paid
-          for (Member member : company.members) {
-            if (member.hasManagamentPermission()) {
-              Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-              if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
-                sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
-              }
-            }
-          }
-        }).execute();
+    //Send a message to all managers in the company that are online that the company got paid
+    for (Member member : company.members) {
+      if (member.hasManagamentPermission()) {
+        Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
+        if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
+          sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
+        }
+      }
+    }
   }
 }

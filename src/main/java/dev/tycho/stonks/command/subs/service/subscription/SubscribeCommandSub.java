@@ -30,7 +30,6 @@ public class SubscribeCommandSub extends ModularCommandSub {
 //        ).open(player);
   }
 
-
   private void subscribe(Player player, Service service, boolean autoPay) {
     if (service.maxSubscribers > 0 && service.subscriptions.size() >= service.maxSubscribers) {
       sendMessage(player, "That service has the maximum number of subscriptions");
