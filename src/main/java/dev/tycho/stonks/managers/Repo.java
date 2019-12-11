@@ -36,7 +36,7 @@ public class Repo extends SpigotModule {
   private DatabaseStore<Transaction> transactionStore;
 
   public Repo(Stonks stonks) {
-    super("Repository", stonks);
+    super("Database Manager", stonks);
     instance = this;
     this.plugin = stonks;
   }

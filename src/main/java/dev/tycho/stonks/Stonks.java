@@ -69,15 +69,6 @@ public class Stonks extends JavaPlugin {
     }
   }
 
-  public SpigotModule getModule(String name) {
-    for (SpigotModule module : loadedModules) {
-      if (module.getModuleName().equals(name)) {
-        return module;
-      }
-    }
-    return null;
-  }
-
   private boolean setupEconomy() {
     RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
     if (economyProvider != null) {
