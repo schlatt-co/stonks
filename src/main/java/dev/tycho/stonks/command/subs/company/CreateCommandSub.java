@@ -46,32 +46,32 @@ public class CreateCommandSub extends ModularCommandSub {
 //    Stonks.newChain()
 //        .async(() -> {
 
-          String name = companyName.trim();
+    String name = companyName.trim();
 
-          if (!name.matches("[0-9a-zA-Z\\s&+]{2,32}")) {
-            sendMessage(player, "Invalid name. Please try again. You may have used special characters or it is too long");
-            return;
-          }
-          if (StringUtils.isNumeric(name)) {
-            sendMessage(player, "A company name cannot be a number!");
-            return;
-          }
-          if (Repo.getInstance().companyWithName(name) != null) {
-            sendMessage(player, "A company with that name already exists!");
-            return;
-          }
-          double creationFee = SettingsManager.COMPANY_FEE;
-          if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
-            sendMessage(player, "You don't have the sufficient funds for the $" + creationFee + " company creation fee.");
-            return;
-          }
+    if (!name.matches("[0-9a-zA-Z\\s&+]{2,32}")) {
+      sendMessage(player, "Invalid name. Please try again. You may have used special characters or it is too long");
+      return;
+    }
+    if (StringUtils.isNumeric(name)) {
+      sendMessage(player, "A company name cannot be a number!");
+      return;
+    }
+    if (Repo.getInstance().companyWithName(name) != null) {
+      sendMessage(player, "A company with that name already exists!");
+      return;
+    }
+    double creationFee = SettingsManager.COMPANY_FEE;
+    if (!Stonks.economy.withdrawPlayer(player, creationFee).transactionSuccess()) {
+      sendMessage(player, "You don't have the sufficient funds for the $" + creationFee + " company creation fee.");
+      return;
+    }
 
-          Company c = Repo.getInstance().createCompany(name, player);
-          if (c != null) {
-            sendMessage(player, "Company created successfully!");
-          } else {
-            sendMessage(player, "Company creation failed");
-          }
+    Company c = Repo.getInstance().createCompany(name, player);
+    if (c != null) {
+      sendMessage(player, "Company created successfully!");
+    } else {
+      sendMessage(player, "Company creation failed");
+    }
 //        }).execute();
   }
 }

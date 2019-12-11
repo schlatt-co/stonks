@@ -26,8 +26,6 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
   }
 
 
-
-
   @Override
   public void execute(Player player) {
     removeHolding(player, getArgument("account"), getArgument("player_name"));

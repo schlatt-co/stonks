@@ -15,8 +15,6 @@ public class Holding extends Entity {
   public final double share;
 
 
-
-
   public Holding(int pk, UUID playerUUID, double balance, double share, int accountPk) {
     super(pk);
     if (share <= 0) {

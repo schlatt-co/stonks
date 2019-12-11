@@ -16,10 +16,7 @@ public class StringValidator extends ArgumentValidator<String> {
   @Override
   public boolean provide(String str) {
     this.value = str;
-    if (str.length() > maxLength) {
-      return false;
-    }
-    return true;
+    return str.length() <= maxLength;
   }
 
   @Override

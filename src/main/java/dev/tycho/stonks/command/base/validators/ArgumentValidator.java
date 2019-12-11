@@ -12,6 +12,22 @@ public abstract class ArgumentValidator<T> {
     this.optional = false;
   }
 
+  public static ArgumentValidator<dev.tycho.stonks.model.core.Account> optional(ArgumentValidator<dev.tycho.stonks.model.core.Account> arg) {
+    arg.setOptional(true);
+    return arg;
+  }
+
+  public static ArgumentValidator<String> concatIfLast(ArgumentValidator<String> arg) {
+    arg.setConcat(true);
+    return arg;
+  }
+
+  public static ArgumentValidator<String> optionalAndConcatIfLast(ArgumentValidator<String> arg) {
+    arg.setConcat(true);
+    arg.setOptional(true);
+    return arg;
+  }
+
   public T get() {
     T ret = value;
     value = null;
@@ -24,12 +40,8 @@ public abstract class ArgumentValidator<T> {
     return name;
   }
 
-  private final void setConcat(boolean val) {
+  private void setConcat(boolean val) {
     this.concatIfLastArg = val;
-  }
-
-  private final void setOptional(boolean val) {
-    this.optional = val;
   }
 
   public final boolean concatIfLastArg() {
@@ -40,26 +52,13 @@ public abstract class ArgumentValidator<T> {
     return optional;
   }
 
+  private void setOptional(boolean val) {
+    this.optional = val;
+  }
+
   public String getUsage() {
     return "<" + name + ">";
   }
 
   public abstract String getPrompt();
-
-
-  public static ArgumentValidator optional(ArgumentValidator arg) {
-    arg.setOptional(true);
-    return arg;
-  }
-
-  public static ArgumentValidator concatIfLast(ArgumentValidator arg) {
-    arg.setConcat(true);
-    return arg;
-  }
-
-  public static ArgumentValidator optionalAndConcatIfLast(ArgumentValidator arg) {
-    arg.setConcat(true);
-    arg.setOptional(true);
-    return arg;
-  }
 }

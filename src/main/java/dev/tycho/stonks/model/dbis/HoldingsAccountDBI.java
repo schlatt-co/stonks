@@ -11,7 +11,6 @@ import dev.tycho.stonks.model.service.Service;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
 
@@ -46,7 +45,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
 
   @Override
   public HoldingsAccount create(HoldingsAccount obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "INSERT INTO holdings_account (pk, name, uuid, company_pk) VALUES (?, ?, ?, ?)",
@@ -77,7 +76,7 @@ public class HoldingsAccountDBI extends JavaSqlDBI<HoldingsAccount> {
 
   @Override
   public boolean save(HoldingsAccount obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "UPDATE holdings_account SET name = ?, uuid = ?, company_pk = ? WHERE pk = ?");

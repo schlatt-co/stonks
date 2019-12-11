@@ -6,7 +6,6 @@ import dev.tycho.stonks.model.logging.Transaction;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class TransactionDBI extends JavaSqlDBI<Transaction> {
 
@@ -37,7 +36,7 @@ public class TransactionDBI extends JavaSqlDBI<Transaction> {
 
   @Override
   public Transaction create(Transaction obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "INSERT INTO transaction (account_pk, payee_uuid, message, amount, timestamp) VALUES (?, ?, ?, ?, ?)",

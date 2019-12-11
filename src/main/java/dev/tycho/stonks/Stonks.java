@@ -88,7 +88,7 @@ public class Stonks extends JavaPlugin {
 
 
   private boolean setupEssentials() {
-    essentials = (Essentials)this.getServer().getPluginManager().getPlugin("Essentials");
+    essentials = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
     return (essentials != null);
   }
 }

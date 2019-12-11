@@ -9,7 +9,7 @@ public class IntegerValidator extends ArgumentValidator<Integer> {
 
   @Override
   public boolean provide(String str) {
-    if (!StringUtils.isNumeric(str)) return  false;
+    if (!StringUtils.isNumeric(str)) return false;
     value = Integer.parseInt(str);
     return true;
   }

@@ -17,7 +17,7 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
   private Player player;
 
   public AllPlayerHoldingsGui(Player player) {
-    super(Repo.getInstance().holdingsAccounts().getAllWhere(a->a.getPlayerHolding(player.getUniqueId()) != null), "All your holdings");
+    super(Repo.getInstance().holdingsAccounts().getAllWhere(a -> a.getPlayerHolding(player.getUniqueId()) != null), "All your holdings");
     this.player = player;
   }
 
@@ -38,7 +38,6 @@ public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
     lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.share);
     lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
     lore.add(ChatColor.GREEN + "Right click to view this company");
-
 
 
     Material material;

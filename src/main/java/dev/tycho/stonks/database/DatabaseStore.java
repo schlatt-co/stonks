@@ -14,15 +14,14 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
   protected Function<T, T> factory;
   protected JavaSqlDBI<T> dbi;
 
-  public void setDbi(JavaSqlDBI<T> dbi) {
-    this.dbi = dbi;
-    if (dbi.createTable()) System.out.println("Created table for " + dbi.getClass().getSimpleName().replace("DBI", ""));
-  }
-
   public DatabaseStore(Function<T, T> factory) {
     this.factory = factory;
   }
 
+  public void setDbi(JavaSqlDBI<T> dbi) {
+    this.dbi = dbi;
+    if (dbi.createTable()) System.out.println("Created table for " + dbi.getClass().getSimpleName().replace("DBI", ""));
+  }
 
   protected abstract boolean db_save(T obj);
 

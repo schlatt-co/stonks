@@ -37,10 +37,10 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
   }
 
   public static class Builder {
+    Collection<Service> services;
     private Company company = null;
     private String title = "";
     private Consumer<Service> onServiceSelected;
-    Collection<Service> services;
 
     public Builder() {
 

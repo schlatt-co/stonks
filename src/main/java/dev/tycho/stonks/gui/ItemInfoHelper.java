@@ -90,7 +90,8 @@ public class ItemInfoHelper {
     if (transaction.payeeUUID != null) {
       itemMaterial = (transaction.amount > 0) ? Material.GREEN_WOOL : Material.RED_WOOL;
 
-      if (transaction.message != null && transaction.message.startsWith("Subscription")) itemMaterial = Material.KNOWLEDGE_BOOK;
+      if (transaction.message != null && transaction.message.startsWith("Subscription"))
+        itemMaterial = Material.KNOWLEDGE_BOOK;
     }
     return Util.item(itemMaterial,
         ((transaction.amount > 0) ? ChatColor.GREEN : ChatColor.RED) + "$" + transaction.amount,

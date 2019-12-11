@@ -46,6 +46,7 @@ public interface Store<T extends Entity> {
 
   /**
    * Delete an entity from the store
+   *
    * @param pk The primary key of the entity to delete
    * @return True if the operation was successful, false if the delete operation failed (e.g deleting not supported)
    */
@@ -54,6 +55,7 @@ public interface Store<T extends Entity> {
 
   /**
    * Updates any child collections the entity has
+   *
    * @param pk The primary key of the entity to refresh
    */
   void refreshRelations(int pk);

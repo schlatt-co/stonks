@@ -1,4 +1,3 @@
-
 package dev.tycho.stonks.database;
 
 import java.util.concurrent.Executors;

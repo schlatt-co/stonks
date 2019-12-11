@@ -6,7 +6,6 @@ import dev.tycho.stonks.model.service.Subscription;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class SubscriptionDBI extends JavaSqlDBI<Subscription> {
 

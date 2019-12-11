@@ -9,17 +9,17 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class MyHoldingsCommandSub extends CommandSub {
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-        return null;
-    }
+  @Override
+  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
+    return null;
+  }
 
-    @Override
-    public void onCommand(Player player, String alias, String[] args) {
-        Stonks.newChain()
-            .asyncFirst(() -> new AllPlayerHoldingsGui(player))
-            .abortIfNull()
-            .sync(gui -> gui.show(player))
-            .execute();
-    }
+  @Override
+  public void onCommand(Player player, String alias, String[] args) {
+    Stonks.newChain()
+        .asyncFirst(() -> new AllPlayerHoldingsGui(player))
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
+  }
 }

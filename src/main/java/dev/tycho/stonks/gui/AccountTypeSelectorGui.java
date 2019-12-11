@@ -52,6 +52,11 @@ public class AccountTypeSelectorGui implements InventoryProvider {
 
   }
 
+  public enum AccountType {
+    CompanyAccount,
+    HoldingsAccount
+  }
+
   public static class Builder {
     private String title = "";
     private Consumer<AccountType> onTypeSelected;
@@ -73,11 +78,5 @@ public class AccountTypeSelectorGui implements InventoryProvider {
     public AccountTypeSelectorGui open(Player player) {
       return new AccountTypeSelectorGui(onTypeSelected, title, player);
     }
-  }
-
-
-  public enum AccountType {
-    CompanyAccount,
-    HoldingsAccount
   }
 }

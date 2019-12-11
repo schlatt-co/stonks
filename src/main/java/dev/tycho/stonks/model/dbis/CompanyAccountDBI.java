@@ -10,7 +10,6 @@ import dev.tycho.stonks.model.service.Service;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
 
@@ -44,7 +43,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
 
   @Override
   public CompanyAccount create(CompanyAccount obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "INSERT INTO company_account (pk, name, uuid, company_pk, balance) VALUES (?, ?, ?, ?, ?)",
@@ -76,7 +75,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
 
   @Override
   public boolean save(CompanyAccount obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "UPDATE company_account SET name = ?, uuid = ?, company_pk = ?, balance = ? WHERE pk = ?");

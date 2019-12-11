@@ -9,7 +9,7 @@ public class DoubleValidator extends ArgumentValidator<Double> {
 
   @Override
   public boolean provide(String str) {
-    if (!NumberUtils.isNumber (str)) return false;
+    if (!NumberUtils.isNumber(str)) return false;
     value = Double.parseDouble(str);
     return true;
   }

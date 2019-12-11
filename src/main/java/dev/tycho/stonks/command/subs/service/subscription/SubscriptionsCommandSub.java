@@ -18,7 +18,7 @@ public class SubscriptionsCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     new PlayerSubscriptionListGui(
-        Repo.getInstance().subscriptions().getAllWhere(s->s.playerUUID.equals(player.getUniqueId())))
+        Repo.getInstance().subscriptions().getAllWhere(s -> s.playerUUID.equals(player.getUniqueId())))
         .show(player);
   }
 }

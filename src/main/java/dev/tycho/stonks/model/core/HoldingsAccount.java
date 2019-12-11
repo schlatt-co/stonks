@@ -13,7 +13,7 @@ public class HoldingsAccount extends Account {
   public final Collection<Holding> holdings;
 
   public HoldingsAccount(int pk, String name, UUID uuid, int companyPk, Collection<Transaction> transactionHistory,
-                         Collection<Service> services, Collection<Holding>holdings) {
+                         Collection<Service> services, Collection<Holding> holdings) {
     super(pk, name, uuid, companyPk, transactionHistory, services);
     this.holdings = holdings;
   }
@@ -41,6 +41,7 @@ public class HoldingsAccount extends Account {
     }
     return null;
   }
+
   @Override
   public double getTotalBalance() {
     double total = 0;

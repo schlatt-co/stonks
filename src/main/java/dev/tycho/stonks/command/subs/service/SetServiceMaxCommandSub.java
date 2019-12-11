@@ -45,6 +45,6 @@ public class SetServiceMaxCommandSub extends ModularCommandSub {
     }
 
     Repo.getInstance().modifyService(service, service.name, service.duration, service.cost, maxSubs);
-      sendMessage(player, "Max subs updated to " + maxSubs);
+    sendMessage(player, "Max subs updated to " + maxSubs);
   }
 }

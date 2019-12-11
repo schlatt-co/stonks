@@ -6,7 +6,6 @@ import dev.tycho.stonks.model.core.Holding;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 public class HoldingDBI extends JavaSqlDBI<Holding> {
 
@@ -36,7 +35,7 @@ public class HoldingDBI extends JavaSqlDBI<Holding> {
 
   @Override
   public Holding create(Holding obj) {
-    PreparedStatement statement = null;
+    PreparedStatement statement;
     try {
       statement = connection.prepareStatement(
           "INSERT INTO holding (player_uuid, balance, share, account_pk) VALUES (?, ?, ?, ?)",

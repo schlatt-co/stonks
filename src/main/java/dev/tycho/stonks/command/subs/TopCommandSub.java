@@ -24,12 +24,12 @@ public class TopCommandSub extends CommandSub {
     sendMessage(player, "Fetching top companies, please wait one moment...");
     Stonks.newChain()
         .async(() -> {
-            List<Company> companies = new ArrayList<>(Repo.getInstance().companies().getAll());
-            companies.sort((c1, c2) -> (int) (c2.getTotalValue() - c1.getTotalValue()));
-            for (int i = 0; i < Math.min(10, companies.size()); i++) {
-              Company company = companies.get(i);
-              sendMessage(player, "#" + (i + 1) + " - " + ChatColor.YELLOW + company.name + ChatColor.GREEN + ", " + ChatColor.DARK_GREEN + "$" + Util.commify(company.getTotalValue()));
-            }
+          List<Company> companies = new ArrayList<>(Repo.getInstance().companies().getAll());
+          companies.sort((c1, c2) -> (int) (c2.getTotalValue() - c1.getTotalValue()));
+          for (int i = 0; i < Math.min(10, companies.size()); i++) {
+            Company company = companies.get(i);
+            sendMessage(player, "#" + (i + 1) + " - " + ChatColor.YELLOW + company.name + ChatColor.GREEN + ", " + ChatColor.DARK_GREEN + "$" + Util.commify(company.getTotalValue()));
+          }
         })
         .execute();
   }

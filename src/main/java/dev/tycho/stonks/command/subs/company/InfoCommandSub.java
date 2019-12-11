@@ -12,7 +12,7 @@ public class InfoCommandSub extends ModularCommandSub {
   public InfoCommandSub() {
     super(new CompanyValidator("company"));
   }
-  
+
   @Override
   public void execute(Player player) {
     Company company = getArgument("company");

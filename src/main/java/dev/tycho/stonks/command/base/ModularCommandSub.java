@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ModularCommandSub extends CommandSub {
   final ArgumentValidator[] arguments;
 
@@ -14,17 +14,13 @@ public abstract class ModularCommandSub extends CommandSub {
     super(perms);
     this.arguments = new ArgumentValidator[arguments.length + 1];
     this.arguments[0] = argument;
-    for (int i = 1; i < this.arguments.length; i++) {
-      this.arguments[i] = arguments[i - 1];
-    }
+    System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
   }
 
   protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
     this.arguments[0] = argument;
-    for (int i = 1; i < this.arguments.length; i++) {
-      this.arguments[i] = arguments[i - 1];
-    }
+    System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
   }
 
   public final void onCommand(Player player, String alias, String[] args) {
