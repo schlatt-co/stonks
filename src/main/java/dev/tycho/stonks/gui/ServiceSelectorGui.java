@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class ServiceSelectorGui extends CollectionGuiBase<Service> {
+public class ServiceSelectorGui extends CollectionGui<Service> {
 
   private Company company;
   private Consumer<Service> onServiceSelected;
@@ -66,7 +66,7 @@ public class ServiceSelectorGui extends CollectionGuiBase<Service> {
       return this;
     }
 
-    public ServiceSelectorGui open(Player player) {
+    public ServiceSelectorGui show(Player player) {
       ServiceSelectorGui serviceSelectorGui = new ServiceSelectorGui(company, services, title, onServiceSelected, player);
       serviceSelectorGui.show(player);
       return serviceSelectorGui;

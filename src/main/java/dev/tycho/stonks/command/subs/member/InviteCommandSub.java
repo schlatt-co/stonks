@@ -36,7 +36,7 @@ public class InviteCommandSub extends ModularCommandSub {
         .companies(list)
         .title("Select a company to invite to")
         .companySelected((company -> invitePlayerToCompany(player, company, getArgument("player_name"))))
-        .open(player);
+        .show(player);
   }
 
 

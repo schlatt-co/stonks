@@ -41,10 +41,10 @@ public class CreateAccountCommandSub extends ModularCommandSub {
                       .onChoiceMade(b -> {
                         if (b) createAccount(player, company, accountName, type);
                       })
-                      .open(player))
-                  .open(player);
+                      .show(player))
+                  .show(player);
             }
-        ).open(player);
+        ).show(player);
   }
 
   private void createAccount(Player player, Company company, String newAccountName, AccountTypeSelectorGui.AccountType accountType) {

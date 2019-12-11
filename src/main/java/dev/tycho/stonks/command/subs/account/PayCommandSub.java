@@ -74,7 +74,7 @@ public class PayCommandSub extends ModularCommandSub {
           for (Member m : company.members) {
             if (m.role.equals(CEO)) {
               OfflinePlayer p = Bukkit.getOfflinePlayer(m.playerUUID);
-              if (p != null) ceoName = p.getName();
+              ceoName = p.getName();
             }
           }
           info.add(ChatColor.GOLD + ceoName);
@@ -84,17 +84,17 @@ public class PayCommandSub extends ModularCommandSub {
                 .info(info)
                 .onChoiceMade(
                     c -> {
-                      if (c) accountSelectorScreen.open(player);
+                      if (c) accountSelectorScreen.show(player);
                     }
-                ).open(player);
+                ).show(player);
           } else {
-            accountSelectorScreen.open(player);
+            accountSelectorScreen.show(player);
           }
         }))
-        .open(player);
+        .show(player);
   }
 
-  public void payAccount(Player sender, Account account, String message, double amount) {
+  private void payAccount(Player sender, Account account, String message, double amount) {
     if (amount < 0) {
       sendMessage(sender, "You cannot pay a negative number");
       return;

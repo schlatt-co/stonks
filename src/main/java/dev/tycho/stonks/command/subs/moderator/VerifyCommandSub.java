@@ -31,7 +31,7 @@ public class VerifyCommandSub extends CommandSub {
               if (c)
                 Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden);
             })
-            .open(player))
-        .open(player);
+            .show(player))
+        .show(player);
   }
 }

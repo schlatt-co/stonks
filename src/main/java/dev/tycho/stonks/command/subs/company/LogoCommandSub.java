@@ -25,7 +25,7 @@ public class LogoCommandSub extends CommandSub {
         .companies(list)
         .title("Select company logo to change")
         .companySelected((company -> setLogo(player, company)))
-        .open(player);
+        .show(player);
   }
 
   private void setLogo(Player player, Company company) {

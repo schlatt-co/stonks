@@ -5,38 +5,24 @@ import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.model.core.Role;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
-import fr.minuskube.inv.InventoryManager;
-import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-public class MemberInfoGui implements InventoryProvider {
-
-  public static InventoryManager inventoryManager;
+public class MemberInfoGui extends InventoryGui {
 
   private Member member;
   private OfflinePlayer offlinePlayer;
   private Company company;
 
   public MemberInfoGui(Member member, Company company) {
+    super(Bukkit.getOfflinePlayer(member.playerUUID).getName());
     this.member = member;
     this.offlinePlayer = Bukkit.getOfflinePlayer(member.playerUUID);
     this.company = company;
-  }
-
-  public static SmartInventory getInventory(Member member, Company company) {
-    return SmartInventory.builder()
-        .id("memberInfo")
-        .provider(new MemberInfoGui(member, company))
-        .manager(inventoryManager)
-        .size(3, 9)
-        .title(Bukkit.getOfflinePlayer(member.playerUUID).getName())
-        .build();
   }
 
   @Override
@@ -56,10 +42,5 @@ public class MemberInfoGui implements InventoryProvider {
         "stonks setrole " + offlinePlayer.getName() + " " + Role.CEO.toString() + " " + company.name)));
 
     contents.set(1, 8, ClickableItem.of(Util.item(Material.LAVA_BUCKET, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + company.name)));
-  }
-
-  @Override
-  public void update(Player player, InventoryContents contents) {
-
   }
 }

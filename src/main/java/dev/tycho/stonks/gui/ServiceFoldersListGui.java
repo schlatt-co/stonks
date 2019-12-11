@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ServiceFoldersListGui extends CollectionGuiBase<Account> {
+public class ServiceFoldersListGui extends CollectionGui<Account> {
   private Company company;
 
   public ServiceFoldersListGui(Company company) {

@@ -87,8 +87,8 @@ public class WithdrawCommandSub extends ModularCommandSub {
                 .company(company)
                 .title("Select an account to withdraw from")
                 .accountSelected(acc -> withdrawFromAccount(player, acc, amount))
-                .open(player)))
-        .open(player);
+                .show(player)))
+        .show(player);
   }
 
   public void withdrawFromAccount(Player player, Account account, double amount) {

@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
 
-public class AccountSelectorGui extends CollectionGuiBase<Account> {
+public class AccountSelectorGui extends CollectionGui<Account> {
 
   private Company company;
   private Consumer<Account> onAccountSelected;
@@ -19,7 +19,6 @@ public class AccountSelectorGui extends CollectionGuiBase<Account> {
     super(company.accounts, title);
     this.company = company;
     this.onAccountSelected = onAccountSelected;
-    show(player);
   }
 
   @Override
@@ -41,10 +40,6 @@ public class AccountSelectorGui extends CollectionGuiBase<Account> {
     private String title = "";
     private Consumer<Account> onAccountSelected;
 
-    public Builder() {
-
-    }
-
     public AccountSelectorGui.Builder company(Company company) {
       this.company = company;
       return this;
@@ -60,8 +55,8 @@ public class AccountSelectorGui extends CollectionGuiBase<Account> {
       return this;
     }
 
-    public AccountSelectorGui open(Player player) {
-      return new AccountSelectorGui(company, title, onAccountSelected, player);
+    public void show(Player player) {
+      new AccountSelectorGui(company, title, onAccountSelected, player).show(player);
     }
   }
 

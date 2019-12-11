@@ -35,6 +35,6 @@ public class MemberInfoCommandSub extends ModularCommandSub {
       sendMessage(player, "That player isn't a member of that company!");
       return;
     }
-    MemberInfoGui.getInventory(member, company).open(player);
+    new MemberInfoGui(member, company).show(player);
   }
 }

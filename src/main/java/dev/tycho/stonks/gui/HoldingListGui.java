@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoldingListGui extends CollectionGuiBase<Holding> {
+public class HoldingListGui extends CollectionGui<Holding> {
   private HoldingsAccount holdingsAccount;
 
   public HoldingListGui(HoldingsAccount holdingsAccount) {

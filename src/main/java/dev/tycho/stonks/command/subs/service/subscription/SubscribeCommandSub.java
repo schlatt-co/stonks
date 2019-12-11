@@ -63,6 +63,6 @@ public class SubscribeCommandSub extends ModularCommandSub {
                 }
               }
             }
-        ).open(player);
+        ).show(player);
   }
 }

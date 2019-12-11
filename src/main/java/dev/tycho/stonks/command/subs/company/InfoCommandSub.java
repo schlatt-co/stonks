@@ -15,6 +15,6 @@ public class InfoCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     Company company = getArgument("company");
-    CompanyInfoGui.getInventory(company).open(player);
+    new CompanyInfoGui(company).show(player);
   }
 }

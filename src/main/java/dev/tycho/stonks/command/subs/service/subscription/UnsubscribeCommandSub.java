@@ -31,7 +31,7 @@ public class UnsubscribeCommandSub extends ModularCommandSub {
           } else {
             sendMessage(player, "Error deleting subscription");
           }
-        }).open(player);
+        }).show(player);
 
   }
 }

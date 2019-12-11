@@ -33,7 +33,7 @@ public class CreateCommandSub extends ModularCommandSub {
             createCompany(player, companyName);
           }
         })
-        .open(player);
+        .show(player);
   }
 
 
