@@ -20,9 +20,6 @@ public class HistoryCommandSub extends ModularCommandSub {
       player.sendMessage(ChatColor.RED + "Account not found");
       return;
     }
-    new TransactionHistoryGui.Builder()
-        .account(account)
-        .title("Transaction History")
-        .open(player);
+    new TransactionHistoryGui(account).show(player);
   }
 }
