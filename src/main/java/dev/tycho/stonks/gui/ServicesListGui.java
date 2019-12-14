@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class ServicesListGui extends CollectionGuiBase<Service> {
+public class ServicesListGui extends CollectionGui<Service> {
   private Company company;
 
   public ServicesListGui(Company company, Account account) {

@@ -12,7 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class AccountListGui extends CollectionGuiBase<Account> {
+public class AccountListGui extends CollectionGui<Account> {
   private Company company;
 
   public AccountListGui(Company company) {

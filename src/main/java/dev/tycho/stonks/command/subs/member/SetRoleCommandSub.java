@@ -71,12 +71,6 @@ public class SetRoleCommandSub extends ModularCommandSub {
       sendMessage(player, "That player has never played on the server!");
       return;
     }
-
-    //Find the company they are making the changes in
-    if (company == null) {
-      sendMessage(player, "That company doesn't exist!");
-      return;
-    }
     //Now check both are members
     Member changingMember = company.getMember(player);
     if (changingMember == null) {

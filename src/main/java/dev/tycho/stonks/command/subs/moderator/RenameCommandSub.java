@@ -26,7 +26,7 @@ public class RenameCommandSub extends ModularCommandSub {
               if (c)
                 Repo.getInstance().modifyCompany(company, newName, company.logoMaterial, company.verified, company.hidden);
             })
-            .open(player))
-        .open(player);
+            .show(player))
+        .show(player);
   }
 }

@@ -70,8 +70,8 @@ public class CreateServiceCommandSub extends ModularCommandSub {
             .company(company)
             .accountSelected(
                 account -> createService(player, duration, cost, maxSubs, name, company, account)
-            ).open(player))
-        .open(player);
+            ).show(player))
+        .show(player);
   }
 
   void createService(Player player, double duration, double cost, int maxSubs, String name, Company company, Account account) {

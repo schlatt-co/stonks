@@ -36,7 +36,7 @@ public class InviteCommandSub extends ModularCommandSub {
         .companies(list)
         .title("Select a company to invite to")
         .companySelected((company -> invitePlayerToCompany(player, company, getArgument("player_name"))))
-        .open(player);
+        .show(player);
   }
 
 
@@ -44,10 +44,6 @@ public class InviteCommandSub extends ModularCommandSub {
     Player playerToInviteObject = playerFromName(playerToInvite);
     if (player == null) {
       sendMessage(player, playerToInvite + " has never played on the server before!");
-      return;
-    }
-    if (company == null) {
-      sendMessage(player, "That company doesn't exist");
       return;
     }
     //Make sure player has invite permissions

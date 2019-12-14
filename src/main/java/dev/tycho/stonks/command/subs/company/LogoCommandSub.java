@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.company;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.Repo;
@@ -26,7 +25,7 @@ public class LogoCommandSub extends CommandSub {
         .companies(list)
         .title("Select company logo to change")
         .companySelected((company -> setLogo(player, company)))
-        .open(player);
+        .show(player);
   }
 
   private void setLogo(Player player, Company company) {
@@ -35,12 +34,8 @@ public class LogoCommandSub extends CommandSub {
       sendMessage(player, "You must hold the item you wish to set as the company icon!");
       return;
     }
-    Stonks.newChain()
-        .async(() -> {
-          String newLogoMaterial = itemInHand.getType().name();
-          Repo.getInstance().modifyCompany(company, company.name, newLogoMaterial, company.verified, company.hidden);
-          sendMessage(player, "Company logo updated successfully!");
-        })
-        .execute();
+    String newLogoMaterial = itemInHand.getType().name();
+    Repo.getInstance().modifyCompany(company, company.name, newLogoMaterial, company.verified, company.hidden);
+    sendMessage(player, "Company logo updated successfully!");
   }
 }

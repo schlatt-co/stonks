@@ -27,8 +27,8 @@ public class SetServiceMaxCommandSub extends ModularCommandSub {
             .title("Select a service")
             .serviceSelected(
                 service -> changeServiceMaxSubs(player, getArgument("max_subs"), company, service)
-            ).open(player))
-        .open(player);
+            ).show(player))
+        .show(player);
   }
 
   private void changeServiceMaxSubs(Player player, int maxSubs, Company company, Service service) {

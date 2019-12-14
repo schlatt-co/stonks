@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.AccountListGui;
@@ -16,10 +15,6 @@ public class AccountsCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     Company company = getArgument("company");
-    Stonks.newChain()
-        .asyncFirst(() -> new AccountListGui(company))
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
+    new AccountListGui(company).show(player);
   }
 }

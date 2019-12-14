@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class MemberListGui extends CollectionGuiBase<Member> {
+public class MemberListGui extends CollectionGui<Member> {
 
   private Company company;
 

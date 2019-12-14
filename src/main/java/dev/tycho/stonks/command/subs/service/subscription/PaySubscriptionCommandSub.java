@@ -47,6 +47,6 @@ public class PaySubscriptionCommandSub extends ModularCommandSub {
                 sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
               }
             }
-        ).open(player);
+        ).show(player);
   }
 }

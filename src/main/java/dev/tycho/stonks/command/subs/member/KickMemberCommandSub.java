@@ -39,11 +39,6 @@ public class KickMemberCommandSub extends ModularCommandSub {
       return;
     }
 
-    if (company == null) {
-      sendMessage(player, "Invalid company!");
-      return;
-    }
-
     Member memberToKick = company.getMember(playerToKick);
     if (memberToKick == null) {
       sendMessage(player, "That player isn't part of that company!");

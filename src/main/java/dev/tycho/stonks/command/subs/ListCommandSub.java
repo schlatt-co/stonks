@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.managers.Repo;
@@ -46,8 +45,6 @@ public class ListCommandSub extends CommandSub {
   }
 
   private void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
-    Stonks.newChain()
-        .asyncFirst(() -> {
           Collection<Company> companies;
           switch (options) {
             default:
@@ -69,10 +66,7 @@ public class ListCommandSub extends CommandSub {
               companies = Repo.getInstance().companies().getAllWhere(c -> c.isMember(player));
               break;
           }
-          return new CompanyListGui(companies);
-        })
-        .sync(gui -> gui.show(player))
-        .execute();
+          new CompanyListGui(companies).show(player);
   }
 
   enum CompanyListOptions {

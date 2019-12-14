@@ -33,7 +33,7 @@ public class CreateCommandSub extends ModularCommandSub {
             createCompany(player, companyName);
           }
         })
-        .open(player);
+        .show(player);
   }
 
 
@@ -43,9 +43,6 @@ public class CreateCommandSub extends ModularCommandSub {
       sendMessage(player, "You cannot make a company for another " + Util.convertString(SettingsManager.COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId()))));
       return;
     }
-//    Stonks.newChain()
-//        .async(() -> {
-
     String name = companyName.trim();
 
     if (!name.matches("[0-9a-zA-Z\\s&+]{2,32}")) {
@@ -72,6 +69,5 @@ public class CreateCommandSub extends ModularCommandSub {
     } else {
       sendMessage(player, "Company creation failed");
     }
-//        }).execute();
   }
 }

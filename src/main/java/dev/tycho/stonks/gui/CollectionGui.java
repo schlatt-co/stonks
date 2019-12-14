@@ -5,46 +5,21 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
-import java.util.Collections;
 
-public abstract class CollectionGuiBase<T> implements InventoryProvider {
+public abstract class CollectionGui<T> extends InventoryGui {
   public static InventoryManager inventoryManager;
   private Collection<T> collection;
   private SmartInventory inventory;
 
-  protected CollectionGuiBase(Collection<T> collection, String title) {
+  protected CollectionGui(Collection<T> collection, String title) {
+    super(title);
     this.collection = collection;
-    this.inventory = SmartInventory.builder()
-        .id(title)
-        .provider(this)
-        .manager(inventoryManager)
-        .size(6, 9)
-        .title(title)
-        .build();
-  }
-
-  protected Collection<T> getReadonlyCollection() {
-    return Collections.unmodifiableCollection(collection);
-  }
-
-  public Inventory show(Player player) {
-    return inventory.open(player);
-  }
-
-  void close(Player player) {
-    inventory.close(player);
-  }
-
-  private SmartInventory getInventory() {
-    return inventory;
   }
 
 
@@ -74,10 +49,5 @@ public abstract class CollectionGuiBase<T> implements InventoryProvider {
         e -> getInventory().open(player, pagination.previous().getPage())));
     contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
         e -> getInventory().open(player, pagination.next().getPage())));
-  }
-
-  @Override
-  public void update(Player player, InventoryContents contents) {
-
   }
 }

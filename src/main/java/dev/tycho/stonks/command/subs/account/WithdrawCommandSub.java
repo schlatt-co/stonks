@@ -87,63 +87,60 @@ public class WithdrawCommandSub extends ModularCommandSub {
                 .company(company)
                 .title("Select an account to withdraw from")
                 .accountSelected(acc -> withdrawFromAccount(player, acc, amount))
-                .open(player)))
-        .open(player);
+                .show(player)))
+        .show(player);
   }
 
   public void withdrawFromAccount(Player player, Account account, double amount) {
-    Stonks.newChain()
-        .async(() -> {
-          //We have a valid account
-          //First check they are a member of the company
-          Company company = Repo.getInstance().companies().get(account.companyPk);
-          Member member = company.getMember(player);
-          if (member == null) {
-            sendMessage(player, "You are not a member of the company the account is in!");
-            return;
-          }
-          if (amount < 0) {
-            sendMessage(player, "You cannot withdraw a negative number");
-            return;
-          }
-          IAccountVisitor visitor = new IAccountVisitor() {
-            @Override
-            public void visit(CompanyAccount a) {
-              //With a company account we need to verify they have withdraw permission
-              if (!member.hasManagamentPermission()) {
-                sendMessage(player, "You have insufficient permissions to withdraw money from this account!");
-                return;
-              }
-              if (a.getTotalBalance() < amount) {
-                sendMessage(player, "That account doesn't have enough funds to complete this transaction!");
-                return;
-              }
+    //We have a valid account
+    //First check they are a member of the company
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    Member member = company.getMember(player);
+    if (member == null) {
+      sendMessage(player, "You are not a member of the company the account is in!");
+      return;
+    }
+    if (amount < 0) {
+      sendMessage(player, "You cannot withdraw a negative number");
+      return;
+    }
+    IAccountVisitor visitor = new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        //With a company account we need to verify they have withdraw permission
+        if (!member.hasManagamentPermission()) {
+          sendMessage(player, "You have insufficient permissions to withdraw money from this account!");
+          return;
+        }
+        if (a.getTotalBalance() < amount) {
+          sendMessage(player, "That account doesn't have enough funds to complete this transaction!");
+          return;
+        }
 
-              Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
-              Stonks.economy.depositPlayer(player, amount);
-              sendMessage(player, "Money withdrawn successfully!");
-            }
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, amount);
+        Stonks.economy.depositPlayer(player, amount);
+        sendMessage(player, "Money withdrawn successfully!");
+      }
 
-            @Override
-            public void visit(HoldingsAccount a) {
-              //Check to see if they own a holding in this holdingsaccount
-              Holding h = a.getPlayerHolding(player.getUniqueId());
-              if (h == null) {
-                sendMessage(player, "You do not have a holding in this account!");
-                return;
-              }
+      @Override
+      public void visit(HoldingsAccount a) {
+        //Check to see if they own a holding in this holdingsaccount
+        Holding h = a.getPlayerHolding(player.getUniqueId());
+        if (h == null) {
+          sendMessage(player, "You do not have a holding in this account!");
+          return;
+        }
 
-              if (h.balance < amount) {
-                sendMessage(player, "That holding doesn't have enough funds to complete this transaction!");
-                return;
-              }
+        if (h.balance < amount) {
+          sendMessage(player, "That holding doesn't have enough funds to complete this transaction!");
+          return;
+        }
 
-              Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h, amount);
-              Stonks.economy.depositPlayer(player, amount);
-              sendMessage(player, "Money withdrawn successfully!");
-            }
-          };
-          account.accept(visitor);
-        }).execute();
+        Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h, amount);
+        Stonks.economy.depositPlayer(player, amount);
+        sendMessage(player, "Money withdrawn successfully!");
+      }
+    };
+    account.accept(visitor);
   }
 }

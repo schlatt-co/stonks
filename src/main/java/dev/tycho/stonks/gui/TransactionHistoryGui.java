@@ -11,7 +11,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class TransactionHistoryGui extends CollectionGuiBase<Transaction> {
+public class TransactionHistoryGui extends CollectionGui<Transaction> {
   private Account account;
 
   private TransactionHistoryGui(Account account, String title) {

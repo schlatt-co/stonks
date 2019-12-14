@@ -54,8 +54,8 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
                 .company(company)
                 .title("Select an account")
                 .accountSelected(l -> createHolding(player, l, otherPlayer, share))
-                .open(player)))
-        .open(player);
+                .show(player)))
+        .show(player);
   }
 
   private void createHolding(Player player, Account account, String playerName, double share) {

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllPlayerHoldingsGui extends CollectionGuiBase<HoldingsAccount> {
+public class AllPlayerHoldingsGui extends CollectionGui<HoldingsAccount> {
   private Player player;
 
   public AllPlayerHoldingsGui(Player player) {

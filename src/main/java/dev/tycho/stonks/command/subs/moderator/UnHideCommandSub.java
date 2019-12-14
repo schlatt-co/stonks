@@ -31,7 +31,7 @@ public class UnHideCommandSub extends CommandSub {
               if (c)
                 Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, false);
             })
-            .open(player))
-        .open(player);
+            .show(player))
+        .show(player);
   }
 }

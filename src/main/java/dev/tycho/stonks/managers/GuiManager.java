@@ -17,7 +17,7 @@ public class GuiManager extends SpigotModule {
   //TODO turn these into singletons
   @Override
   public void enable() {
-    CollectionGuiBase.inventoryManager = inventoryManager;
+    CollectionGui.inventoryManager = inventoryManager;
 
     CompanyInfoGui.inventoryManager = inventoryManager;
 
