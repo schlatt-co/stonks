@@ -8,16 +8,17 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ConfirmationGui extends InventoryGui {
-  private Consumer<Boolean> onSelection;
   private List<String> info;
+  private Runnable onYes;
+  private Runnable onNo;
 
   //turn this consumer into two consumers.
-  public ConfirmationGui(Consumer<Boolean> onSelection, String title, List<String> info) {
+  public ConfirmationGui(Runnable onYes, Runnable onNo, String title, List<String> info) {
     super(title);
-    this.onSelection = onSelection;
+    this.onYes = onYes;
+    this.onNo = onNo;
     this.info = info;
   }
 
@@ -26,12 +27,12 @@ public class ConfirmationGui extends InventoryGui {
     contents.set(1, 3, ClickableItem.of(Util.item(Material.GREEN_WOOL, "YES"),
         e -> {
           close(player);
-          onSelection.accept(true);
+          onYes.run();
         }));
     contents.set(1, 5, ClickableItem.of(Util.item(Material.RED_WOOL, "NO"),
         e -> {
           close(player);
-          onSelection.accept(false);
+          onNo.run();
         }));
 
     if (info.size() > 0) {
@@ -47,17 +48,25 @@ public class ConfirmationGui extends InventoryGui {
   public static class Builder {
     private String title = "Confirm";
     private List<String> info = new ArrayList<>();
-    private Consumer<Boolean> onSelected = e -> {
+    private Runnable onYes = () -> {
+    };
+    private Runnable onNo = () -> {
     };
 
     public Builder() {
 
     }
 
-    public ConfirmationGui.Builder onChoiceMade(Consumer<Boolean> onSelected) {
-      this.onSelected = onSelected;
+    public ConfirmationGui.Builder yes(Runnable consumer) {
+      this.onYes = consumer;
       return this;
     }
+
+    public ConfirmationGui.Builder no(Runnable consumer) {
+      this.onNo = consumer;
+      return this;
+    }
+
 
     public ConfirmationGui.Builder title(String title) {
       this.title = title;
@@ -70,7 +79,7 @@ public class ConfirmationGui extends InventoryGui {
     }
 
     public void show(Player player) {
-      new ConfirmationGui(onSelected, title, info).show(player);
+      new ConfirmationGui(onYes, onNo, title, info).show(player);
     }
   }
 

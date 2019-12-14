@@ -34,8 +34,7 @@ public class PaySubscriptionCommandSub extends ModularCommandSub {
 
     new ConfirmationGui.Builder()
         .title("Pay bill of $" + service.cost)
-        .onChoiceMade(c -> {
-              if (!c) return;
+        .yes(() -> {
               if (!Stonks.economy.withdrawPlayer(player, service.cost).transactionSuccess()) {
                 sendMessage(player, "Insufficient funds!");
               } else {

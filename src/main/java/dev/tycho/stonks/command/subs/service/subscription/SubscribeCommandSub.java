@@ -42,8 +42,7 @@ public class SubscribeCommandSub extends ModularCommandSub {
     }
     new ConfirmationGui.Builder()
         .title("Accept first bill of $" + service.cost)
-        .onChoiceMade(c -> {
-              if (!c) return;
+        .yes(() -> {
               //We can now subscribe to the service
               //Setup the subscription
               if (!Stonks.economy.withdrawPlayer(player, service.cost).transactionSuccess()) {

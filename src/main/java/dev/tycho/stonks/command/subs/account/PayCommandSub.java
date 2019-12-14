@@ -82,10 +82,7 @@ public class PayCommandSub extends ModularCommandSub {
             new ConfirmationGui.Builder()
                 .title(company.name + " is unverified")
                 .info(info)
-                .onChoiceMade(
-                    c -> {
-                      if (c) accountSelectorScreen.show(player);
-                    }
+                .yes(() -> accountSelectorScreen.show(player)
                 ).show(player);
           } else {
             accountSelectorScreen.show(player);
