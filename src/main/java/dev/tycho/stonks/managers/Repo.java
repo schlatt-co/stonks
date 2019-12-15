@@ -234,13 +234,13 @@ public class Repo extends SpigotModule {
     ha = holdingsAccountStore.create(ha);
 
     Holding h = new Holding(0, player.getUniqueId(), 0, 1, ha.pk);
-    h = holdingStore.create(h);
+    holdingStore.create(h);
     holdingsAccountStore.refreshRelations(ha.pk);
     companyStore.refreshRelations(company.pk);
     return ha;
   }
 
-  public CompanyAccount createCompanyAccount(Company company, String name, Player player) {
+  public CompanyAccount createCompanyAccount(Company company, String name) {
     CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), 0);
     ca = companyAccountStore.create(ca);
     companyStore.refreshRelations(company.pk);
@@ -262,7 +262,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account renameAccount(Account account, String newName) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.balance);
@@ -284,7 +284,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account payAccount(UUID player, String message, Account account, double amount) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance + amount);

@@ -62,7 +62,7 @@ public class WithdrawCommandSub extends ModularCommandSub {
       //If you are not a manager, or a non-member with a holding then don't remove
       for (Account a : c.accounts) {
         //Is there a holding account for the player
-        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
+        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
           @Override
           public void visit(CompanyAccount a) {
             val = false;
@@ -91,7 +91,7 @@ public class WithdrawCommandSub extends ModularCommandSub {
         .show(player);
   }
 
-  public void withdrawFromAccount(Player player, Account account, double amount) {
+  private void withdrawFromAccount(Player player, Account account, double amount) {
     //We have a valid account
     //First check they are a member of the company
     Company company = Repo.getInstance().companies().get(account.companyPk);

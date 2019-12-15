@@ -85,7 +85,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
         newAccount = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
         break;
       case CompanyAccount:
-        newAccount = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
+        newAccount = Repo.getInstance().createCompanyAccount(company, newAccountName);
         break;
       default:
         //account type not recognised

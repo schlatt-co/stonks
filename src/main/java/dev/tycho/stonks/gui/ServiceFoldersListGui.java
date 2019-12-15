@@ -42,7 +42,7 @@ public class ServiceFoldersListGui extends CollectionGui<Account> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Account account) {
-    ReturningAccountVisitor<Material> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<Material> visitor = new ReturningAccountVisitor<Material>() {
       @Override
       public void visit(CompanyAccount a) {
         val = Material.CHEST;
