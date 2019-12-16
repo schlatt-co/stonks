@@ -5,6 +5,7 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public abstract class InventoryGui implements InventoryProvider {
   public static InventoryManager inventoryManager;
@@ -21,8 +22,8 @@ public abstract class InventoryGui implements InventoryProvider {
             .build();
   }
 
-  public void show(Player player) {
-    inventory.open(player);
+  public Inventory show(Player player) {
+    return inventory.open(player);
   }
 
   void close(Player player) {

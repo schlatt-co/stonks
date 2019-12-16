@@ -1,5 +1,7 @@
 package dev.tycho.stonks;
 
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.MainCommand;
@@ -21,11 +23,14 @@ public class Stonks extends JavaPlugin {
   private static TaskChainFactory taskChainFactory;
   private List<SpigotModule> loadedModules = new ArrayList<>();
 
-//  public static <T> TaskChain<T> newChain() {
-//    return taskChainFactory.newChain();
-//  }
-//  Here for maybe future use
-//  public static <T> TaskChain<T> newSharedChain(String name) { return taskChainFactory.newSharedChain(name); }
+  public static <T> TaskChain<T> newChain() {
+    return taskChainFactory.newChain();
+  }
+
+  // Here for maybe future use
+  public static <T> TaskChain<T> newSharedChain(String name) {
+    return taskChainFactory.newSharedChain(name);
+  }
 
   @Override
   public void onEnable() {
@@ -34,7 +39,7 @@ public class Stonks extends JavaPlugin {
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
-//    taskChainFactory = BukkitTaskChainFactory.create(this);
+    taskChainFactory = BukkitTaskChainFactory.create(this);
     loadedModules.add(new Repo(this));
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));

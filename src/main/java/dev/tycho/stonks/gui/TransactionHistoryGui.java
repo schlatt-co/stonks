@@ -11,11 +11,13 @@ import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 public class TransactionHistoryGui extends CollectionGui<Transaction> {
   private Account account;
 
-  public TransactionHistoryGui(Account account) {
-    super(account.transactions, "Transaction History");
+  public TransactionHistoryGui(Collection<Transaction> transactions, Account account) {
+    super(transactions, "Transaction History");
     this.account = account;
   }
 

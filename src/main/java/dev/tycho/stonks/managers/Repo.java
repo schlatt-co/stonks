@@ -15,10 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
@@ -147,6 +144,42 @@ public class Repo extends SpigotModule {
     });
     return list;
   }
+
+  public Collection<Company> companiesWithWithdrawableAccount(Player player) {
+    List<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
+    //We need a list of all companies with a withdrawable account for this player
+    //Remove companies where the player is not a manager and doesn't have an account
+    //todo remove this messy logic
+    for (int i = list.size() - 1; i >= 0; i--) {
+      boolean remove = true;
+      Company c = list.get(i);
+      Member m = c.getMember(player);
+      if (m != null && m.hasManagamentPermission()) {
+        //If a manager or ceo
+        remove = false;
+      }
+      //If you are not a manager, or a non-member with a holding then don't remove
+      for (Account a : c.accounts) {
+        //Is there a holding account for the player
+        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+          @Override
+          public void visit(CompanyAccount a) {
+            val = false;
+          }
+
+          @Override
+          public void visit(HoldingsAccount a) {
+            val = (a.getPlayerHolding(player.getUniqueId()) != null);
+          }
+        };
+        a.accept(visitor);
+        if (visitor.getRecentVal()) remove = false;
+      }
+      if (remove) list.remove(i);
+    }
+    return list;
+  }
+
 
   public Company companyWithName(String name) {
     return Repo.getInstance().companies().getWhere(c -> c.name.equals(name));
