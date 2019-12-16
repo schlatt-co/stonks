@@ -9,6 +9,7 @@ import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
@@ -44,7 +45,10 @@ public abstract class CollectionGui<T> extends InventoryGui {
     pagination.setItems(items);
     pagination.setItemsPerPage(36);
     pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 0));
-
+    int pageNumber = pagination.getPage() + 1;
+    ItemStack pageIndicator = Util.item(Material.BLACK_STAINED_GLASS_PANE, "Page " + pageNumber);
+    pageIndicator.setAmount(pageNumber);
+    contents.set(5, 4, ClickableItem.empty(pageIndicator));
     contents.set(5, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
         e -> getInventory().open(player, pagination.previous().getPage())));
     contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
