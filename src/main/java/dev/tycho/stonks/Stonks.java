@@ -16,6 +16,7 @@ public class Stonks extends JavaPlugin {
 
   public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
+  public static Migrator migrator;
   private List<SpigotModule> loadedModules = new ArrayList<>();
 
   public static <T> TaskChain<T> newChain() {
@@ -32,11 +33,13 @@ public class Stonks extends JavaPlugin {
       return;
     }
     taskChainFactory = BukkitTaskChainFactory.create(this);
-
-    loadedModules.add(new DatabaseManager(this));
+    DatabaseManager dbManager = new DatabaseManager(this);
+    loadedModules.add(dbManager);
     loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
+
+
 //    loadedModules.add(new SignManager(this));
 
     if (!setupEconomy()) {
@@ -47,12 +50,17 @@ public class Stonks extends JavaPlugin {
       module.onEnable();
     }
 
+    this.migrator = new Migrator(this, dbManager);
+
+
+
     //Schedule the auto-pay services task
 //    BukkitScheduler scheduler = getServer().getScheduler();
 //    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1000L, 6000L);
 
 
     Bukkit.getLogger().info("Loaded!");
+    migrator.migrate();
   }
 
   @Override

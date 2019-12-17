@@ -1,21 +1,28 @@
 package dev.tycho.stonks.command;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.subs.*;
+import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.subs.FeesCommandSub;
+import dev.tycho.stonks.command.subs.HelpCommandSub;
+import dev.tycho.stonks.command.subs.ListCommandSub;
+import dev.tycho.stonks.command.subs.TopCommandSub;
 import dev.tycho.stonks.command.subs.account.*;
 import dev.tycho.stonks.command.subs.company.CreateCommandSub;
-import dev.tycho.stonks.command.subs.FeesCommandSub;
 import dev.tycho.stonks.command.subs.company.InfoCommandSub;
 import dev.tycho.stonks.command.subs.company.InvitesCommandSub;
 import dev.tycho.stonks.command.subs.company.LogoCommandSub;
+import dev.tycho.stonks.command.subs.holding.CreateHoldingCommandSub;
 import dev.tycho.stonks.command.subs.holding.HoldingInfoCommandSub;
 import dev.tycho.stonks.command.subs.holding.MyHoldingsCommandSub;
 import dev.tycho.stonks.command.subs.holding.RemoveHoldingCommandSub;
 import dev.tycho.stonks.command.subs.member.*;
 import dev.tycho.stonks.command.subs.moderator.*;
-import dev.tycho.stonks.command.subs.holding.CreateHoldingCommandSub;
 import dev.tycho.stonks.command.subs.service.*;
 import dev.tycho.stonks.command.subs.service.subscription.*;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class MainCommand extends CommandBase {
 
@@ -61,5 +68,16 @@ public class MainCommand extends CommandBase {
     addSubCommand("subscribers", new SubscribersCommandSub());
     addSubCommand("subscriptions", new SubscriptionsCommandSub());
     addSubCommand("unsubscribe", new UnsubscribeCommandSub());
+    addSubCommand("migrate", new CommandSub() {
+      @Override
+      public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
+        return null;
+      }
+
+      @Override
+      public void onCommand(Player player, String alias, String[] args) {
+
+      }
+    });
   }
 }
