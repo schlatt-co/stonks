@@ -74,7 +74,7 @@ public class PayCommandSub extends ModularCommandSub {
           for (Member m : company.members) {
             if (m.role.equals(CEO)) {
               OfflinePlayer p = Bukkit.getOfflinePlayer(m.playerUUID);
-              if (p != null) ceoName = p.getName();
+              ceoName = p.getName();
             }
           }
           info.add(ChatColor.GOLD + ceoName);
@@ -82,44 +82,38 @@ public class PayCommandSub extends ModularCommandSub {
             new ConfirmationGui.Builder()
                 .title(company.name + " is unverified")
                 .info(info)
-                .onChoiceMade(
-                    c -> {
-                      if (c) accountSelectorScreen.open(player);
-                    }
-                ).open(player);
+                .yes(() -> accountSelectorScreen.show(player)
+                ).show(player);
           } else {
-            accountSelectorScreen.open(player);
+            accountSelectorScreen.show(player);
           }
         }))
-        .open(player);
+        .show(player);
   }
 
-  public void payAccount(Player sender, Account account, String message, double amount) {
-    Stonks.newChain()
-        .async(() -> {
-          if (amount < 0) {
-            sendMessage(sender, "You cannot pay a negative number");
-            return;
-          }
+  private void payAccount(Player sender, Account account, String message, double amount) {
+    if (amount < 0) {
+      sendMessage(sender, "You cannot pay a negative number");
+      return;
+    }
 
-          if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
-            sendMessage(sender, "Insufficient funds!");
-            return;
-          }
-          Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
-          Company company = Repo.getInstance().companies().get(account.companyPk);
-          //Tell the user we paid the account
-          sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
+    if (!Stonks.economy.withdrawPlayer(sender, amount).transactionSuccess()) {
+      sendMessage(sender, "Insufficient funds!");
+      return;
+    }
+    Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    //Tell the user we paid the account
+    sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
 
-          //Send a message to all managers in the company that are online that the company got paid
-          for (Member member : company.members) {
-            if (member.hasManagamentPermission()) {
-              Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-              if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
-                sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
-              }
-            }
-          }
-        }).execute();
+    //Send a message to all managers in the company that are online that the company got paid
+    for (Member member : company.members) {
+      if (member.hasManagamentPermission()) {
+        Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
+        if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
+          sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
+        }
+      }
+    }
   }
 }

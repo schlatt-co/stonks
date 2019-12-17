@@ -27,11 +27,8 @@ public class UnVerifyCommandSub extends CommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> c.verified))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Unverify " + company.name + "?")
-            .onChoiceMade(c -> {
-              if (c)
-                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, false, company.hidden);
-            })
-            .open(player))
-        .open(player);
+            .yes(() -> Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, false, company.hidden))
+            .show(player))
+        .show(player);
   }
 }

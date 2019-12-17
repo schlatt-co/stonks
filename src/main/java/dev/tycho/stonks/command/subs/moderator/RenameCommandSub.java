@@ -22,11 +22,9 @@ public class RenameCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAll())
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Rename " + company.name + " to" + newName + "?")
-            .onChoiceMade(c -> {
-              if (c)
-                Repo.getInstance().modifyCompany(company, newName, company.logoMaterial, company.verified, company.hidden);
-            })
-            .open(player))
-        .open(player);
+            .yes(() ->
+                Repo.getInstance().modifyCompany(company, newName, company.logoMaterial, company.verified, company.hidden))
+            .show(player))
+        .show(player);
   }
 }

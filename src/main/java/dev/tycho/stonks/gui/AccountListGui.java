@@ -12,7 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class AccountListGui extends CollectionGuiBase<Account> {
+public class AccountListGui extends CollectionGui<Account> {
   private Company company;
 
   public AccountListGui(Company company) {
@@ -28,7 +28,7 @@ public class AccountListGui extends CollectionGuiBase<Account> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Account obj) {
-    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<ClickableItem>() {
       @Override
       public void visit(CompanyAccount a) {
         val = ClickableItem.of(

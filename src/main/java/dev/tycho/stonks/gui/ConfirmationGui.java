@@ -2,50 +2,37 @@ package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
-import fr.minuskube.inv.InventoryManager;
-import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class ConfirmationGui implements InventoryProvider {
-
-  public static InventoryManager inventoryManager;
-
-  private SmartInventory inventory;
-  private Consumer<Boolean> onSelection;
+public class ConfirmationGui extends InventoryGui {
   private List<String> info;
+  private Runnable onYes;
+  private Runnable onNo;
 
   //turn this consumer into two consumers.
-  public ConfirmationGui(Consumer<Boolean> onSelection, String title, List<String> info, Player player) {
-    this.onSelection = onSelection;
+  public ConfirmationGui(Runnable onYes, Runnable onNo, String title, List<String> info) {
+    super(title);
+    this.onYes = onYes;
+    this.onNo = onNo;
     this.info = info;
-    this.inventory = SmartInventory.builder()
-        .id("ConfirmationGui")
-        .provider(this)
-        .manager(inventoryManager)
-        .size(3, 9)
-        .title(title)
-        .build();
-    inventory.open(player);
   }
 
   @Override
   public void init(Player player, InventoryContents contents) {
     contents.set(1, 3, ClickableItem.of(Util.item(Material.GREEN_WOOL, "YES"),
         e -> {
-          inventory.close(player);
-          onSelection.accept(true);
+          close(player);
+          onYes.run();
         }));
     contents.set(1, 5, ClickableItem.of(Util.item(Material.RED_WOOL, "NO"),
         e -> {
-          inventory.close(player);
-          onSelection.accept(false);
+          close(player);
+          onNo.run();
         }));
 
     if (info.size() > 0) {
@@ -61,17 +48,25 @@ public class ConfirmationGui implements InventoryProvider {
   public static class Builder {
     private String title = "Confirm";
     private List<String> info = new ArrayList<>();
-    private Consumer<Boolean> onSelected = e -> {
+    private Runnable onYes = () -> {
+    };
+    private Runnable onNo = () -> {
     };
 
     public Builder() {
 
     }
 
-    public ConfirmationGui.Builder onChoiceMade(Consumer<Boolean> onSelected) {
-      this.onSelected = onSelected;
+    public ConfirmationGui.Builder yes(Runnable consumer) {
+      this.onYes = consumer;
       return this;
     }
+
+    public ConfirmationGui.Builder no(Runnable consumer) {
+      this.onNo = consumer;
+      return this;
+    }
+
 
     public ConfirmationGui.Builder title(String title) {
       this.title = title;
@@ -83,8 +78,8 @@ public class ConfirmationGui implements InventoryProvider {
       return this;
     }
 
-    public ConfirmationGui open(Player player) {
-      return new ConfirmationGui(onSelected, title, info, player);
+    public void show(Player player) {
+      new ConfirmationGui(onYes, onNo, title, info).show(player);
     }
   }
 

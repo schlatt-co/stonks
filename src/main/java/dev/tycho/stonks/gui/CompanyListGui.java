@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class CompanyListGui extends CollectionGuiBase<Company> {
+public class CompanyListGui extends CollectionGui<Company> {
   public CompanyListGui(Collection<Company> companies) {
     super(companies, "Company List");
   }
@@ -26,7 +26,6 @@ public class CompanyListGui extends CollectionGuiBase<Company> {
   protected ClickableItem itemProvider(Player player, Company obj) {
     return ClickableItem.of(ItemInfoHelper.companyDisplayItem(obj),
         e -> {
-          CompanyInfoGui.getInventory(obj).open(player);
           player.performCommand("stonks info " + obj.name);
         });
   }

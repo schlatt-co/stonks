@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class CompanySelectorGui extends CollectionGuiBase<Company> {
+public class CompanySelectorGui extends CollectionGui<Company> {
   private Consumer<Company> onCompanySelected;
 
   private CompanySelectorGui(Collection<Company> companies, String title, Consumer<Company> onCompanySelected) {
@@ -55,7 +55,7 @@ public class CompanySelectorGui extends CollectionGuiBase<Company> {
       return this;
     }
 
-    public CompanySelectorGui open(Player player) {
+    public CompanySelectorGui show(Player player) {
       CompanySelectorGui companySelectorGui = new CompanySelectorGui(companies, title, onCompanySelected);
       companySelectorGui.show(player);
       return companySelectorGui;

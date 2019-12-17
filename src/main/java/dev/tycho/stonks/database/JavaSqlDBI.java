@@ -16,7 +16,7 @@ public abstract class JavaSqlDBI<T extends Entity> implements DatabaseInterface<
     return uuid == null ? null : uuid.toString();
   }
 
-  protected UUID uuidFromString(String string) {
+  public static UUID uuidFromString(String string) {
     if (string == null) {
       return null;
     }

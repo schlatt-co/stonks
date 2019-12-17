@@ -27,11 +27,8 @@ public class UnHideCommandSub extends CommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Unhide " + company.name + "?")
-            .onChoiceMade(c -> {
-              if (c)
-                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, false);
-            })
-            .open(player))
-        .open(player);
+            .yes(() -> Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, false))
+            .show(player))
+        .show(player);
   }
 }

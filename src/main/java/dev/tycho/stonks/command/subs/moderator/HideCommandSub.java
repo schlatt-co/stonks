@@ -27,11 +27,10 @@ public class HideCommandSub extends CommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Hide " + company.name + "?")
-            .onChoiceMade(c -> {
-              if (c)
-                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true);
-            })
-            .open(player))
-        .open(player);
+            .yes(() ->
+                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true)
+            )
+            .show(player))
+        .show(player);
   }
 }

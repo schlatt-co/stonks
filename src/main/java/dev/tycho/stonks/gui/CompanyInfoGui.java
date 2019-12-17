@@ -4,30 +4,19 @@ import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
-import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class CompanyInfoGui implements InventoryProvider {
+public class CompanyInfoGui extends InventoryGui {
 
   public static InventoryManager inventoryManager;
 
   private Company company;
 
   public CompanyInfoGui(Company company) {
+    super(company.name);
     this.company = company;
-  }
-
-  public static SmartInventory getInventory(Company company) {
-    return SmartInventory.builder()
-        .id("companyInfo")
-        .provider(new CompanyInfoGui(company))
-        .manager(inventoryManager)
-        .size(5, 9)
-        .title(company.name)
-        .build();
   }
 
   @Override
@@ -44,11 +33,6 @@ public class CompanyInfoGui implements InventoryProvider {
         e -> player.performCommand("stonks accounts " + company.name)));
     contents.set(2, 5, ClickableItem.of(Util.item(Material.BOOKSHELF, "Services"),
         e -> player.performCommand("stonks servicefolders " + company.name)));
-
-  }
-
-  @Override
-  public void update(Player player, InventoryContents contents) {
 
   }
 }

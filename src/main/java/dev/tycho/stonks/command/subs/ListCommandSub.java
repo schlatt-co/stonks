@@ -8,7 +8,8 @@ import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ListCommandSub extends CommandSub {
@@ -41,6 +42,8 @@ public class ListCommandSub extends CommandSub {
           return;
       }
     }
+
+
     //default to not hidden
     openCompanyList(player, CompanyListOptions.getDefault());
   }
@@ -48,29 +51,31 @@ public class ListCommandSub extends CommandSub {
   private void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
     Stonks.newChain()
         .asyncFirst(() -> {
-          Collection<Company> companies;
+          List<Company> companies;
           switch (options) {
             default:
             case ALL:
-              companies = Repo.getInstance().companies().getAll();
+              companies = new ArrayList<>(Repo.getInstance().companies().getAll());
               break;
             case NOT_HIDDEN_OR_MEMBER:
-              companies = Repo.getInstance().companies().getAllWhere(
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(
                   c ->
                       !c.hidden ||
                           c.isMember(
                               player
-                          ));
+                          )));
               break;
             case VERIFIED:
-              companies = Repo.getInstance().companies().getAllWhere(c -> c.verified);
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c -> c.verified));
               break;
             case MEMBER_OF:
-              companies = Repo.getInstance().companies().getAllWhere(c -> c.isMember(player));
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c -> c.isMember(player)));
               break;
           }
+          companies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
           return new CompanyListGui(companies);
         })
+        .abortIfNull()
         .sync(gui -> gui.show(player))
         .execute();
   }

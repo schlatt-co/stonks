@@ -30,7 +30,6 @@ public class SubscribeCommandSub extends ModularCommandSub {
 //        ).open(player);
   }
 
-
   private void subscribe(Player player, Service service, boolean autoPay) {
     if (service.maxSubscribers > 0 && service.subscriptions.size() >= service.maxSubscribers) {
       sendMessage(player, "That service has the maximum number of subscriptions");
@@ -43,8 +42,7 @@ public class SubscribeCommandSub extends ModularCommandSub {
     }
     new ConfirmationGui.Builder()
         .title("Accept first bill of $" + service.cost)
-        .onChoiceMade(c -> {
-              if (!c) return;
+        .yes(() -> {
               //We can now subscribe to the service
               //Setup the subscription
               if (!Stonks.economy.withdrawPlayer(player, service.cost).transactionSuccess()) {
@@ -64,6 +62,6 @@ public class SubscribeCommandSub extends ModularCommandSub {
                 }
               }
             }
-        ).open(player);
+        ).show(player);
   }
 }

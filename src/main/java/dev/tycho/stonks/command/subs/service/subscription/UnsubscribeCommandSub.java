@@ -24,14 +24,14 @@ public class UnsubscribeCommandSub extends ModularCommandSub {
       return;
     }
     new ConfirmationGui.Builder().title("Unsubscribe from " + service.name + "?")
-        .onChoiceMade(c -> {
-          if (!c) return;
+        .yes(() -> {
           if (Repo.getInstance().deleteSubscription(subscription, service)) {
             sendMessage(player, "You have unsubscribed from " + service.name);
           } else {
             sendMessage(player, "Error deleting subscription");
           }
-        }).open(player);
+        })
+        .show(player);
 
   }
 }

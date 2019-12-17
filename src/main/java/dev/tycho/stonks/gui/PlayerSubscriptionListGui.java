@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class PlayerSubscriptionListGui extends CollectionGuiBase<Subscription> {
+public class PlayerSubscriptionListGui extends CollectionGui<Subscription> {
 
   public PlayerSubscriptionListGui(Collection<Subscription> subscriptions) {
     super(subscriptions, "Your Subscriptions");

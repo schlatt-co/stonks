@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.service;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.ServiceFoldersListGui;
@@ -15,10 +14,6 @@ public class ServiceFoldersCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     Company company = getArgument("company");
-    Stonks.newChain()
-        .asyncFirst(() -> new ServiceFoldersListGui(company))
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
+    new ServiceFoldersListGui(company).show(player);
   }
 }

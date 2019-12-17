@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 
-public class SubscriberListGui extends CollectionGuiBase<Subscription> {
+public class SubscriberListGui extends CollectionGui<Subscription> {
 
   private Service service;
 

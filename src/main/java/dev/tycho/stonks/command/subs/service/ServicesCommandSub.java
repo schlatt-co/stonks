@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.service;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
 import dev.tycho.stonks.gui.ServicesListGui;
@@ -17,11 +16,6 @@ public class ServicesCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     Account account = getArgument("account");
-
-    Stonks.newChain()
-        .asyncFirst(() -> new ServicesListGui(Repo.getInstance().companies().get(account.companyPk), account))
-        .abortIfNull()
-        .sync(gui -> gui.show(player))
-        .execute();
+    new ServicesListGui(Repo.getInstance().companies().get(account.companyPk), account).show(player);
   }
 }

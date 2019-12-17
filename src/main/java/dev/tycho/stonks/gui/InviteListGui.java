@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class InviteListGui extends CollectionGuiBase<Member> {
+public class InviteListGui extends CollectionGui<Member> {
   public InviteListGui(Collection<Member> invites) {
     super(invites, "Invites Inbox");
   }
