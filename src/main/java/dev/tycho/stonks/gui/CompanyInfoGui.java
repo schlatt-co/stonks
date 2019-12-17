@@ -15,7 +15,7 @@ public class CompanyInfoGui extends InventoryGui {
   private Company company;
 
   public CompanyInfoGui(Company company) {
-    super(company.name);
+    super(company.name, 5);
     this.company = company;
   }
 

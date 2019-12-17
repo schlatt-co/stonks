@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 public class AccountTypeSelectorGui extends InventoryGui {
   private Consumer<AccountType> onTypeSelected;
 
-  public AccountTypeSelectorGui(Consumer<AccountType> onTypeSelected, String title) {
-    super(title);
+  private AccountTypeSelectorGui(Consumer<AccountType> onTypeSelected, String title) {
+    super(title, 3);
     this.onTypeSelected = onTypeSelected;
   }
 

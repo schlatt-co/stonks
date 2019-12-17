@@ -25,17 +25,15 @@ public class Util {
   public static ItemStack item(Material material, String name, List<String> lore) {
     ItemStack itemStack = new ItemStack(material);
     ItemMeta itemMeta = itemStack.getItemMeta();
-    assert itemMeta != null;
-    itemMeta.setDisplayName(ChatColor.RESET + name);
-    List<String> lores = new ArrayList<>();
-    for (String curLore : lore) {
-      lores.add(ChatColor.RESET + curLore);
+    if (itemMeta != null) {
+      itemMeta.setDisplayName(ChatColor.RESET + name);
+      List<String> lores = new ArrayList<>();
+      for (String curLore : lore) {
+        lores.add(ChatColor.RESET + curLore);
+      }
+      itemMeta.setLore(lores);
+      itemStack.setItemMeta(itemMeta);
     }
-    itemMeta.setLore(lores);
-//    if (shine) {
-//      itemMeta.addEnchant(DatabaseManager.glowEnchantment, 1, true);
-//    }
-    itemStack.setItemMeta(itemMeta);
     return itemStack;
   }
 

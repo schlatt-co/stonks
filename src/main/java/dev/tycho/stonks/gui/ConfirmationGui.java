@@ -16,7 +16,7 @@ public class ConfirmationGui extends InventoryGui {
 
   //turn this consumer into two consumers.
   public ConfirmationGui(Runnable onYes, Runnable onNo, String title, List<String> info) {
-    super(title);
+    super(title, 3);
     this.onYes = onYes;
     this.onNo = onNo;
     this.info = info;
