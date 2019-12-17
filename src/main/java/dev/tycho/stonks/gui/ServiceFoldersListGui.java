@@ -43,7 +43,7 @@ public class ServiceFoldersListGui extends CollectionGuiBase<AccountLink> {
   @Override
   protected ClickableItem itemProvider(Player player, AccountLink obj) {
     Account account = obj.getAccount();
-    ReturningAccountVisitor<Material> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<Material> visitor = new ReturningAccountVisitor<Material>() {
       @Override
       public void visit(CompanyAccount a) {
         val = Material.CHEST;

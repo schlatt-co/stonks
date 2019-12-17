@@ -11,7 +11,7 @@ public abstract class SpigotModule implements Listener {
   final Stonks plugin;
   private final String moduleName;
 
-  SpigotModule(String moduleName, Stonks plugin) {
+  public SpigotModule(String moduleName, Stonks plugin) {
     this.moduleName = moduleName;
     this.plugin = plugin;
   }

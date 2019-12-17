@@ -38,7 +38,7 @@ public class ItemInfoHelper {
 
   static ItemStack accountDisplayItem(AccountLink link, Player player, String... extraLore) {
 
-    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<ItemStack>() {
       @Override
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();

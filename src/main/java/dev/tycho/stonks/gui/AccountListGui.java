@@ -26,7 +26,7 @@ public class AccountListGui extends CollectionGuiBase<AccountLink> {
   @Override
   protected ClickableItem itemProvider(Player player, AccountLink obj) {
     Account account = obj.getAccount();
-    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<ClickableItem>() {
       @Override
       public void visit(CompanyAccount a) {
         val = ClickableItem.of(

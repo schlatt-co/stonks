@@ -65,7 +65,7 @@ public class WithdrawCommandSub extends CommandSub {
       //If you are not a manager, or a non-member with a holding then don't remove
       for (AccountLink a : c.getAccounts()) {
         //Is there a holding account for the player
-        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
+        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
           @Override
           public void visit(CompanyAccount a) {
             val = false;
