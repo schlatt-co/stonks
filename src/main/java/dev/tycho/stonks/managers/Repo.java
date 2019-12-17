@@ -4,6 +4,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.database.AsyncSaveStore;
 import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.database.TransactionStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -30,7 +31,7 @@ public class Repo extends SpigotModule {
   private DatabaseStore<Member> memberStore;
   private DatabaseStore<Service> serviceStore;
   private DatabaseStore<Subscription> subscriptionStore;
-  private DatabaseStore<Transaction> transactionStore;
+  private TransactionStore transactionStore;
 
   public Repo(Stonks stonks) {
     super("Database Manager", stonks);
@@ -106,16 +107,17 @@ public class Repo extends SpigotModule {
     memberStore = new AsyncSaveStore<>(Member::new);
     serviceStore = new AsyncSaveStore<>(Service::new);
     subscriptionStore = new AsyncSaveStore<>(Subscription::new);
-    transactionStore = new AsyncSaveStore<>(Transaction::new);
+    transactionStore = new TransactionStore(conn, new TransactionDBI(conn));
+    transactionStore.createTable();
+
 
     companyStore.setDbi(new CompanyDBI(conn, memberStore, companyAccountStore, holdingsAccountStore));
-    companyAccountStore.setDbi(new CompanyAccountDBI(conn, transactionStore, serviceStore));
-    holdingsAccountStore.setDbi(new HoldingsAccountDBI(conn, transactionStore, serviceStore, holdingStore));
+    companyAccountStore.setDbi(new CompanyAccountDBI(conn, serviceStore));
+    holdingsAccountStore.setDbi(new HoldingsAccountDBI(conn, serviceStore, holdingStore));
     holdingStore.setDbi(new HoldingDBI(conn));
     memberStore.setDbi(new MemberDBI(conn));
     serviceStore.setDbi(new ServiceDBI(conn, subscriptionStore));
     subscriptionStore.setDbi(new SubscriptionDBI(conn));
-    transactionStore.setDbi(new TransactionDBI(conn));
 
     repopulateAll();
   }
@@ -124,7 +126,6 @@ public class Repo extends SpigotModule {
   public void repopulateAll() {
     subscriptionStore.populate();
     serviceStore.populate();
-    transactionStore.populate();
     companyAccountStore.populate();
     holdingStore.populate();
     holdingsAccountStore.populate();
@@ -210,7 +211,7 @@ public class Repo extends SpigotModule {
     c = companyStore.create(c);
 
     Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
-    ceo = memberStore.create(ceo);
+    memberStore.create(ceo);
     companyStore.refreshRelations(c.pk);
     return c;
   }
@@ -250,20 +251,16 @@ public class Repo extends SpigotModule {
     return memberStore.getAllWhere(member -> !member.acceptedInvite && member.playerUUID.equals(player.getUniqueId()));
   }
 
-  public Transaction createTransaction(UUID player, Account account, String message, double amount) {
+  public void createTransaction(UUID player, Account account, String message, double amount) {
     //Create the new transaction
     Transaction t = new Transaction(0, account.pk, player, message, amount,
         new Timestamp(System.currentTimeMillis()));
-    t = transactionStore.create(t);
-    //Refresh the respective account object
-    refreshAccount(account);
-    //Update the company for the account we just updated
-    companyStore.refreshRelations(account.companyPk);
-    return t;
+    transactionStore.create(t);
+    //No refreshes are needed since no entities have a collection of transactions
   }
 
   public HoldingsAccount createHoldingsAccount(Company company, String name, Player player) {
-    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    HoldingsAccount ha = new HoldingsAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>());
     ha = holdingsAccountStore.create(ha);
 
     Holding h = new Holding(0, player.getUniqueId(), 0, 1, ha.pk);
@@ -274,7 +271,7 @@ public class Repo extends SpigotModule {
   }
 
   public CompanyAccount createCompanyAccount(Company company, String name) {
-    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), new ArrayList<>(), 0);
+    CompanyAccount ca = new CompanyAccount(0, name, UUID.randomUUID(), company.pk, new ArrayList<>(), 0);
     ca = companyAccountStore.create(ca);
     companyStore.refreshRelations(company.pk);
     return ca;
@@ -298,14 +295,14 @@ public class Repo extends SpigotModule {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.balance);
+        CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.services, a.balance);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, newName, a.uuid, a.companyPk, a.services, a.holdings);
         holdingsAccountStore.save(ha);
         val = ha;
       }
@@ -320,14 +317,14 @@ public class Repo extends SpigotModule {
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
       @Override
       public void visit(CompanyAccount a) {
-        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance + amount);
+        CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.balance + amount);
         companyAccountStore.save(ca);
         val = ca;
       }
 
       @Override
       public void visit(HoldingsAccount a) {
-        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.holdings);
+        HoldingsAccount ha = new HoldingsAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.holdings);
         double totalShare = ha.getTotalShare();
         //Add money proportionally to all holdings
         for (Holding h : ha.holdings) {
@@ -354,7 +351,7 @@ public class Repo extends SpigotModule {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
     }
-    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.transactions, a.services, a.balance - amount);
+    CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.balance - amount);
     companyAccountStore.save(ca);
     //Create a transaction log too
     createTransaction(player, a, "withdraw", -amount);
@@ -473,6 +470,10 @@ public class Repo extends SpigotModule {
 
   public Store<Subscription> subscriptions() {
     return subscriptionStore;
+  }
+
+  public TransactionStore transactions() {
+    return transactionStore;
   }
 
 }

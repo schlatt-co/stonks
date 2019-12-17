@@ -4,6 +4,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
 import dev.tycho.stonks.gui.TransactionHistoryGui;
+import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.logging.Transaction;
 import org.bukkit.ChatColor;
@@ -27,10 +28,11 @@ public class HistoryCommandSub extends ModularCommandSub {
     }
 
     Stonks.newChain().asyncFirst(() -> {
-      List<Transaction> transactions = new ArrayList<>(account.transactions);
+      List<Transaction> transactions = new ArrayList<>(Repo.getInstance().transactions().getTransactionsForAccount(account));
       transactions.sort((a, b) -> b.timestamp.compareTo(a.timestamp));
       return new TransactionHistoryGui(transactions, account);
-    }).abortIfNull()
+    })
+        .abortIfNull()
         .sync(gui -> gui.show(player))
         .execute();
   }
