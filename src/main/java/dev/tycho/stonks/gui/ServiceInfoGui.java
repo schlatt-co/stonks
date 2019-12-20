@@ -13,7 +13,7 @@ public class ServiceInfoGui extends InventoryGui {
   private Account account;
 
   public ServiceInfoGui(Service service, Account account) {
-    super(service.name + " Info");
+    super(service.name + " Info", 5);
     this.service = service;
     this.account = account;
   }

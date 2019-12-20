@@ -1,5 +1,6 @@
 package dev.tycho.stonks.command.subs;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.managers.Repo;
@@ -7,7 +8,8 @@ import dev.tycho.stonks.model.core.Company;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ListCommandSub extends CommandSub {
@@ -40,33 +42,42 @@ public class ListCommandSub extends CommandSub {
           return;
       }
     }
+
+
     //default to not hidden
     openCompanyList(player, CompanyListOptions.getDefault());
   }
 
   private void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
-          Collection<Company> companies;
+    Stonks.newChain()
+        .asyncFirst(() -> {
+          List<Company> companies;
           switch (options) {
             default:
             case ALL:
-              companies = Repo.getInstance().companies().getAll();
+              companies = new ArrayList<>(Repo.getInstance().companies().getAll());
               break;
             case NOT_HIDDEN_OR_MEMBER:
-              companies = Repo.getInstance().companies().getAllWhere(
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(
                   c ->
                       !c.hidden ||
                           c.isMember(
                               player
-                          ));
+                          )));
               break;
             case VERIFIED:
-              companies = Repo.getInstance().companies().getAllWhere(c -> c.verified);
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c -> c.verified));
               break;
             case MEMBER_OF:
-              companies = Repo.getInstance().companies().getAllWhere(c -> c.isMember(player));
+              companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c -> c.isMember(player)));
               break;
           }
-          new CompanyListGui(companies).show(player);
+          companies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
+          return new CompanyListGui(companies);
+        })
+        .abortIfNull()
+        .sync(gui -> gui.show(player))
+        .execute();
   }
 
   enum CompanyListOptions {

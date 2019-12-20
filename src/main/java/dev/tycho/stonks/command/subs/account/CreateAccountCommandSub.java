@@ -38,9 +38,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
                   .companies(list)
                   .companySelected(company -> new ConfirmationGui.Builder()
                       .title("Accept creation fee?")
-                      .onChoiceMade(b -> {
-                        if (b) createAccount(player, company, accountName, type);
-                      })
+                      .yes(() -> createAccount(player, company, accountName, type))
                       .show(player))
                   .show(player);
             }
@@ -87,7 +85,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
         newAccount = Repo.getInstance().createHoldingsAccount(company, newAccountName, player);
         break;
       case CompanyAccount:
-        newAccount = Repo.getInstance().createCompanyAccount(company, newAccountName, player);
+        newAccount = Repo.getInstance().createCompanyAccount(company, newAccountName);
         break;
       default:
         //account type not recognised

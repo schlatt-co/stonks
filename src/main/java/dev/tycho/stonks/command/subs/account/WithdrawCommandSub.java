@@ -9,12 +9,10 @@ import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
-import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,40 +45,10 @@ public class WithdrawCommandSub extends ModularCommandSub {
       withdrawFromAccount(player, account, amount);
       return;
     }
-    List<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
-    //We need a list of all companies with a withdrawable account for this player
-    //Remove companies where the player is not a manager and doesn't have an account
-    //todo remove this messy logic
-    for (int i = list.size() - 1; i >= 0; i--) {
-      boolean remove = true;
-      Company c = list.get(i);
-      Member m = c.getMember(player);
-      if (m != null && m.hasManagamentPermission()) {
-        //If a manager or ceo
-        remove = false;
-      }
-      //If you are not a manager, or a non-member with a holding then don't remove
-      for (Account a : c.accounts) {
-        //Is there a holding account for the player
-        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
-          @Override
-          public void visit(CompanyAccount a) {
-            val = false;
-          }
 
-          @Override
-          public void visit(HoldingsAccount a) {
-            val = (a.getPlayerHolding(player.getUniqueId()) != null);
-          }
-        };
-        a.accept(visitor);
-        if (visitor.getRecentVal()) remove = false;
-      }
-      if (remove) list.remove(i);
-    }
 
     new CompanySelectorGui.Builder()
-        .companies(list)
+        .companies(Repo.getInstance().companiesWithWithdrawableAccount(player))
         .title("Select a company to withdraw from")
         .companySelected((company ->
             new AccountSelectorGui.Builder()
@@ -91,7 +59,7 @@ public class WithdrawCommandSub extends ModularCommandSub {
         .show(player);
   }
 
-  public void withdrawFromAccount(Player player, Account account, double amount) {
+  protected void withdrawFromAccount(Player player, Account account, double amount) {
     //We have a valid account
     //First check they are a member of the company
     Company company = Repo.getInstance().companies().get(account.companyPk);

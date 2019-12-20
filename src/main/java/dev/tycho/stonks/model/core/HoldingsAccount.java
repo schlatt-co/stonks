@@ -1,7 +1,6 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
-import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 
 import java.util.ArrayList;
@@ -13,8 +12,8 @@ public class HoldingsAccount extends Account {
   public final Collection<Holding> holdings;
 
   public HoldingsAccount(int pk, String name, UUID uuid, int companyPk, boolean profitAccount,
-                         Collection<Transaction> transactionHistory, Collection<Service> services, Collection<Holding> holdings) {
-    super(pk, name, uuid, companyPk, profitAccount, transactionHistory, services);
+                         Collection<Service> services, Collection<Holding> holdings) {
+    super(pk, name, uuid, companyPk, profitAccount, services);
     this.holdings = holdings;
   }
 

@@ -28,12 +28,8 @@ public class CreateCommandSub extends ModularCommandSub {
     String companyName = getArgument("company_name");
     new ConfirmationGui.Builder()
         .title("Accept $" + CREATION_FEE + " creation fee?")
-        .onChoiceMade(aBoolean -> {
-          if (aBoolean) {
-            createCompany(player, companyName);
-          }
-        })
-        .show(player);
+        .yes(() ->
+            createCompany(player, companyName)).show(player);
   }
 
 

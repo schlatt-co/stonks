@@ -27,10 +27,7 @@ public class VerifyCommandSub extends CommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.verified))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Verify " + company.name + "?")
-            .onChoiceMade(c -> {
-              if (c)
-                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden);
-            })
+            .yes(() -> Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden))
             .show(player))
         .show(player);
   }

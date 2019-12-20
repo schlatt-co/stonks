@@ -9,6 +9,7 @@ import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
@@ -18,7 +19,7 @@ public abstract class CollectionGui<T> extends InventoryGui {
   private SmartInventory inventory;
 
   protected CollectionGui(Collection<T> collection, String title) {
-    super(title);
+    super(title, 6);
     this.collection = collection;
   }
 
@@ -41,13 +42,31 @@ public abstract class CollectionGui<T> extends InventoryGui {
       items[i] = itemProvider(player, obj);
       i++;
     }
-    pagination.setItems(items);
+
+    if (items.length > 0) {
+      pagination.setItems(items);
+    } else {
+      pagination.setItems(ClickableItem.empty(Util.item(Material.COBWEB, "No items")));
+    }
+
     pagination.setItemsPerPage(36);
     pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 0));
-
-    contents.set(5, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
-        e -> getInventory().open(player, pagination.previous().getPage())));
-    contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
-        e -> getInventory().open(player, pagination.next().getPage())));
+    int pageNumber = pagination.getPage() + 1;
+    ItemStack pageIndicator = Util.item(Material.BLACK_STAINED_GLASS_PANE, "Page " + pageNumber);
+    pageIndicator.setAmount(pageNumber);
+    contents.set(5, 4, ClickableItem.empty(pageIndicator));
+    //Add pagination arrows unless we only have one page
+    if (pagination.isFirst()) {
+      if (!pagination.isLast()) contents.set(5, 3, ClickableItem.empty(Util.item(Material.AIR, " ")));
+    } else {
+      contents.set(5, 3, ClickableItem.of(Util.item(Material.ARROW, "Previous page"),
+          e -> getInventory().open(player, pagination.previous().getPage())));
+    }
+    if (pagination.isLast()) {
+      if (!pagination.isFirst()) contents.set(5, 5, ClickableItem.empty(Util.item(Material.AIR, " ")));
+    } else {
+      contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
+          e -> getInventory().open(player, pagination.next().getPage())));
+    }
   }
 }

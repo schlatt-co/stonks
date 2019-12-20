@@ -11,11 +11,13 @@ import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 public class TransactionHistoryGui extends CollectionGui<Transaction> {
   private Account account;
 
-  private TransactionHistoryGui(Account account, String title) {
-    super(account.transactions, title);
+  public TransactionHistoryGui(Collection<Transaction> transactions, Account account) {
+    super(transactions, "Transaction History");
     this.account = account;
   }
 
@@ -41,31 +43,4 @@ public class TransactionHistoryGui extends CollectionGui<Transaction> {
   protected ClickableItem itemProvider(Player player, Transaction obj) {
     return ClickableItem.empty(ItemInfoHelper.transactionDisplayItem(obj));
   }
-
-  public static class Builder {
-    private Account account;
-    private String title = "";
-
-
-    public Builder() {
-    }
-
-    public TransactionHistoryGui.Builder account(Account account) {
-      this.account = account;
-      return this;
-    }
-
-    public TransactionHistoryGui.Builder title(String title) {
-      this.title = title;
-      return this;
-    }
-
-    public TransactionHistoryGui open(Player player) {
-      TransactionHistoryGui transactionHistoryGui = new TransactionHistoryGui(account, title);
-      transactionHistoryGui.show(player);
-      return transactionHistoryGui;
-    }
-  }
-
-
 }

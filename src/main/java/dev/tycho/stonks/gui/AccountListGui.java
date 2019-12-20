@@ -28,7 +28,7 @@ public class AccountListGui extends CollectionGui<Account> {
 
   @Override
   protected ClickableItem itemProvider(Player player, Account obj) {
-    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<>() {
+    ReturningAccountVisitor<ClickableItem> visitor = new ReturningAccountVisitor<ClickableItem>() {
       @Override
       public void visit(CompanyAccount a) {
         val = ClickableItem.of(

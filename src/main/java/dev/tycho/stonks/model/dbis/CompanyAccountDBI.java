@@ -4,7 +4,6 @@ import dev.tycho.stonks.database.JavaSqlDBI;
 import dev.tycho.stonks.database.Store;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.CompanyAccount;
-import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 
 import java.sql.*;
@@ -12,14 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
-
-  private final Store<Transaction> transactionStore;
   private final Store<Service> serviceStore;
 
-  public CompanyAccountDBI(Connection connection, Store<Transaction> transactionStore, Store<Service> serviceStore) {
+  public CompanyAccountDBI(Connection connection, Store<Service> serviceStore) {
     super(connection);
     this.serviceStore = serviceStore;
-    this.transactionStore = transactionStore;
   }
 
   @Override
@@ -61,7 +57,7 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
       ResultSet rs = statement.getGeneratedKeys();
       if (rs.next()) {
         int createdPk = rs.getInt(1);
-        return new CompanyAccount(createdPk, obj.name, obj.uuid, obj.companyPk, obj.profitAccount, new ArrayList<>(), new ArrayList<>(), obj.balance);
+        return new CompanyAccount(createdPk, obj.name, obj.uuid, obj.companyPk, obj.profitAccount, new ArrayList<>(), obj.balance);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -109,7 +105,6 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
             uuidFromString(results.getString("uuid")),
             results.getInt("company_pk"),
             results.getBoolean("profit_account"),
-            new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
             new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
             results.getDouble("balance"));
       }
@@ -127,7 +122,6 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
         obj.uuid,
         obj.companyPk,
         obj.profitAccount,
-        new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == obj.pk)),
         new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
         obj.balance);
   }
@@ -149,7 +143,6 @@ public class CompanyAccountDBI extends JavaSqlDBI<CompanyAccount> {
                 uuidFromString(results.getString("uuid")),
                 results.getInt("company_pk"),
                 results.getBoolean("profit_account"),
-                new ArrayList<>(transactionStore.getAllWhere(t -> t.accountPk == pk)),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
                 results.getDouble("balance")));
       }

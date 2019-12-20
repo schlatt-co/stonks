@@ -19,7 +19,7 @@ public class MemberInfoGui extends InventoryGui {
   private Company company;
 
   public MemberInfoGui(Member member, Company company) {
-    super(Bukkit.getOfflinePlayer(member.playerUUID).getName());
+    super(Bukkit.getOfflinePlayer(member.playerUUID).getName(), 5);
     this.member = member;
     this.offlinePlayer = Bukkit.getOfflinePlayer(member.playerUUID);
     this.company = company;
@@ -32,13 +32,13 @@ public class MemberInfoGui extends InventoryGui {
 
     contents.set(0, 4, ClickableItem.empty(Util.playerHead(offlinePlayer.getName(), offlinePlayer, "Role: " + member.role.toString())));
 
-    contents.set(1, 3, ClickableItem.of(Util.item(Material.DIRT, "Set role to intern"), e -> player.performCommand(
+    contents.set(1, 4, ClickableItem.of(Util.item(Material.DIRT, "Set role to intern"), e -> player.performCommand(
         "stonks setrole " + offlinePlayer.getName() + " " + Role.Intern.toString() + " " + company.name)));
-    contents.set(1, 2, ClickableItem.of(Util.item(Material.IRON_BLOCK, "Set role to employee"), e -> player.performCommand(
+    contents.set(1, 3, ClickableItem.of(Util.item(Material.IRON_BLOCK, "Set role to employee"), e -> player.performCommand(
         "stonks setrole " + offlinePlayer.getName() + " " + Role.Employee.toString() + " " + company.name)));
-    contents.set(1, 1, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Set role to manager"), e -> player.performCommand(
+    contents.set(1, 2, ClickableItem.of(Util.item(Material.GOLD_BLOCK, "Set role to manager"), e -> player.performCommand(
         "stonks setrole " + offlinePlayer.getName() + " " + Role.Manager.toString() + " " + company.name)));
-    contents.set(1, 0, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand(
+    contents.set(1, 1, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand(
         "stonks setrole " + offlinePlayer.getName() + " " + Role.CEO.toString() + " " + company.name)));
 
     contents.set(1, 8, ClickableItem.of(Util.item(Material.LAVA_BUCKET, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + company.name)));
