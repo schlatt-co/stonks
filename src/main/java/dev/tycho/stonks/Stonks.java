@@ -72,7 +72,7 @@ public class Stonks extends JavaPlugin {
         renewSubscription(subscription);
         cancelSubscriptionIfOverdue(subscription);
       }
-    }, 0, 1200);
+    }, 0, 6000);
 
     MainCommand command = new MainCommand();
     getCommand("company").setTabCompleter(command);
