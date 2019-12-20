@@ -1,6 +1,7 @@
 package dev.tycho.stonks.model.trading;
 
 import dev.tycho.stonks.database.Entity;
+import dev.tycho.stonks.database.TransactionStore;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.logging.Transaction;
@@ -8,7 +9,6 @@ import dev.tycho.stonks.model.logging.Transaction;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 public class Stock extends Entity {
   public final int companyPk;
@@ -42,7 +42,7 @@ public class Stock extends Entity {
     this.shareholders = new ArrayList<>(s.shareholders);
   }
 
-  public static double value(Stock stock, Company company) {
+  public static double value(Stock stock, Company company, TransactionStore transactions) {
     if (stock.companyPk != company.pk) throw new IllegalArgumentException("The stock and company relation is invalid");
     double totalProfit = 0;
     for (Account account : company.accounts) {
@@ -50,13 +50,9 @@ public class Stock extends Entity {
       if (account.profitAccount) {
         //Get all transactions that are +ve and less than a week old
         //Add the value of the transaction to total profit
-        for (Transaction transaction : account.transactions) {
+        for (Transaction transaction : transactions.getTransactionsForAccountTimeLimited(account, 7)) {
           if (transaction.amount > 0) {
-            double daysAgo = TimeUnit.MILLISECONDS.toDays(
-                System.currentTimeMillis() - transaction.timestamp.getTime());
-            if (daysAgo < 7) {
-              totalProfit += transaction.amount;
-            }
+            totalProfit += transaction.amount;
           }
         }
       }

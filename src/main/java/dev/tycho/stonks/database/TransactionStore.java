@@ -56,6 +56,32 @@ public class TransactionStore {
     return ImmutableList.copyOf(objects);
   }
 
+  public ImmutableCollection<Transaction> getTransactionsForAccountTimeLimited(Account account, double numDays) {
+    Collection<Transaction> objects = new ArrayList<>();
+    try {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT pk, account_pk, payee_uuid, message, amount, timestamp FROM transaction " +
+              "WHERE account_pk = ? AND DATE(timestamp) = CURDATE() - INTERVAL ? DAY  ");
+      statement.setInt(1, account.pk);
+      statement.setDouble(2, numDays);
+      ResultSet results = statement.executeQuery();
+      while (results.next()) {
+        int pk = results.getInt("pk");
+        objects.add(new Transaction(
+            pk,
+            results.getInt("account_pk"),
+            JavaSqlDBI.uuidFromString(results.getString("payee_uuid")),
+            results.getString("message"),
+            results.getDouble("amount"),
+            results.getTimestamp("timestamp")));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return ImmutableList.copyOf(objects);
+  }
+
+
   public void createTable() {
     dbi.createTable();
   }
