@@ -12,18 +12,23 @@ import dev.tycho.stonks.model.dbis.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
 
   private static Repo instance;
   private final Stonks plugin;
-  private Connection conn;
+  private BasicDataSource dataSource;
+
   private DatabaseStore<Company> companyStore;
   private DatabaseStore<CompanyAccount> companyAccountStore;
   private DatabaseStore<HoldingsAccount> holdingsAccountStore;
@@ -36,6 +41,7 @@ public class Repo extends SpigotModule {
   public Repo(Stonks stonks) {
     super("Database Manager", stonks);
     instance = this;
+    dataSource = new BasicDataSource();
     this.plugin = stonks;
   }
 
@@ -43,7 +49,7 @@ public class Repo extends SpigotModule {
     return instance;
   }
 
-  private Connection createConnection() throws SQLException {
+  private void createDataSource() {
     String host = plugin.getConfig().getString("mysql.host");
     String port = plugin.getConfig().getString("mysql.port");
     String database = plugin.getConfig().getString("mysql.database");
@@ -53,17 +59,17 @@ public class Repo extends SpigotModule {
     String url = "jdbc:mysql://" + host + ":" + port + "/" + database +
         "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL="
         + useSsl;
-
-    Properties connectionProps = new Properties();
-    connectionProps.put("user", username);
-    connectionProps.put("password", password);
-    Connection conn = DriverManager.getConnection(url, connectionProps);
+    dataSource.setUrl(url);
+    dataSource.setUsername(username);
+    dataSource.setPassword(password);
+    dataSource.setMinIdle(5);
+    dataSource.setMaxIdle(10);
+    dataSource.setMaxOpenPreparedStatements(100);
     System.out.println("Connected to database");
-    return conn;
   }
 
   //todo this could be in a better place than repo
-  public int getNextAccountPk() {
+  public int getNextAccountPk(Connection conn) {
     try {
       int companyAccountPk = -1;
       int holdingsAccountPk = -1;
@@ -93,12 +99,7 @@ public class Repo extends SpigotModule {
 
   @Override
   public void enable() {
-    try {
-      conn = createConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return;
-    }
+    createDataSource();
 
     companyStore = new AsyncSaveStore<>(Company::new);
     companyAccountStore = new AsyncSaveStore<>(CompanyAccount::new);
@@ -107,17 +108,17 @@ public class Repo extends SpigotModule {
     memberStore = new AsyncSaveStore<>(Member::new);
     serviceStore = new AsyncSaveStore<>(Service::new);
     subscriptionStore = new AsyncSaveStore<>(Subscription::new);
-    transactionStore = new TransactionStore(conn, new TransactionDBI(conn));
+    transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
     transactionStore.createTable();
 
 
-    companyStore.setDbi(new CompanyDBI(conn, memberStore, companyAccountStore, holdingsAccountStore));
-    companyAccountStore.setDbi(new CompanyAccountDBI(conn, serviceStore));
-    holdingsAccountStore.setDbi(new HoldingsAccountDBI(conn, serviceStore, holdingStore));
-    holdingStore.setDbi(new HoldingDBI(conn));
-    memberStore.setDbi(new MemberDBI(conn));
-    serviceStore.setDbi(new ServiceDBI(conn, subscriptionStore));
-    subscriptionStore.setDbi(new SubscriptionDBI(conn));
+    companyStore.setDbi(new CompanyDBI(dataSource, memberStore, companyAccountStore, holdingsAccountStore));
+    companyAccountStore.setDbi(new CompanyAccountDBI(dataSource, serviceStore));
+    holdingsAccountStore.setDbi(new HoldingsAccountDBI(dataSource, serviceStore, holdingStore));
+    holdingStore.setDbi(new HoldingDBI(dataSource));
+    memberStore.setDbi(new MemberDBI(dataSource));
+    serviceStore.setDbi(new ServiceDBI(dataSource, subscriptionStore));
+    subscriptionStore.setDbi(new SubscriptionDBI(dataSource));
 
     repopulateAll();
   }

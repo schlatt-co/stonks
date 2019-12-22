@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.logging.Transaction;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,11 +14,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class TransactionStore {
-  private Connection connection;
+  private BasicDataSource dataSource;
   private JavaSqlDBI<Transaction> dbi;
 
-  public TransactionStore(Connection connection, JavaSqlDBI<Transaction> dbi) {
-    this.connection = connection;
+  public TransactionStore(BasicDataSource dataSource, JavaSqlDBI<Transaction> dbi) {
+    this.dataSource = dataSource;
     this.dbi = dbi;
   }
 
@@ -36,19 +37,21 @@ public class TransactionStore {
   public ImmutableCollection<Transaction> getTransactionsForAccount(Account account) {
     Collection<Transaction> objects = new ArrayList<>();
     try {
-      PreparedStatement statement = connection.prepareStatement(
-          "SELECT pk, account_pk, payee_uuid, message, amount, timestamp FROM transaction WHERE account_pk = ?");
-      statement.setInt(1, account.pk);
-      ResultSet results = statement.executeQuery();
-      while (results.next()) {
-        int pk = results.getInt("pk");
-        objects.add(new Transaction(
-            pk,
-            results.getInt("account_pk"),
-            JavaSqlDBI.uuidFromString(results.getString("payee_uuid")),
-            results.getString("message"),
-            results.getDouble("amount"),
-            results.getTimestamp("timestamp")));
+      try (Connection conn = dataSource.getConnection()) {
+        PreparedStatement statement = conn.prepareStatement(
+            "SELECT pk, account_pk, payee_uuid, message, amount, timestamp FROM transaction WHERE account_pk = ?");
+        statement.setInt(1, account.pk);
+        ResultSet results = statement.executeQuery();
+        while (results.next()) {
+          int pk = results.getInt("pk");
+          objects.add(new Transaction(
+              pk,
+              results.getInt("account_pk"),
+              JavaSqlDBI.uuidFromString(results.getString("payee_uuid")),
+              results.getString("message"),
+              results.getDouble("amount"),
+              results.getTimestamp("timestamp")));
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();
