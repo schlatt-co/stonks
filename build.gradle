@@ -28,7 +28,6 @@ dependencies {
     compile 'fr.minuskube.inv:smart-invs:1.2.7'
     compile 'co.aikar:taskchain-bukkit:3.7.2'
     compile 'org.apache.commons:commons-dbcp2:2.7.0'
-
 }
 
 compileJava.options.encoding = 'UTF-8'
