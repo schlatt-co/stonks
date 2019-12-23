@@ -342,8 +342,8 @@ public class Repo extends SpigotModule {
     Account a = visitor.getRecentVal();
     //Create a transaction log too
     createTransaction(player, account, message, amount);
-    //We don't need to refresh the company because this is done when creating a transaction log
-    //companyStore.refresh(a.companyPk);
+    //Refresh the accounts for our parent company
+    companyStore.refreshRelations(a.companyPk);
     return a;
   }
 
@@ -356,8 +356,8 @@ public class Repo extends SpigotModule {
     companyAccountStore.save(ca);
     //Create a transaction log too
     createTransaction(player, a, "withdraw", -amount);
-    //We don't need to refresh the company because this is done when creating a transaction log
-    //companyStore.refresh(a.companyPk);
+    //Refresh the accounts for our parent company
+    companyStore.refreshRelations(a.companyPk);
     return ca;
   }
 
@@ -380,6 +380,11 @@ public class Repo extends SpigotModule {
     holdingsAccountStore.refreshRelations(h.accountPk);
 
     createTransaction(player, accountWithId(h.accountPk), "withdraw holding", -amount);
+    Account account = accountWithId(h.accountPk);
+    //Refresh the account and company's relation collections for the new holding
+    refreshAccount(account);
+    companyStore.refreshRelations(account.companyPk);
+
     return holding;
   }
 
