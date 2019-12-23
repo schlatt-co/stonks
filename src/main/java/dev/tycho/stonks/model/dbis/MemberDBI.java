@@ -85,7 +85,7 @@ public class MemberDBI extends JavaSqlDBI<Member> {
     try {
       try (Connection conn = getConnection()) {
         PreparedStatement statement = conn.prepareStatement(
-            "UPDATE holding SET player_uuid = ?, company_pk = ?, join_date = ?, role = ?, accepted_invite = ? WHERE pk = ?");
+            "UPDATE member SET player_uuid = ?, company_pk = ?, join_date = ?, role = ?, accepted_invite = ? WHERE pk = ?");
         statement.setString(1, uuidToStr(obj.playerUUID));
         statement.setInt(2, obj.companyPk);
         statement.setTimestamp(3, obj.joinTimestamp);
