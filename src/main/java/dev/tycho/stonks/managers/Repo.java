@@ -389,7 +389,7 @@ public class Repo extends SpigotModule {
   }
 
   public boolean deleteHolding(Holding holding) {
-    if (memberStore.delete(holding.pk)) {
+    if (holdingStore.delete(holding.pk)) {
       //Update the company and account
       holdingsAccountStore.refreshRelations(holding.accountPk);
       HoldingsAccount ha = holdingsAccountStore.get(holding.accountPk);
