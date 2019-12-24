@@ -228,7 +228,7 @@ public class Repo extends SpigotModule {
   public Member createMember(Company company, Player player) {
     Member newMember = new Member(0, player.getUniqueId(), company.pk, new Timestamp(System.currentTimeMillis()), Role.Employee, false);
     newMember = memberStore.create(newMember);
-    companyStore.refreshRelations(newMember.pk);
+    companyStore.refreshRelations(newMember.companyPk);
     return newMember;
   }
 
