@@ -107,13 +107,7 @@ public class PayCommandSub extends ModularCommandSub {
     sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");
 
     //Send a message to all managers in the company that are online that the company got paid
-    for (Member member : company.members) {
-      if (member.hasManagamentPermission()) {
-        Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-        if (!u.getName().equalsIgnoreCase(sender.getName()) && u.isOnline()) {
-          sendMessage(u, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
-        }
-      }
-    }
+    Repo.getInstance().sendMessageToAllOnlineManagers(
+        company, sender.getDisplayName() + ChatColor.GREEN + " paid " + ChatColor.YELLOW + " " + company.name + " (" + account.name + ") $" + Util.commify(amount));
   }
 }

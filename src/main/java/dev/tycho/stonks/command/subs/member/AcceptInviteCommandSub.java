@@ -34,6 +34,7 @@ public class AcceptInviteCommandSub extends ModularCommandSub {
     member = Repo.getInstance().modifyMember(member, member.role, true);
     if (member.acceptedInvite) {
       sendMessage(player, "You are now a member of " + ChatColor.YELLOW + company.name + "!");
+      Repo.getInstance().sendMessageToAllOnlineManagers(company, player.getDisplayName() + " just joined " + ChatColor.GOLD + company.name);
     } else {
       sendMessage(player, "Joining this company failed. Please contact an admin");
     }

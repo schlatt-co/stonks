@@ -6,6 +6,7 @@ import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -84,6 +85,15 @@ public class KickMemberCommandSub extends ModularCommandSub {
     //We can kick the player
     if (Repo.getInstance().deleteMember(memberToKick)) {
       sendMessage(player, "Player kicked successfully!");
+      //Send a different message based on if a player was fired or left
+      if (player.getUniqueId().equals(playerToKick.getUniqueId())) {
+        Repo.getInstance().sendMessageToAllOnlineManagers(company,
+            player.getDisplayName() + " just resigned from " + ChatColor.GOLD + company.name);
+      } else {
+        Repo.getInstance().sendMessageToAllOnlineManagers(company,
+            player.getDisplayName() + " just fired " + playerName + " from " + ChatColor.GOLD + company.name);
+      }
+
     } else {
       sendMessage(player, "Error kicking player");
     }

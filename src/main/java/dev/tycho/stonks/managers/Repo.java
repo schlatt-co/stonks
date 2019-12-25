@@ -182,6 +182,16 @@ public class Repo extends SpigotModule {
     return list;
   }
 
+  public void sendMessageToAllOnlineManagers(Company company, String message) {
+    for (Member member : company.members) {
+      if (member.hasManagamentPermission()) {
+        Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
+        if (u.isOnline()) {
+          sendMessage(u, message);
+        }
+      }
+    }
+  }
 
   public Company companyWithName(String name) {
     return Repo.getInstance().companies().getWhere(c -> c.name.equals(name));
