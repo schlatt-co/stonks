@@ -12,6 +12,7 @@ import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class CreateCommandSub extends ModularCommandSub {
@@ -62,6 +63,7 @@ public class CreateCommandSub extends ModularCommandSub {
     Company c = Repo.getInstance().createCompany(name, player);
     if (c != null) {
       sendMessage(player, "Company created successfully!");
+      Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + ChatColor.GREEN + " just founded a new company - " + c.name + "!");
     } else {
       sendMessage(player, "Company creation failed");
     }
