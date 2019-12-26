@@ -6,7 +6,7 @@ authors:
   - TychoVI
   - Tsarcasm
   - JRoy
-depend: [Vault, ChestShop, Essentials]
+depend: [PluginLibrary, Vault, ChestShop, Essentials]
 commands:
   company:
     description: Main command that houses rest.
