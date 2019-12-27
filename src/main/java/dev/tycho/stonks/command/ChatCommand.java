@@ -14,27 +14,28 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class ChatCommand implements CommandExecutor {
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Player player = (Player) sender;
-        HashMap<Player, Integer> chatSelectionStore = PlayerStateData.getInstance().getChatSelectionStore();
-        if(args.length < 1 || !chatSelectionStore.containsKey(player)) {
-            Collection<Company> list = Repo.getInstance().companiesWhereMember(player);
-            new CompanySelectorGui.Builder()
-                    .companies(list)
-                    .title("Select company for chat.")
-                    .companySelected((company -> {
-                        chatSelectionStore.put(player, company.pk);
-                        player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "Set " + company.name + " as company chat channel. You may send a message now using /cc <message>");
-                    }))
-                    .show(player);
-        } else {
-            StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
-            for (String arg : args) {
-                message.append(arg).append(" ");
-            }
-            Repo.getInstance().sendMessageToAllOnlineMembers(Repo.getInstance().companies().get(chatSelectionStore.get(player)), message.toString());
-        }
-        return true;
+
+  @Override
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    Player player = (Player) sender;
+    HashMap<Player, Integer> chatSelectionStore = PlayerStateData.getInstance().getChatSelectionStore();
+    if (args.length == 0 || !chatSelectionStore.containsKey(player)) {
+      Collection<Company> list = Repo.getInstance().companiesWhereMember(player);
+      new CompanySelectorGui.Builder()
+          .companies(list)
+          .title("Select company for chat.")
+          .companySelected((company -> {
+            chatSelectionStore.put(player, company.pk);
+            player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "Set " + company.name + " as company chat channel. You may send a message now using /cc <message>");
+          }))
+          .show(player);
+    } else {
+      StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
+      for (String arg : args) {
+        message.append(arg).append(" ");
+      }
+      Repo.getInstance().sendMessageToAllOnlineMembers(Repo.getInstance().companies().get(chatSelectionStore.get(player)), message.toString());
     }
+    return true;
+  }
 }
