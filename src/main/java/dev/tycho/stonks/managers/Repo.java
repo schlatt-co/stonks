@@ -148,11 +148,11 @@ public class Repo extends SpigotModule {
     list.removeIf(c -> {
       for (Member m : c.members) {
         //If a member then keep
-        if (!m.playerUUID.equals(player.getUniqueId()) || !m.acceptedInvite) {
-          return true;
+        if (m.playerUUID.equals(player.getUniqueId()) && m.acceptedInvite) {
+          return false;
         }
       }
-      return false;
+      return true;
     });
     return list;
   }
