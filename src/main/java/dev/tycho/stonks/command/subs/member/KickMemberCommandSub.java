@@ -3,9 +3,11 @@ package dev.tycho.stonks.command.subs.member;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
+import dev.tycho.stonks.managers.PlayerStateData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,7 +62,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     boolean hasHoldings = false;
     for (Account account : company.accounts) {
-      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
         @Override
         public void visit(CompanyAccount a) {
           val = false;
@@ -84,6 +86,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     //We can kick the player
     if (Repo.getInstance().deleteMember(memberToKick)) {
+      PlayerStateData.getInstance().getChatSelectionStore().remove(Bukkit.getOfflinePlayer(memberToKick.playerUUID).getPlayer());
       sendMessage(player, "Player kicked successfully!");
       //Send a different message based on if a player was fired or left
       if (player.getUniqueId().equals(playerToKick.getUniqueId())) {
