@@ -29,9 +29,9 @@ public class ChatCommand implements CommandExecutor {
                     }))
                     .show(player);
         } else {
-            String message = player.getDisplayName() + ": ";
+            StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
             for (String arg : args) {
-                message = message + arg + " ";
+                message.append(arg).append(" ");
             }
             Repo.getInstance().sendMessageToAllOnlineMembers(Repo.getInstance().companies().get(chatSelectionStore.get(player)), message.toString());
         }
