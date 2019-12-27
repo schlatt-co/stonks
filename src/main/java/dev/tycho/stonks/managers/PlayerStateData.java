@@ -1,5 +1,7 @@
 package dev.tycho.stonks.managers;
 
+import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ public class PlayerStateData {
   private static PlayerStateData instance;
   private HashMap<UUID, Long> createAccountCooldown = new HashMap<>();
   private HashMap<UUID, Long> createCompanyCooldown = new HashMap<>();
+  private HashMap<Player, Integer> chatSelectionStore = new HashMap<>();
 
   public PlayerStateData() {
     instance = this;
@@ -18,6 +21,10 @@ public class PlayerStateData {
       new PlayerStateData();
     }
     return instance;
+  }
+
+  public HashMap<Player, Integer> getChatSelectionStore() {
+    return chatSelectionStore;
   }
 
   public void setPlayerCreateAccountCooldown(UUID playerUUID, long cooldown) {

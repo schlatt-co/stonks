@@ -1,6 +1,7 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,10 @@ public abstract class SpigotModule implements Listener {
 
   private void log(String message) {
     System.out.println("[Stonks] " + moduleName + "> " + message);
+  }
+
+  protected final void sendMessage(CommandSender sender, Company company, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + company.name + "> " + ChatColor.GREEN + message);
   }
 
   protected final void sendMessage(CommandSender sender, String message) {

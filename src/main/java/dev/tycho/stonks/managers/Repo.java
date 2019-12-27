@@ -17,10 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
@@ -134,13 +131,24 @@ public class Repo extends SpigotModule {
     companyStore.populate();
   }
 
-
   public Collection<Company> companiesWhereManager(Player player) {
     Collection<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
     list.removeIf(c -> {
       for (Member m : c.members) {
         //If a manager then keep
         if (m.playerUUID.equals(player.getUniqueId()) && m.hasManagamentPermission()) return false;
+      }
+      return true;
+    });
+    return list;
+  }
+
+  public Collection<Company> companiesWhereMember(Player player) {
+    Collection<Company> list = new ArrayList<>(Repo.getInstance().companies().getAll());
+    list.removeIf(c -> {
+      for (Member m : c.members) {
+        //If a member then keep
+        if (m.playerUUID.equals(player.getUniqueId())) return false;
       }
       return true;
     });
@@ -186,9 +194,18 @@ public class Repo extends SpigotModule {
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
         Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-        if (u.isOnline()) {
+        if (u != null && u.isOnline()) {
           sendMessage(u, message);
         }
+      }
+    }
+  }
+
+  public void sendMessageToAllOnlineMembers(Company company, String message) {
+    for (Member member : company.members) {
+      Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
+      if (u != null && u.isOnline()) {
+        sendMessage(u, company, message);
       }
     }
   }
@@ -458,7 +475,6 @@ public class Repo extends SpigotModule {
     }
     return false;
   }
-
 
   public Store<Company> companies() {
     return companyStore;
