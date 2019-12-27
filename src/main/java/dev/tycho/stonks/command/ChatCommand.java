@@ -8,51 +8,35 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    new Thread(() -> {
-      Player player = (Player) sender;
-      HashMap<Player, Integer> chatSelectionStore = PlayerStateData.getInstance().getChatSelectionStore();
-      Integer companyPk = PlayerStateData.getInstance().getChatSelectionStore().computeIfAbsent(player, p -> {
-        AtomicInteger selected = new AtomicInteger(-1);
-        new CompanySelectorGui.Builder()
-            .companies(Repo.getInstance().companiesWhereMember(player))
-            .title("Select company for chat.")
-            .companySelected((company -> {
-              selected.set(company.pk);
-              player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "Set " + company.name + " as company chat channel. You may send a message now using /cc <message>");
-            }))
-            .show(player);
-        while (player.getOpenInventory().getType() != InventoryType.CRAFTING) {
-          try {
-            Thread.sleep(500);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-        return selected.get();
-      });
-
-      if (companyPk == -1) {
-        player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "You failed to select a company!");
-        return;
-      }
-
-      StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
-      for (String arg : args) {
-        message.append(arg).append(" ");
-      }
-      Repo.getInstance().sendMessageToAllOnlineMembers(Repo.getInstance().companies().get(chatSelectionStore.get(player)), message.toString());
-
-      return;
-    }).start();
+    Player player = (Player) sender;
+    if (args.length == 0 || !PlayerStateData.getInstance().getChatSelectionStore().containsKey(player)) {
+      new CompanySelectorGui.Builder()
+          .companies(Repo.getInstance().companiesWhereMember(player))
+          .title("Select company for chat.")
+          .companySelected((company -> {
+            PlayerStateData.getInstance().getChatSelectionStore().put(player, company.pk);
+            player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "Set " + company.name + " as company chat channel. You may send a message now using /cc <message>");
+            if (args.length != 0) {
+              sendMessage(player, args);
+            }
+          }))
+          .show(player);
+      return true;
+    }
+    sendMessage(player, args);
     return true;
+  }
+
+  private void sendMessage(Player player, String[] args) {
+    StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
+    for (String arg : args) {
+      message.append(arg).append(" ");
+    }
+    Repo.getInstance().sendMessageToAllOnlineMembers(Repo.getInstance().companies().get(PlayerStateData.getInstance().getChatSelectionStore().get(player)), message.toString());
   }
 }
