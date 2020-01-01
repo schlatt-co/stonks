@@ -64,6 +64,7 @@ public class CreateCommandSub extends ModularCommandSub {
     if (c != null) {
       sendMessage(player, "Company created successfully!");
       Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + ChatColor.GREEN + " just founded a new company - " + c.name + "!");
+      PlayerData.getInstance().setPlayerCreateCompanyCooldown(player.getUniqueId(), System.currentTimeMillis());
     } else {
       sendMessage(player, "Company creation failed");
     }

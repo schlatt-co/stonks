@@ -62,7 +62,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     boolean hasHoldings = false;
     for (Account account : company.accounts) {
-      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
+      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
         @Override
         public void visit(CompanyAccount a) {
           val = false;

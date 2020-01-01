@@ -6,6 +6,7 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
+import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
 import dev.tycho.stonks.managers.*;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -80,6 +81,7 @@ public class Stonks extends JavaPlugin {
     getCommand("company").setExecutor(command);
 
     getCommand("cc").setExecutor(new CompanyChatCommand());
+    getCommand("ccr").setExecutor(new CompanyChatReplyCommand());
 
     Bukkit.getLogger().info("Loaded!");
   }

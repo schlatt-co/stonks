@@ -15,3 +15,6 @@ commands:
   cc:
     description: Command for private company chats.
     usage: /cc
+  ccr:
+    description: Command for private company chat replying.
+    usage: /ccr

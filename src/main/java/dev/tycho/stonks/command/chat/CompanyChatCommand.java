@@ -18,13 +18,17 @@ public class CompanyChatCommand implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     Player player = (Player) sender;
+
+    //If we need to select a company to chat in
     if (args.length == 0 || !PlayerData.getInstance().getSelectedCompanyChat().containsKey(player)) {
+      //Show a company selector
       new CompanySelectorGui.Builder()
           .companies(Repo.getInstance().companiesWhereMember(player))
           .title("Select company for chat.")
           .companySelected(company -> {
             PlayerData.getInstance().getSelectedCompanyChat().put(player, company.pk);
             player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "Set " + company.name + " as company chat channel. You may send a message now using /cc <message>");
+            //If there is a message to send as well then send that
             if (args.length != 0) {
               messageMembers(player, company, args);
             }
@@ -38,19 +42,20 @@ public class CompanyChatCommand implements CommandExecutor {
   }
 
   private void messageMembers(Player player, Company company, String[] args) {
-    StringBuilder message = new StringBuilder(player.getDisplayName() + ": ");
+    StringBuilder message = new StringBuilder(ChatColor.DARK_GREEN + company.name + "> " + ChatColor.WHITE).append(player.getDisplayName() + ": ");
     for (String arg : args) {
       message.append(arg).append(" ");
     }
 
     for (Member member : company.members) {
-      User u = Stonks.essentials.getUser(member.playerUUID);
-      if (u == null) continue;
-      Player p = u.getBase();
-      if (p == null || !player.isOnline()) continue;
-      p.sendMessage(message.toString());
-
-      PlayerData.getInstance().getReplyCompanyChat().put(p, company.pk);
+      if (member.acceptedInvite) {
+        User u = Stonks.essentials.getUser(member.playerUUID);
+        if (u == null) continue;
+        Player p = u.getBase();
+        if (p == null || !player.isOnline()) continue;
+        p.sendMessage(message.toString());
+        PlayerData.getInstance().getReplyCompanyChat().put(p, company.pk);
+      }
     }
   }
 }

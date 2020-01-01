@@ -98,13 +98,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
     sendMessage(player, "Account creation successful!");
     sendMessage(player, "Account ID: " + ChatColor.YELLOW + newAccount.pk);
 
-    PlayerData
-        .getInstance()
-        .setPlayerCreateAccountCooldown(
-            player.getUniqueId(),
-            System.currentTimeMillis()
-        );
-
+    PlayerData.getInstance().setPlayerCreateAccountCooldown(player.getUniqueId(), System.currentTimeMillis());
   }
 
 

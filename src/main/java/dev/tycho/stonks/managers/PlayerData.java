@@ -32,7 +32,7 @@ public class PlayerData {
     createAccountCooldown.put(playerUUID, cooldown);
   }
 
-  public void setPLayerCreateCompanyCooldown(UUID playerUUID, long cooldown) {
+  public void setPlayerCreateCompanyCooldown(UUID playerUUID, long cooldown) {
     createCompanyCooldown.put(playerUUID, cooldown);
   }
 
