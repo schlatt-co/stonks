@@ -3,7 +3,7 @@ package dev.tycho.stonks.command.subs.member;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
-import dev.tycho.stonks.managers.PlayerStateData;
+import dev.tycho.stonks.managers.PlayerData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -78,7 +78,6 @@ public class KickMemberCommandSub extends ModularCommandSub {
       if (hasHoldings) break;
     }
 
-
     if (hasHoldings) {
       sendMessage(player, "That player has holdings! Please delete them before kicking them!");
       return;
@@ -86,7 +85,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     //We can kick the player
     if (Repo.getInstance().deleteMember(memberToKick)) {
-      PlayerStateData.getInstance().getChatSelectionStore().remove(Bukkit.getOfflinePlayer(memberToKick.playerUUID).getPlayer());
+      PlayerData.getInstance().getSelectedCompanyChat().remove(Bukkit.getOfflinePlayer(memberToKick.playerUUID).getPlayer());
       sendMessage(player, "Player kicked successfully!");
       //Send a different message based on if a player was fired or left
       if (player.getUniqueId().equals(playerToKick.getUniqueId())) {

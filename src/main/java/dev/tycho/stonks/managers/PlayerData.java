@@ -6,25 +6,26 @@ import java.util.HashMap;
 import java.util.UUID;
 
 //Stores data about players in memory, stuff that doesn't need to persist between restarts
-public class PlayerStateData {
-  private static PlayerStateData instance;
+public class PlayerData {
+  private static PlayerData instance;
   private HashMap<UUID, Long> createAccountCooldown = new HashMap<>();
   private HashMap<UUID, Long> createCompanyCooldown = new HashMap<>();
-  private HashMap<Player, Integer> chatSelectionStore = new HashMap<>();
+  private HashMap<Player, Integer> selectedCompanyChat = new HashMap<>();
+  private HashMap<Player, Integer> replyCompanyChat = new HashMap<>();
 
-  public PlayerStateData() {
+  public PlayerData() {
     instance = this;
   }
 
-  public static PlayerStateData getInstance() {
+  public static PlayerData getInstance() {
     if (instance == null) {
-      new PlayerStateData();
+      new PlayerData();
     }
     return instance;
   }
 
-  public HashMap<Player, Integer> getChatSelectionStore() {
-    return chatSelectionStore;
+  public HashMap<Player, Integer> getSelectedCompanyChat() {
+    return selectedCompanyChat;
   }
 
   public void setPlayerCreateAccountCooldown(UUID playerUUID, long cooldown) {
@@ -45,5 +46,9 @@ public class PlayerStateData {
     return 0;
   }
 
+
+  public HashMap<Player, Integer> getReplyCompanyChat() {
+    return replyCompanyChat;
+  }
 
 }

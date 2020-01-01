@@ -1,5 +1,6 @@
 package dev.tycho.stonks.managers;
 
+import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.database.AsyncSaveStore;
 import dev.tycho.stonks.database.DatabaseStore;
@@ -17,7 +18,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 //The repo has a store for each entity we want to save in the database
 public class Repo extends SpigotModule {
@@ -192,23 +196,26 @@ public class Repo extends SpigotModule {
     return list;
   }
 
+
+  public void sendMessageToPlayer(UUID playerUUID, String message) {
+    User u = Stonks.essentials.getUser(playerUUID);
+    if (u == null) return;
+    Player player = u.getBase();
+    if (player == null || !player.isOnline()) return;
+    sendMessage(player, message);
+  }
+
   public void sendMessageToAllOnlineManagers(Company company, String message) {
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-        if (u != null && u.isOnline()) {
-          sendMessage(u, message);
-        }
+        sendMessageToPlayer(member.playerUUID, message);
       }
     }
   }
 
   public void sendMessageToAllOnlineMembers(Company company, String message) {
     for (Member member : company.members) {
-      Player u = Stonks.essentials.getUser(member.playerUUID).getBase();
-      if (u != null && u.isOnline()) {
-        sendMessage(u, company, message);
-      }
+      sendMessageToPlayer(member.playerUUID, message);
     }
   }
 

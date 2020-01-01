@@ -6,7 +6,7 @@ import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import dev.tycho.stonks.managers.PlayerStateData;
+import dev.tycho.stonks.managers.PlayerData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.managers.SettingsManager;
 import dev.tycho.stonks.model.core.Account;
@@ -46,9 +46,9 @@ public class CreateAccountCommandSub extends ModularCommandSub {
   }
 
   private void createAccount(Player player, Company company, String newAccountName, AccountTypeSelectorGui.AccountType accountType) {
-    if (!player.isOp() && (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateAccountCooldown(player.getUniqueId())) < SettingsManager.ACCOUNT_CREATION_COOLDOWN) {
+    if (!player.isOp() && (System.currentTimeMillis() - PlayerData.getInstance().getPlayerCreateAccountCooldown(player.getUniqueId())) < SettingsManager.ACCOUNT_CREATION_COOLDOWN) {
       sendMessage(player, "You cannot make an account for another " + Util.convertString(
-          SettingsManager.ACCOUNT_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateAccountCooldown(player.getUniqueId()))));
+          SettingsManager.ACCOUNT_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerData.getInstance().getPlayerCreateAccountCooldown(player.getUniqueId()))));
       return;
     }
     if (company == null) {
@@ -98,7 +98,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
     sendMessage(player, "Account creation successful!");
     sendMessage(player, "Account ID: " + ChatColor.YELLOW + newAccount.pk);
 
-    PlayerStateData
+    PlayerData
         .getInstance()
         .setPlayerCreateAccountCooldown(
             player.getUniqueId(),

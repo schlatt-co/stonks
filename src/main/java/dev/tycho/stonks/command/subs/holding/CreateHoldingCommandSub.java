@@ -10,6 +10,7 @@ import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.core.Member;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -114,5 +115,9 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
     //We can make a holding
     Repo.getInstance().createHolding(newHoldingOwner.getUniqueId(), holdingsAccount, share);
     sendMessage(player, "Holding successfully created!");
+    if (!player.getUniqueId().equals(newHoldingOwner.getUniqueId())) {
+      Repo.getInstance().sendMessageToPlayer(player.getUniqueId(), "A holding was created for you in the account " + account.name
+          + " (" + ChatColor.GOLD + company.name + ChatColor.WHITE + ")");
+    }
   }
 }

@@ -5,7 +5,7 @@ import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
-import dev.tycho.stonks.managers.PlayerStateData;
+import dev.tycho.stonks.managers.PlayerData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.managers.SettingsManager;
 import dev.tycho.stonks.model.core.Company;
@@ -36,8 +36,8 @@ public class CreateCommandSub extends ModularCommandSub {
 
   private void createCompany(Player player, String companyName) {
     //Prevent the player from spamming companies
-    if (!player.isOp() && (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId())) < SettingsManager.COMPANY_CREATION_COOLDOWN) {
-      sendMessage(player, "You cannot make a company for another " + Util.convertString(SettingsManager.COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerStateData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId()))));
+    if (!player.isOp() && (System.currentTimeMillis() - PlayerData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId())) < SettingsManager.COMPANY_CREATION_COOLDOWN) {
+      sendMessage(player, "You cannot make a company for another " + Util.convertString(SettingsManager.COMPANY_CREATION_COOLDOWN - (System.currentTimeMillis() - PlayerData.getInstance().getPlayerCreateCompanyCooldown(player.getUniqueId()))));
       return;
     }
     String name = companyName.trim();
