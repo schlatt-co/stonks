@@ -1,13 +1,6 @@
 package dev.tycho.stonks.database;
 
-import java.util.function.Function;
-
 public class SyncStore<T extends Entity> extends DatabaseStore<T> {
-
-  public SyncStore(Function<T, T> factory) {
-    super(factory);
-  }
-
   @Override
   protected boolean db_save(T obj) {
     return dbi.save(obj);
