@@ -5,18 +5,12 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class DatabaseStore<T extends Entity> implements Store<T> {
 
   protected HashMap<Integer, T> entities = new HashMap<>();
-  protected Function<T, T> factory;
   protected JavaSqlDBI<T> dbi;
-
-  public DatabaseStore(Function<T, T> factory) {
-    this.factory = factory;
-  }
 
   public void setDbi(JavaSqlDBI<T> dbi) {
     this.dbi = dbi;
@@ -50,7 +44,7 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
   @Override
   public T get(int pk) {
     if (entities.containsKey(pk)) {
-      return factory.apply(entities.get(pk));
+      return entities.get(pk);
     }
     return null;
   }
@@ -70,7 +64,7 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
     }
 
     entities.put(created.pk, created);
-    return factory.apply(created);
+    return created;
   }
 
   @Override
@@ -99,7 +93,7 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
   @Override
   public T getWhere(Predicate<T> p) {
     for (T entity : entities.values()) {
-      if (p.test(entity)) return factory.apply(entity);
+      if (p.test(entity)) return entity;
     }
     return null;
   }
@@ -109,7 +103,7 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
     List<T> matches = new ArrayList<>();
     for (T entity : entities.values()) {
       if (p.test(entity)) {
-        matches.add(factory.apply(entity));
+        matches.add(entity);
       }
     }
     return ImmutableList.copyOf(matches);
