@@ -34,7 +34,7 @@ public class InviteListGui extends CollectionGui<Member> {
           if (e.getClick().isLeftClick()) {
             player.performCommand("stonks acceptinvite " + company.pk);
           } else if (e.getClick().isRightClick()) {
-            player.performCommand("stonks rejectinvite " + company.pk);
+            player.performCommand("stonks declineinvite " + company.pk);
           } else {
             return;
           }
