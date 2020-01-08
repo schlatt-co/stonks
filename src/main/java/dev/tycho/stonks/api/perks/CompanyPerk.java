@@ -10,12 +10,18 @@ public abstract class CompanyPerk {
   private final Material icon;
   private final int price;
   private final String[] description;
+  private final CompanyPerkAction[] perkActions;
 
   public CompanyPerk(String name, Material icon, int price, String... description) {
+    this(name, icon, price, description, new CompanyPerkAction[]{});
+  }
+
+  public CompanyPerk(String name, Material icon, int price, String[] description, CompanyPerkAction... companyPerkActions) {
     this.name = name;
     this.icon = icon;
     this.price = price;
     this.description = description;
+    this.perkActions = companyPerkActions;
   }
 
   public abstract void onPurchase(Company company, Member purchaser);
@@ -34,5 +40,9 @@ public abstract class CompanyPerk {
 
   public String[] getDescription() {
     return description;
+  }
+
+  public CompanyPerkAction[] getPerkActions() {
+    return perkActions;
   }
 }
