@@ -35,6 +35,10 @@ public class ItemInfoHelper {
     return accountDisplayItem(account, player, new String[]{});
   }
 
+  static ItemStack perkDisplayItem(Company company, Perk perk) {
+    return Util.item(Material.getMaterial(company.logoMaterial), "Namespace: " + perk.namespace);
+  }
+
 
   static ItemStack accountDisplayItem(Account account, Player player, String... extraLore) {
 

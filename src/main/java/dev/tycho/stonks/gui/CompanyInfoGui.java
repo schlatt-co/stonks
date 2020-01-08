@@ -1,6 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryManager;
@@ -33,6 +34,12 @@ public class CompanyInfoGui extends InventoryGui {
         e -> player.performCommand("stonks accounts " + company.name)));
     contents.set(2, 5, ClickableItem.of(Util.item(Material.BOOKSHELF, "Services"),
         e -> player.performCommand("stonks servicefolders " + company.name)));
+
+    Member member = company.getMember(player);
+    if (member != null && member.hasManagamentPermission()) {
+      contents.set(2, 7, ClickableItem.of(Util.item(Material.PAPER, "Perks"),
+          e -> player.performCommand("stonks perks " + company.name)));
+    }
 
   }
 }
