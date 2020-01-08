@@ -94,7 +94,6 @@ public class Stonks extends JavaPlugin {
     if (player.isOnline()) onlinePlayer = player.getPlayer();
 
     if (Subscription.isOverdue(service, subscription)) {
-      System.out.println("Auto billing " + player.getName() + " $" + service.cost + " for service id " + service.pk);
       //Subscription is overdue and we must renew it
       if (onlinePlayer != null)
         sendMessage(onlinePlayer, ChatColor.YELLOW + "Your subscription for " + service.name + " has ended." + ChatColor.GREEN + " Automatically renewing it now.....");
@@ -102,7 +101,6 @@ public class Stonks extends JavaPlugin {
       //Try and charge them the amount due
       if (!Stonks.economy.withdrawPlayer(player, service.cost).transactionSuccess()) {
         //Player does not have enough money
-        System.out.println("(failed - they didn't have enough money)");
         if (onlinePlayer != null)
           sendMessage(onlinePlayer, ChatColor.RED + "Failed to renew. You don't have enough money, please get more then manually resubscribe");
       } else {
@@ -119,7 +117,6 @@ public class Stonks extends JavaPlugin {
           Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mail send " +
               player.getName() + " you have been billed $" + service.cost + " for the service " + service.name);
         }
-        System.out.println("(success)");
       }
     }
   }
