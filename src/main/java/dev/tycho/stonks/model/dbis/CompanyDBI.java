@@ -14,13 +14,15 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
   private final Store<Member> memberStore;
   private final Store<CompanyAccount> companyAccountStore;
   private final Store<HoldingsAccount> holdingsAccountStore;
+  private final Store<Perk> perkStore;
 
-
-  public CompanyDBI(DataSource dataSource, Store<Member> memberStore, Store<CompanyAccount> companyAccountStore, Store<HoldingsAccount> holdingsAccountStore) {
+  public CompanyDBI(DataSource dataSource, Store<Member> memberStore, Store<CompanyAccount> companyAccountStore,
+                    Store<HoldingsAccount> holdingsAccountStore, Store<Perk> perkStore) {
     super(dataSource);
     this.memberStore = memberStore;
     this.companyAccountStore = companyAccountStore;
     this.holdingsAccountStore = holdingsAccountStore;
+    this.perkStore = perkStore;
   }
 
   @Override
@@ -62,7 +64,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
         ResultSet rs = statement.getGeneratedKeys();
         if (rs.next()) {
           int newPk = rs.getInt(1);
-          return new Company(newPk, obj.name, obj.shopName, obj.logoMaterial, obj.verified, obj.hidden, new ArrayList<>(), new ArrayList<>()
+          return new Company(newPk, obj.name, obj.shopName, obj.logoMaterial, obj.verified, obj.hidden,
+              new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
           );
         }
       }
@@ -121,7 +124,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
               results.getString("logo_material"),
               results.getBoolean("verified"),
               results.getBoolean("hidden"),
-              accounts, new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == pk))
+              accounts, new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == pk)),
+              new ArrayList<>(perkStore.getAllWhere(m -> m.companyPk == pk))
           );
           return company;
         }
@@ -147,7 +151,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
         obj.verified,
         obj.hidden,
         accounts,
-        new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == obj.pk))
+        new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == obj.pk)),
+        new ArrayList<>(perkStore.getAllWhere(m -> m.companyPk == obj.pk))
     );
     return company;
   }
@@ -176,7 +181,8 @@ public class CompanyDBI extends JavaSqlDBI<Company> {
                   results.getBoolean("verified"),
                   results.getBoolean("hidden"),
                   accounts,
-                  new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == pk))
+                  new ArrayList<>(memberStore.getAllWhere(m -> m.companyPk == pk)),
+                  new ArrayList<>(perkStore.getAllWhere(m -> m.companyPk == pk))
               ));
         }
       }
