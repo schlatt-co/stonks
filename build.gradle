@@ -17,6 +17,7 @@ dependencies {
     compileOnly "net.ess3:EssentialsX:2.17.0"
     compileOnly "com.github.schlatt-co:PluginLibrary:c65436d5b6"
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+    compile 'me.nallar.whocalled:WhoCalled:1.1'
 }
 
 compileJava.options.encoding = 'UTF-8'
