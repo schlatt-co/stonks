@@ -52,4 +52,8 @@ public abstract class CompanyPerk {
   public final CompanyPerkAction[] getPerkActions() {
     return perkActions;
   }
+
+  public final String getNamespace() {
+    return getPlugin().getName().toLowerCase() + ":" + getName().toLowerCase();
+  }
 }
