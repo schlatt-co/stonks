@@ -1,9 +1,10 @@
 package dev.tycho.stonks.model.core;
 
+import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.database.Entity;
+import dev.tycho.stonks.managers.PerkManager;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class Company extends Entity {
@@ -15,12 +16,12 @@ public class Company extends Entity {
   public final Boolean hidden;
 
   public final Collection<Member> members;
-
   public final Collection<Account> accounts;
+  public final Collection<Perk> perks;
 
 
   public Company(int pk, String name, String shopName, String logoMaterial, Boolean verified, Boolean hidden,
-                 Collection<Account> accounts, Collection<Member> members) {
+                 Collection<Account> accounts, Collection<Member> members, Collection<Perk> perks) {
     super(pk);
     this.name = name;
     this.shopName = shopName;
@@ -29,17 +30,7 @@ public class Company extends Entity {
     this.logoMaterial = logoMaterial;
     this.verified = verified;
     this.hidden = hidden;
-  }
-
-  public Company(Company company) {
-    super(company.pk);
-    this.name = company.name;
-    this.shopName = company.shopName;
-    this.members = new ArrayList<>(company.members);
-    this.accounts = new ArrayList<>(company.accounts);
-    this.logoMaterial = company.logoMaterial;
-    this.verified = company.verified;
-    this.hidden = company.hidden;
+    this.perks = perks;
   }
 
   public Member getMember(Player player) {
@@ -74,5 +65,21 @@ public class Company extends Entity {
       }
     }
     return false;
+  }
+
+  public boolean ownsPerk(String namespace) {
+    for (Perk perk : perks) {
+      if (perk.namespace.equalsIgnoreCase(namespace)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean ownsPerk(Class<? extends CompanyPerk> perk) {
+    if (!PerkManager.getInstance().getClassNamespaceMap().containsKey(perk.getName())) {
+      return false;
+    }
+    return ownsPerk(PerkManager.getInstance().getClassNamespaceMap().get(perk.getName()));
   }
 }

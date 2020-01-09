@@ -1,17 +1,21 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.api.perks.CompanyPerk;
+import dev.tycho.stonks.api.perks.CompanyPerkAction;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
+import io.github.jroy.pluginlibrary.PluginLibrary;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,10 +39,49 @@ public class ItemInfoHelper {
     return accountDisplayItem(account, player, new String[]{});
   }
 
+  static ItemStack perkDisplayItem(Company company, CompanyPerk perk) {
+    ItemStack itemStack = Util.item(perk.getIcon(), perk.getName(), "", ChatColor.translateAlternateColorCodes('&', (company.ownsPerk(perk.getNamespace()) ? "&ePurchased!" : "&fPrice: &e" + perk.getPrice())), "");
+    ItemMeta meta = itemStack.getItemMeta();
+    assert meta != null;
+    List<String> lore = meta.getLore();
+    for (String curString : perk.getDescription()) {
+      assert lore != null;
+      lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
+    }
+    meta.setLore(lore);
+    if (company.ownsPerk(perk.getNamespace())) {
+      meta.addEnchant(PluginLibrary.glowEnchantment, 1, true);
+    }
+    itemStack.setItemMeta(meta);
+    return itemStack;
+  }
+
+  static ItemStack perkActionDisplayItem(Company company, Player player, CompanyPerkAction perkAction) {
+    Member member = company.getMember(player);
+    if (member == null) {
+      player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "You're not a member for this organization. You should never see this, please report this!");
+      throw new RuntimeException("Company member made illegal access to perk action!");
+    }
+    ItemStack itemStack = Util.item(perkAction.getIcon(), perkAction.getName(), "");
+    ItemMeta meta = itemStack.getItemMeta();
+    assert meta != null;
+    List<String> lore = meta.getLore();
+    for (String curString : perkAction.getDescription()) {
+      assert lore != null;
+      lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
+    }
+    meta.setLore(lore);
+    if (member.role.hasPermission(perkAction.getPermissionLevel())) {
+      meta.addEnchant(PluginLibrary.glowEnchantment, 1, true);
+    }
+    itemStack.setItemMeta(meta);
+    return itemStack;
+  }
+
 
   static ItemStack accountDisplayItem(Account account, Player player, String... extraLore) {
 
-    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<ItemStack>() {
+    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();

@@ -37,6 +37,7 @@ public class Repo extends SpigotModule {
   private DatabaseStore<Member> memberStore;
   private DatabaseStore<Service> serviceStore;
   private DatabaseStore<Subscription> subscriptionStore;
+  private DatabaseStore<Perk> perkStore;
   private TransactionStore transactionStore;
 
   public Repo(Stonks stonks) {
@@ -109,11 +110,13 @@ public class Repo extends SpigotModule {
     memberStore = new AsyncSaveStore<>();
     serviceStore = new AsyncSaveStore<>();
     subscriptionStore = new AsyncSaveStore<>();
+    perkStore = new AsyncSaveStore<>();
     transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
     transactionStore.createTable();
 
 
-    companyStore.setDbi(new CompanyDBI(dataSource, memberStore, companyAccountStore, holdingsAccountStore));
+    companyStore.setDbi(new CompanyDBI(dataSource, memberStore, companyAccountStore, holdingsAccountStore, perkStore));
+    perkStore.setDbi(new PerkDBI(dataSource));
     companyAccountStore.setDbi(new CompanyAccountDBI(dataSource, serviceStore));
     holdingsAccountStore.setDbi(new HoldingsAccountDBI(dataSource, serviceStore, holdingStore));
     holdingStore.setDbi(new HoldingDBI(dataSource));
@@ -129,6 +132,7 @@ public class Repo extends SpigotModule {
     subscriptionStore.populate();
     serviceStore.populate();
     companyAccountStore.populate();
+    perkStore.populate();
     holdingStore.populate();
     holdingsAccountStore.populate();
     memberStore.populate();
@@ -177,7 +181,7 @@ public class Repo extends SpigotModule {
       //If you are not a manager, or a non-member with a holding then don't remove
       for (Account a : c.accounts) {
         //Is there a holding account for the player
-        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
           @Override
           public void visit(CompanyAccount a) {
             val = false;
@@ -243,7 +247,7 @@ public class Repo extends SpigotModule {
 
   public Company createCompany(String companyName, Player player) {
     Company c = new Company(0, companyName, "S" + companyName,
-        Material.EMERALD.name(), false, false, new ArrayList<>(), new ArrayList<>()
+        Material.EMERALD.name(), false, false, new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
     );
     c = companyStore.create(c);
 
@@ -255,11 +259,29 @@ public class Repo extends SpigotModule {
 
   public Company modifyCompany(Company c, String newName, String newLogo, boolean newVerified, boolean newHidden) {
     Company company = new Company(c.pk, newName, "S" + newName,
-        newLogo, newVerified, newHidden, c.accounts, c.members
+        newLogo, newVerified, newHidden, c.accounts, c.members, c.perks
     );
     companyStore.save(company);
     return company;
   }
+
+  public Perk createPerk(Company company, String namespace) {
+    Perk p = new Perk(0, company.pk, namespace);
+    p = perkStore.create(p);
+    //Update the company store for the company in which we created a perk
+    companyStore.refreshRelations(company.pk);
+    return p;
+  }
+
+  public boolean deletePerk(Perk perk) {
+    if (perkStore.delete(perk.pk)) {
+      //Update the company for this to remove the member
+      companyStore.refreshRelations(perk.companyPk);
+      return true;
+    }
+    return false;
+  }
+
 
   public Member createMember(Company company, Player player) {
     Member newMember = new Member(0, player.getUniqueId(), company.pk, new Timestamp(System.currentTimeMillis()), Role.Employee, false);
@@ -329,7 +351,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account renameAccount(Account account, String newName) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.services, a.balance);
@@ -351,7 +373,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account payAccount(UUID player, String message, Account account, double amount) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.balance + amount);

@@ -1,5 +1,6 @@
 package dev.tycho.stonks.util;
 
+import me.nallar.whocalled.WhoCalled;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -96,5 +97,15 @@ public class Util {
   private static double trim(double d) {
     DecimalFormat twoDForm = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
     return Double.parseDouble(twoDForm.format(d));
+  }
+
+  public static boolean isCalledInternally() {
+    Class<?> clazz;
+    try {
+      clazz = WhoCalled.$.getCallingClass(2);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      return isCalledInternally();
+    }
+    return clazz.getName().startsWith("dev.tycho.stonks");
   }
 }

@@ -7,23 +7,26 @@ import dev.tycho.stonks.managers.PlayerData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
+import dev.tycho.stonks.perks.CompanyChatPerk;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class CompanyChatCommand implements CommandExecutor {
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
     Player player = (Player) sender;
 
     //If we need to select a company to chat in
     if (args.length == 0 || !PlayerData.getInstance().getSelectedCompanyChat().containsKey(player)) {
       //Show a company selector
       new CompanySelectorGui.Builder()
-          .companies(Repo.getInstance().companiesWhereMember(player))
+          .companies(Repo.getInstance().companies().getAllWhere(
+              p -> p.ownsPerk(CompanyChatPerk.class) && p.isMember(player)))
           .title("Select company for chat.")
           .companySelected(company -> {
             PlayerData.getInstance().getSelectedCompanyChat().put(player, company.pk);
@@ -42,7 +45,11 @@ public class CompanyChatCommand implements CommandExecutor {
   }
 
   private void messageMembers(Player player, Company company, String[] args) {
-    StringBuilder message = new StringBuilder(ChatColor.DARK_GREEN + company.name + "> " + ChatColor.WHITE).append(player.getDisplayName() + ": ");
+    if (!company.ownsPerk(CompanyChatPerk.class)) {
+      player.sendMessage(ChatColor.GREEN + "Stonks> That company hasn't bought the company chat perk");
+      return;
+    }
+    StringBuilder message = new StringBuilder(ChatColor.GREEN + company.name + "> " + ChatColor.WHITE).append(player.getDisplayName()).append(": ");
     for (String arg : args) {
       message.append(arg).append(" ");
     }

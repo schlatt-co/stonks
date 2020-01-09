@@ -7,7 +7,9 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -68,5 +70,9 @@ public abstract class CollectionGui<T> extends InventoryGui {
       contents.set(5, 5, ClickableItem.of(Util.item(Material.ARROW, "Next page"),
           e -> getInventory().open(player, pagination.next().getPage())));
     }
+  }
+
+  protected void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }
