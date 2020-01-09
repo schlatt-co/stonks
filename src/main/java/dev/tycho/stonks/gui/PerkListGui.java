@@ -37,6 +37,7 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
             .show(player);
       } else if (member == null || !member.hasManagamentPermission()) {
         sendMessage(player, "You have insufficient permissions to purchase perks for this company!");
+        getInventory().close(player);
       } else {
         new AccountSelectorGui.Builder()
             .company(company)

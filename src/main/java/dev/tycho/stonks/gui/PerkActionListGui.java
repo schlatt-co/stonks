@@ -37,6 +37,7 @@ public class PerkActionListGui extends CollectionGui<CompanyPerkAction> {
         sendMessage(player, "You have insufficient permission to execute this perk action! Please either ask to be promoted " +
             "or have a higher ranking member execute it");
       }
+      getInventory().close(player);
     });
   }
 }
