@@ -40,7 +40,7 @@ public class ItemInfoHelper {
   }
 
   static ItemStack perkDisplayItem(Company company, CompanyPerk perk) {
-    ItemStack itemStack = Util.item(perk.getIcon(), perk.getName(), "", ChatColor.translateAlternateColorCodes('&', "&fPrice: &e") + perk.getPrice(), "");
+    ItemStack itemStack = Util.item(perk.getIcon(), perk.getName(), "", ChatColor.translateAlternateColorCodes('&', (company.ownsPerk(perk.getNamespace()) ? "&ePurchased!" : "&fPrice: &e" + perk.getPrice())), "");
     ItemMeta meta = itemStack.getItemMeta();
     assert meta != null;
     List<String> lore = meta.getLore();
