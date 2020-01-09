@@ -1,19 +1,20 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.api.perks.CompanyPerk;
+import dev.tycho.stonks.managers.PerkManager;
 import dev.tycho.stonks.model.core.Company;
-import dev.tycho.stonks.model.core.Perk;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class PerkListGui extends CollectionGui<Perk> {
+public class PerkListGui extends CollectionGui<CompanyPerk> {
 
   private Company company;
 
   public PerkListGui(Company company) {
-    super(company.perks, company.name + " perks");
+    super(PerkManager.getInstance().getRegisteredPerks().values(), company.name + "'s Perks");
     this.company = company;
   }
 
@@ -26,7 +27,7 @@ public class PerkListGui extends CollectionGui<Perk> {
   }
 
   @Override
-  protected ClickableItem itemProvider(Player player, Perk obj) {
+  protected ClickableItem itemProvider(Player player, CompanyPerk obj) {
     return ClickableItem.empty(ItemInfoHelper.perkDisplayItem(company, obj));
   }
 }

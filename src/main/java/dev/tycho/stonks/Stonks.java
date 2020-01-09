@@ -51,6 +51,7 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
     loadedModules.add(new SettingsManager(this));
+    loadedModules.add(new PerkManager(this));
     if (!setupEconomy()) {
       return;
     }

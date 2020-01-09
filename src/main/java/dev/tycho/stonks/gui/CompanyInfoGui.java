@@ -37,7 +37,7 @@ public class CompanyInfoGui extends InventoryGui {
 
     Member member = company.getMember(player);
     if (member != null && member.hasManagamentPermission()) {
-      contents.set(2, 7, ClickableItem.of(Util.item(Material.PAPER, "Perks"),
+      contents.set(3, 4, ClickableItem.of(Util.item(Material.DIAMOND, "Perks"),
           e -> player.performCommand("stonks perks " + company.name)));
     }
 

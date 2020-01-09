@@ -1,17 +1,20 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.Util;
+import io.github.jroy.pluginlibrary.PluginLibrary;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,14 +38,25 @@ public class ItemInfoHelper {
     return accountDisplayItem(account, player, new String[]{});
   }
 
-  static ItemStack perkDisplayItem(Company company, Perk perk) {
-    return Util.item(Material.getMaterial(company.logoMaterial), "Namespace: " + perk.namespace);
+  static ItemStack perkDisplayItem(Company company, CompanyPerk perk) {
+    ItemStack itemStack = Util.item(perk.getIcon(), perk.getName(), "", ChatColor.translateAlternateColorCodes('&', "&fPrice: &e") + perk.getPrice(), "");
+    ItemMeta meta = itemStack.getItemMeta();
+    List<String> lore = meta.getLore();
+    for (String curString : perk.getDescription()) {
+      lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
+    }
+    meta.setLore(lore);
+    if (company.ownsPerk(perk.getNamespace())) {
+      meta.addEnchant(PluginLibrary.glowEnchantment, 1, true);
+    }
+    itemStack.setItemMeta(meta);
+    return itemStack;
   }
 
 
   static ItemStack accountDisplayItem(Account account, Player player, String... extraLore) {
 
-    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<ItemStack>() {
+    ReturningAccountVisitor<ItemStack> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         List<String> lore = new ArrayList<>();
