@@ -1,6 +1,8 @@
 package dev.tycho.stonks.model.core;
 
+import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.database.Entity;
+import dev.tycho.stonks.managers.PerkManager;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -72,5 +74,12 @@ public class Company extends Entity {
       }
     }
     return false;
+  }
+
+  public boolean ownsPerk(Class<? extends CompanyPerk> perk) {
+    if (!PerkManager.getInstance().getClassNamespaceMap().containsKey(perk.getName())) {
+      return false;
+    }
+    return ownsPerk(PerkManager.getInstance().getClassNamespaceMap().get(perk.getName()));
   }
 }

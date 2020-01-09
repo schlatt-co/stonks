@@ -7,6 +7,7 @@ import com.Acrobot.ChestShop.UUIDs.NameManager;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.perks.ChestShopPerk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
@@ -46,7 +47,7 @@ public class ShopManager extends SpigotModule {
     dev.tycho.stonks.model.core.Account account;
     if ((account = Repo.getInstance().accountWithId(accountId)) != null) {
       Company company = Repo.getInstance().companies().get(account.companyPk);
-      if (!company.ownsPerk("stonks:chestshop integration")) {
+      if (!company.ownsPerk(ChestShopPerk.class)) {
         sendMessage(event.getPlayer(), "Your company didn't buy the ChestShop Integration perk! You'll need to buy this perk before you can make ChestShops of companies!");
         event.setOutcome(PreShopCreationEvent.CreationOutcome.NO_PERMISSION);
         return;
