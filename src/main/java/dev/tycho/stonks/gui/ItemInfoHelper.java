@@ -1,6 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.api.perks.CompanyPerk;
+import dev.tycho.stonks.api.perks.CompanyPerkAction;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.model.logging.Transaction;
@@ -41,12 +42,36 @@ public class ItemInfoHelper {
   static ItemStack perkDisplayItem(Company company, CompanyPerk perk) {
     ItemStack itemStack = Util.item(perk.getIcon(), perk.getName(), "", ChatColor.translateAlternateColorCodes('&', "&fPrice: &e") + perk.getPrice(), "");
     ItemMeta meta = itemStack.getItemMeta();
+    assert meta != null;
     List<String> lore = meta.getLore();
     for (String curString : perk.getDescription()) {
+      assert lore != null;
       lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
     }
     meta.setLore(lore);
     if (company.ownsPerk(perk.getNamespace())) {
+      meta.addEnchant(PluginLibrary.glowEnchantment, 1, true);
+    }
+    itemStack.setItemMeta(meta);
+    return itemStack;
+  }
+
+  static ItemStack perkActionDisplayItem(Company company, Player player, CompanyPerkAction perkAction) {
+    Member member = company.getMember(player);
+    if (member == null) {
+      player.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + "You're not a member for this organization. You should never see this, please report this!");
+      throw new RuntimeException("Company member made illegal access to perk action!");
+    }
+    ItemStack itemStack = Util.item(perkAction.getIcon(), perkAction.getName(), "");
+    ItemMeta meta = itemStack.getItemMeta();
+    assert meta != null;
+    List<String> lore = meta.getLore();
+    for (String curString : perkAction.getDescription()) {
+      assert lore != null;
+      lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
+    }
+    meta.setLore(lore);
+    if (member.role.hasPermission(perkAction.getPermissionLevel())) {
       meta.addEnchant(PluginLibrary.glowEnchantment, 1, true);
     }
     itemStack.setItemMeta(meta);

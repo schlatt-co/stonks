@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 public class ChestShopPerk extends CompanyPerk {
 
   public ChestShopPerk(Plugin plugin) {
-    super(plugin, "ChestShop Integration", Material.SIGN, 4000, "This perk allows you to create a ChestShop",
+    super(plugin, "ChestShop Integration", Material.OAK_SIGN, 4000, "This perk allows you to create a ChestShop",
         "as a company! Allowing direct deposit/withdrawal into",
         "company accounts; As well as sharing locked chests",
         "among company members. Once purchased, all you need to",

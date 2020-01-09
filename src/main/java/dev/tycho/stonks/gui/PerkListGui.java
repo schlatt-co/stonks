@@ -33,7 +33,8 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
     return ClickableItem.of(ItemInfoHelper.perkDisplayItem(company, obj), e -> {
       Member member = company.getMember(player);
       if (company.ownsPerk(obj.getNamespace())) {
-        //TODO: CompanyPerkAction GUI
+        new PerkActionListGui(company, obj)
+            .show(player);
       } else if (member == null || !member.hasManagamentPermission()) {
         sendMessage(player, "You have insufficient permissions to purchase perks for this company!");
       } else {

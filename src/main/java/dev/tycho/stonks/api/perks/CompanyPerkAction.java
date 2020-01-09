@@ -1,9 +1,9 @@
 package dev.tycho.stonks.api.perks;
 
 import dev.tycho.stonks.model.core.Company;
-import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.model.core.Role;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 public abstract class CompanyPerkAction {
 
@@ -19,7 +19,7 @@ public abstract class CompanyPerkAction {
     this.description = description;
   }
 
-  public abstract void onExecute(Company company, Member executor);
+  public abstract void onExecute(Company company, Player executor);
 
   public String getName() {
     return name;
