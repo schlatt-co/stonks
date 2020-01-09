@@ -64,4 +64,13 @@ public class Company extends Entity {
     }
     return false;
   }
+
+  public boolean ownsPerk(String namespace) {
+    for (Perk perk : perks) {
+      if (perk.namespace.equalsIgnoreCase(namespace)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
