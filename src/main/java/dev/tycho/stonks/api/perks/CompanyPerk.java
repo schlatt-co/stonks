@@ -10,15 +10,15 @@ public abstract class CompanyPerk {
   private final Plugin plugin;
   private final String name;
   private final Material icon;
-  private final int price;
+  private final double price;
   private final String[] description;
   private final CompanyPerkAction[] perkActions;
 
-  public CompanyPerk(Plugin plugin, String name, Material icon, int price, String... description) {
+  public CompanyPerk(Plugin plugin, String name, Material icon, double price, String... description) {
     this(plugin, name, icon, price, description, new CompanyPerkAction[]{});
   }
 
-  public CompanyPerk(Plugin plugin, String name, Material icon, int price, String[] description, CompanyPerkAction... companyPerkActions) {
+  public CompanyPerk(Plugin plugin, String name, Material icon, double price, String[] description, CompanyPerkAction... companyPerkActions) {
     this.plugin = plugin;
     this.name = name;
     this.icon = icon;
@@ -41,7 +41,7 @@ public abstract class CompanyPerk {
     return icon;
   }
 
-  public final int getPrice() {
+  public final double getPrice() {
     return price;
   }
 

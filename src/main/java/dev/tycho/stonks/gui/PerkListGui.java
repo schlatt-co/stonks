@@ -2,7 +2,9 @@ package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.managers.PerkManager;
-import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
+import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
@@ -28,6 +30,42 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
 
   @Override
   protected ClickableItem itemProvider(Player player, CompanyPerk obj) {
-    return ClickableItem.empty(ItemInfoHelper.perkDisplayItem(company, obj));
+    return ClickableItem.of(ItemInfoHelper.perkDisplayItem(company, obj), e -> {
+      Member member = company.getMember(player);
+      if (company.ownsPerk(obj.getNamespace())) {
+        //TODO: CompanyPerkAction GUI
+      } else if (member == null || !member.hasManagamentPermission()) {
+        sendMessage(player, "You have insufficient permissions to purchase perks for this company!");
+      } else {
+        new AccountSelectorGui.Builder()
+            .company(company)
+            .title("Select account to purchase with")
+            .accountSelected(acc -> purchasePerk(player, acc, obj))
+            .show(player);
+      }
+    });
+  }
+
+  protected void purchasePerk(Player player, Account account, CompanyPerk perk) {
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    IAccountVisitor visitor = new IAccountVisitor() {
+      @Override
+      public void visit(CompanyAccount a) {
+        if (a.getTotalBalance() < perk.getPrice()) {
+          sendMessage(player, "That account doesn't have enough funds to complete this transaction!");
+          return;
+        }
+
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice());
+        PerkManager.getInstance().awardPerk(company, perk);
+        sendMessage(player, "Perk purchased successfully!");
+      }
+
+      @Override
+      public void visit(HoldingsAccount a) {
+        sendMessage(player, "Holding accounts cannot be used to purchase perks!");
+      }
+    };
+    account.accept(visitor);
   }
 }
