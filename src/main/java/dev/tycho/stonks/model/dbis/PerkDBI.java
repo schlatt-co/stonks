@@ -122,7 +122,7 @@ public class PerkDBI extends JavaSqlDBI<Perk> {
     try {
       try (Connection conn = getConnection()) {
         PreparedStatement statement = conn.prepareStatement(
-            "SELECT company_pk, namespace FROM perk");
+            "SELECT pk, company_pk, namespace FROM perk");
 
         ResultSet results = statement.executeQuery();
         while (results.next()) {

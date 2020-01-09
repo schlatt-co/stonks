@@ -132,6 +132,7 @@ public class Repo extends SpigotModule {
     subscriptionStore.populate();
     serviceStore.populate();
     companyAccountStore.populate();
+    perkStore.populate();
     holdingStore.populate();
     holdingsAccountStore.populate();
     memberStore.populate();
@@ -180,7 +181,7 @@ public class Repo extends SpigotModule {
       //If you are not a manager, or a non-member with a holding then don't remove
       for (Account a : c.accounts) {
         //Is there a holding account for the player
-        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+        ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
           @Override
           public void visit(CompanyAccount a) {
             val = false;
@@ -350,7 +351,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account renameAccount(Account account, String newName) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, newName, a.uuid, a.companyPk, a.services, a.balance);
@@ -372,7 +373,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account payAccount(UUID player, String message, Account account, double amount) {
-    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<Account>() {
+    ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {
         CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.balance + amount);
