@@ -2,6 +2,7 @@
 out/
 .idea/
 .idea/workspace.xml
+lombok.config
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
