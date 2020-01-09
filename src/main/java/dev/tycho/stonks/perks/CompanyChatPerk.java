@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 public class CompanyChatPerk extends CompanyPerk {
 
   public CompanyChatPerk(Plugin plugin) {
-    super(plugin, "Company Chat", Material.OAK_SIGN, 1000,
+    super(plugin, "Company Chat", Material.WRITABLE_BOOK, 1000,
         "This perk allows you to talk to all the members in your company!",
         "You can do this by typing /cc then selecting a company",
         "Then type /cc <message> to send a message with that selection",
