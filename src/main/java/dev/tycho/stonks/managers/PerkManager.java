@@ -4,6 +4,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.perks.ChestShopPerk;
+import dev.tycho.stonks.perks.CompanyChatPerk;
 import dev.tycho.stonks.util.Util;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class PerkManager extends SpigotModule {
     super("Perk Manager", plugin);
     instance = this;
     registerPerk(new ChestShopPerk(plugin));
+    registerPerk(new CompanyChatPerk(plugin));
   }
 
   public void registerPerk(CompanyPerk perk) {

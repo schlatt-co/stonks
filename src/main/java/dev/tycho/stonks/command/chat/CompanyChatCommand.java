@@ -23,7 +23,8 @@ public class CompanyChatCommand implements CommandExecutor {
     if (args.length == 0 || !PlayerData.getInstance().getSelectedCompanyChat().containsKey(player)) {
       //Show a company selector
       new CompanySelectorGui.Builder()
-          .companies(Repo.getInstance().companiesWhereMember(player))
+          .companies(Repo.getInstance().companies().getAllWhere(
+              p -> p.ownsPerk("stonks:company chat") && p.isMember(player)))
           .title("Select company for chat.")
           .companySelected(company -> {
             PlayerData.getInstance().getSelectedCompanyChat().put(player, company.pk);
@@ -42,7 +43,11 @@ public class CompanyChatCommand implements CommandExecutor {
   }
 
   private void messageMembers(Player player, Company company, String[] args) {
-    StringBuilder message = new StringBuilder(ChatColor.DARK_GREEN + company.name + "> " + ChatColor.WHITE).append(player.getDisplayName() + ": ");
+    if (!company.ownsPerk("stonks:company chat")) {
+      player.sendMessage(ChatColor.GREEN + "Stonks> That company hasn't bought the company chat perk");
+      return;
+    }
+    StringBuilder message = new StringBuilder(ChatColor.GREEN + company.name + "> " + ChatColor.WHITE).append(player.getDisplayName() + ": ");
     for (String arg : args) {
       message.append(arg).append(" ");
     }
