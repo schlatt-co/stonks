@@ -1,6 +1,7 @@
 package dev.tycho.stonks.api;
 
 import dev.tycho.stonks.api.perks.CompanyPerk;
+import dev.tycho.stonks.managers.PerkManager;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import dev.tycho.stonks.model.core.Company;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class StonksAPI {
 
   public static void registerPerk(CompanyPerk perk) {
-
+    PerkManager.getInstance().registerPerk(perk);
   }
 
   /**
