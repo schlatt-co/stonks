@@ -11,6 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class StonksAPI {
 
+  /**
+   * Registers a perk for companies.
+   * @param perk Perk to register
+   */
   public static void registerPerk(CompanyPerk perk) {
     PerkManager.getInstance().registerPerk(perk);
   }
