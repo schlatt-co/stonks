@@ -2,7 +2,9 @@ package dev.tycho.stonks.api.perks;
 
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 public abstract class CompanyPerk {
@@ -55,5 +57,9 @@ public abstract class CompanyPerk {
 
   public final String getNamespace() {
     return getPlugin().getName().toLowerCase() + ":" + getName().toLowerCase();
+  }
+
+  private void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }

@@ -2,7 +2,9 @@ package dev.tycho.stonks.api.perks;
 
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Role;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class CompanyPerkAction {
@@ -35,5 +37,9 @@ public abstract class CompanyPerkAction {
 
   public String[] getDescription() {
     return description;
+  }
+
+  private void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }
