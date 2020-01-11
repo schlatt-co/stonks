@@ -16,6 +16,6 @@ public class HelpCommandSub extends CommandSub {
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     sendMessage(player, "Command Help:");
-    sendMessage(player, "To view all commands and more info about the plugin please go to https://stonks.tycho.dev/");
+    sendMessage(player, "To view all commands and more info about the plugin please go to https://stonks.company/");
   }
 }
