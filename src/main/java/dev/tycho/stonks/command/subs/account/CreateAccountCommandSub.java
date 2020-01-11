@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.subs.account;
 
-import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
@@ -70,10 +69,6 @@ public class CreateAccountCommandSub extends ModularCommandSub {
     }
     if (!member.hasManagamentPermission()) {
       sendMessage(player, "You don't have permission to preform this action. Ask for a promotion!");
-      return;
-    }
-    if (!Stonks.economy.withdrawPlayer(player, SettingsManager.ACCOUNT_FEE).transactionSuccess()) {
-      sendMessage(player, "You don't have the sufficient funds for the $" + SettingsManager.ACCOUNT_FEE + " account creation fee.");
       return;
     }
 
