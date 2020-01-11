@@ -1,10 +1,12 @@
 package dev.tycho.stonks.command.subs.member;
 
+import dev.tycho.stonks.api.event.CompanyJoinEvent;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,6 +35,7 @@ public class AcceptInviteCommandSub extends ModularCommandSub {
     //Ok accept the invite
     member = Repo.getInstance().modifyMember(member, member.role, true);
     if (member.acceptedInvite) {
+      Bukkit.getPluginManager().callEvent(new CompanyJoinEvent(company, player));
       sendMessage(player, "You are now a member of " + ChatColor.YELLOW + company.name + "!");
       Repo.getInstance().sendMessageToAllOnlineManagers(company, player.getDisplayName() + " just joined " + ChatColor.GOLD + company.name);
     } else {
