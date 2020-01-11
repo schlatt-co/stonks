@@ -1,5 +1,6 @@
 package dev.tycho.stonks.command.subs.member;
 
+import dev.tycho.stonks.api.event.CompanyKickEvent;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
@@ -62,7 +63,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     boolean hasHoldings = false;
     for (Account account : company.accounts) {
-      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<Boolean>() {
+      ReturningAccountVisitor<Boolean> visitor = new ReturningAccountVisitor<>() {
         @Override
         public void visit(CompanyAccount a) {
           val = false;
@@ -85,6 +86,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
     //We can kick the player
     if (Repo.getInstance().deleteMember(memberToKick)) {
+      Bukkit.getPluginManager().callEvent(new CompanyKickEvent(company, playerToKick));
       PlayerData.getInstance().getSelectedCompanyChat().remove(Bukkit.getOfflinePlayer(memberToKick.playerUUID).getPlayer());
       sendMessage(player, "Player kicked successfully!");
       //Send a different message based on if a player was fired or left
