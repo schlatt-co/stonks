@@ -59,7 +59,7 @@ public abstract class CompanyPerk {
     return getPlugin().getName().toLowerCase() + ":" + getName().toLowerCase();
   }
 
-  private void sendMessage(CommandSender sender, String message) {
+  protected void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }

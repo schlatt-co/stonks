@@ -39,7 +39,7 @@ public abstract class CompanyPerkAction {
     return description;
   }
 
-  private void sendMessage(CommandSender sender, String message) {
+  protected void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }
