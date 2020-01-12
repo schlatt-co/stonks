@@ -55,6 +55,9 @@ public class SubscribeCommandSub extends ModularCommandSub {
                 //Subscription created!
                 sendMessage(player, "You have subscribed to the service " + service.name);
                 sendMessage(player, "This service will expire in " + service.duration + " days");
+                //tell all managers of the company for the service this user just subscribed
+
+                Repo.getInstance().sendMessageToAllOnlineManagers(Repo.getInstance().companies().get(Repo.getInstance().accountWithId(service.accountPk).companyPk), player.getName() + " has subscribed to the " + service.name + " service!");
                 if (autoPay) {
                   sendMessage(player, "Your subscription will automatically renew, so you don't need to do anything.");
                 } else {

@@ -44,6 +44,8 @@ public class StonksAPI {
     return Repo.getInstance().createCompany(name, owner);
   }
 
+
+
   /**
    * Creates and returns the account with the given name.
    * @param company The company to create the account from.
