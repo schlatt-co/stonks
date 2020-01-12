@@ -4,7 +4,6 @@ import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
-import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerData;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.managers.SettingsManager;
@@ -35,10 +34,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
               new CompanySelectorGui.Builder()
                   .title("Select a company")
                   .companies(list)
-                  .companySelected(company -> new ConfirmationGui.Builder()
-                      .title("Accept creation fee?")
-                      .yes(() -> createAccount(player, company, accountName, type))
-                      .show(player))
+                  .companySelected(company -> createAccount(player, company, accountName, type))
                   .show(player);
             }
         ).show(player);
