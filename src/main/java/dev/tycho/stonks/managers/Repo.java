@@ -487,6 +487,7 @@ public class Repo extends SpigotModule {
   }
 
   public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
+    if (subscription.servicePk != service.pk) throw new IllegalArgumentException("Subscription does not belong to service");
     Subscription s = new Subscription(subscription.pk, subscription.playerUUID, subscription.servicePk,
         new Timestamp(System.currentTimeMillis()), subscription.autoPay);
 

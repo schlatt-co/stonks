@@ -6,6 +6,7 @@ import dev.tycho.stonks.command.base.validators.ServiceValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.service.Service;
+import dev.tycho.stonks.model.service.Subscription;
 import org.bukkit.entity.Player;
 
 public class SubscribeCommandSub extends ModularCommandSub {
@@ -49,9 +50,8 @@ public class SubscribeCommandSub extends ModularCommandSub {
                 sendMessage(player, "Insufficient funds!");
               } else {
                 //Payment success
-                Repo.getInstance().createSubscription(player, service, autoPay);
-                Repo.getInstance().createTransaction(player.getUniqueId(), Repo.getInstance().accountWithId(service.accountPk),
-                    "First Subscription payment (" + service.name + ")", service.cost);
+                Subscription subscription = Repo.getInstance().createSubscription(player, service, autoPay);
+                Repo.getInstance().paySubscription(player.getUniqueId(), subscription, service);
                 //Subscription created!
                 sendMessage(player, "You have subscribed to the service " + service.name);
                 sendMessage(player, "This service will expire in " + service.duration + " days");
