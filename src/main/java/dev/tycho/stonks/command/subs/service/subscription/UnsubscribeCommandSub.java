@@ -27,6 +27,7 @@ public class UnsubscribeCommandSub extends ModularCommandSub {
         .yes(() -> {
           if (Repo.getInstance().deleteSubscription(subscription, service)) {
             sendMessage(player, "You have unsubscribed from " + service.name);
+            Repo.getInstance().sendMessageToAllOnlineManagers(Repo.getInstance().companies().get(Repo.getInstance().accountWithId(service.accountPk).companyPk), player.getName() + " has unsubscribed from the " + service.name + " service");
           } else {
             sendMessage(player, "Error deleting subscription");
           }
