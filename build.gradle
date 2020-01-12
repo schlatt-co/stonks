@@ -1,5 +1,32 @@
-apply plugin: 'java'
-apply plugin: 'idea'
+plugins {
+    id 'java'
+    id 'idea'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
+bukkit {
+    name = 'Stonks'
+    version = '2.1-' + getGitHash()
+    apiVersion = '1.14'
+    main = 'dev.tycho.stonks.Stonks'
+    authors = ['TychoVI', 'Tsarcasm', 'JRoy']
+    depend = ['PluginLibrary', 'Vault', 'ChestShop', 'Essentials']
+    commands {
+        company {
+            description = 'Main Stonks Command'
+            aliases = ['stonks', 'comp']
+            usage = '/company'
+        }
+        cc {
+            description = '/cc'
+            usage = '/cc'
+        }
+        ccr {
+            description = '/ccr'
+            usage = '/ccr'
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -25,4 +52,13 @@ compileJava.options.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+String getGitHash() {
+    def output = new ByteArrayOutputStream()
+    exec {
+        standardOutput = output // Only the std, not errors as it's not to worry about as long as it's a repo
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+    }
+    return output.toString().trim()
 }
