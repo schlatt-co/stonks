@@ -251,8 +251,10 @@ public class Repo extends SpigotModule {
     );
     c = companyStore.create(c);
 
-    Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
-    memberStore.create(ceo);
+    if (player != null) {
+      Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
+      memberStore.create(ceo);
+    }
     //Create a default company account
     createCompanyAccount(c, "Main");
     companyStore.refreshRelations(c.pk);

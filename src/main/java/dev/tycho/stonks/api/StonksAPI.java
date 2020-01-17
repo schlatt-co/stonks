@@ -20,6 +20,28 @@ public class StonksAPI {
   }
 
   /**
+   * Returns the Main account for the Admins company.
+   * @return The main admin company account.
+   * @throws StonksAPIException Should be never thrown.
+   */
+  public static Account getAdminAccount() throws StonksAPIException {
+    return getOrCreateAccount(getAdminCompany(), "Main");
+  }
+
+  /**
+   * Creates (if one isn't already present) and returns the Admins company.
+   * @return The admin company object.
+   * @throws StonksAPIException Should be never thrown.
+   */
+  public static Company getAdminCompany() throws StonksAPIException {
+    Company company = getCompany("Admins");
+    if (company == null) {
+      company = createCompany("Admins", null);
+    }
+    return company;
+  }
+
+  /**
    * Returns the company of the given name or null if no such company exists.
    * @param name The name of the company.
    * @return The company object if the company exists, otherwise null.
