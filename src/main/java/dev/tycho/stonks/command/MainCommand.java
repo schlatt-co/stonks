@@ -42,6 +42,7 @@ public class MainCommand extends CommandBase {
     addSubCommand("members", new MembersCommandSub());
     addSubCommand("myholdings", new MyHoldingsCommandSub());
     addSubCommand("pay", new PayCommandSub());
+    addSubCommand("transfer", new TransferCommandSub());
     addSubCommand("perks", new PerksCommandSub());
     addSubCommand("refresh", new RefreshCommandSub());
     addSubCommand("removeholding", new RemoveHoldingCommandSub());
