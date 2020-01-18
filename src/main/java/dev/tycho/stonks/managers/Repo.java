@@ -251,8 +251,10 @@ public class Repo extends SpigotModule {
     );
     c = companyStore.create(c);
 
-    Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
-    memberStore.create(ceo);
+    if (player != null) {
+      Member ceo = new Member(0, player.getUniqueId(), c.pk, new Timestamp(System.currentTimeMillis()), Role.CEO, true);
+      memberStore.create(ceo);
+    }
     //Create a default company account
     createCompanyAccount(c, "Main");
     companyStore.refreshRelations(c.pk);
@@ -408,6 +410,10 @@ public class Repo extends SpigotModule {
   }
 
   public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount) {
+    return withdrawFromAccount(player, a, amount, "withdraw");
+  }
+
+  public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount, String message) {
     if (amount < 0) {
       System.out.println("Should we be withdrawing a -ve amount?");
       throw new IllegalArgumentException("Tried to withdraw a negative amount");
@@ -415,7 +421,7 @@ public class Repo extends SpigotModule {
     CompanyAccount ca = new CompanyAccount(a.pk, a.name, a.uuid, a.companyPk, a.services, a.balance - amount);
     companyAccountStore.save(ca);
     //Create a transaction log too
-    createTransaction(player, a, "withdraw", -amount);
+    createTransaction(player, a, message, -amount);
     //Refresh the accounts for our parent company
     companyStore.refreshRelations(a.companyPk);
     return ca;
@@ -435,11 +441,15 @@ public class Repo extends SpigotModule {
   }
 
   public Holding withdrawFromHolding(UUID player, Holding h, double amount) {
+    return withdrawFromHolding(player, h, amount, "withdraw holding");
+  }
+
+  public Holding withdrawFromHolding(UUID player, Holding h, double amount, String message) {
     Holding holding = new Holding(h.pk, h.playerUUID, h.balance - amount, h.share, h.accountPk);
     holdingStore.save(holding);
     holdingsAccountStore.refreshRelations(h.accountPk);
 
-    createTransaction(player, accountWithId(h.accountPk), "withdraw holding", -amount);
+    createTransaction(player, accountWithId(h.accountPk), message, -amount);
     Account account = accountWithId(h.accountPk);
     //Refresh the account and company's relation collections for the new holding
     refreshAccount(account);
@@ -487,7 +497,8 @@ public class Repo extends SpigotModule {
   }
 
   public Subscription paySubscription(UUID player, Subscription subscription, Service service) {
-    if (subscription.servicePk != service.pk) throw new IllegalArgumentException("Subscription does not belong to service");
+    if (subscription.servicePk != service.pk)
+      throw new IllegalArgumentException("Subscription does not belong to service");
     Subscription s = new Subscription(subscription.pk, subscription.playerUUID, subscription.servicePk,
         new Timestamp(System.currentTimeMillis()), subscription.autoPay);
 

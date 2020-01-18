@@ -27,11 +27,20 @@ import static dev.tycho.stonks.model.core.Role.CEO;
 
 public class PayCommandSub extends ModularCommandSub {
 
-  private static final List<String> AMOUNTS = Arrays.asList(
+  protected static final List<String> AMOUNTS = Arrays.asList(
       "1",
       "10",
       "1000",
       "10000");
+
+  protected static final List<String> UNVERIFIED = Arrays.asList(
+      "You are trying to pay an unverified company!",
+      "Unverified companies might be pretending to be ",
+      "someone else's company",
+      "Make sure you are paying the correct company",
+      "(e.g. by checking the CEO is who you expect)",
+      "To get a company verified, ask a moderator.",
+      "");
 
   public PayCommandSub() {
     super(new CurrencyValidator("amount"), ArgumentValidator.optionalAndConcatIfLast(new StringValidator("message", 200)));
@@ -61,14 +70,7 @@ public class PayCommandSub extends ModularCommandSub {
                   .company(company)
                   .title("Select which account to pay")
                   .accountSelected(account -> payAccount(player, account, message, amount));
-          List<String> info = new ArrayList<>();
-          info.add("You are trying to pay an unverified company!");
-          info.add("Unverified companies might be pretending to be ");
-          info.add("someone else's company");
-          info.add("Make sure you are paying the correct company");
-          info.add("(e.g. by checking the CEO is who you expect)");
-          info.add("To get a company verified, ask a moderator.");
-          info.add("");
+          List<String> info = new ArrayList<>(UNVERIFIED);
           info.add(ChatColor.GOLD + "The CEO of this company is ");
           String ceoName = "[error lol]";
           for (Member m : company.members) {
