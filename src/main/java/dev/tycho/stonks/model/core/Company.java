@@ -33,6 +33,18 @@ public class Company extends Entity {
     this.perks = perks;
   }
 
+  public Company(Company other) {
+    super(other.pk);
+    this.name = other.name;
+    this.shopName = other.shopName;
+    this.members = other.members;
+    this.accounts = other.accounts;
+    this.logoMaterial = other.logoMaterial;
+    this.verified = other.verified;
+    this.hidden = other.hidden;
+    this.perks = other.perks;
+  }
+
   public Member getMember(Player player) {
     for (Member member : members) {
       if (member.playerUUID.equals(player.getUniqueId())) {

@@ -103,14 +103,14 @@ public class Repo extends SpigotModule {
   public void enable() {
     createDataSource();
 
-    companyStore = new AsyncSaveStore<>();
-    companyAccountStore = new AsyncSaveStore<>();
-    holdingsAccountStore = new AsyncSaveStore<>();
-    holdingStore = new AsyncSaveStore<>();
-    memberStore = new AsyncSaveStore<>();
-    serviceStore = new AsyncSaveStore<>();
-    subscriptionStore = new AsyncSaveStore<>();
-    perkStore = new AsyncSaveStore<>();
+    companyStore = new AsyncSaveStore<>(Company::new);
+    companyAccountStore = new AsyncSaveStore<>(CompanyAccount::new);
+    holdingsAccountStore = new AsyncSaveStore<>(HoldingsAccount::new);
+    holdingStore = new AsyncSaveStore<>(Holding::new);
+    memberStore = new AsyncSaveStore<>(Member::new);
+    serviceStore = new AsyncSaveStore<>(Service::new);
+    subscriptionStore = new AsyncSaveStore<>(Subscription::new);
+    perkStore = new AsyncSaveStore<>(Perk::new);
     transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
     transactionStore.createTable();
 

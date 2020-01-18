@@ -11,4 +11,10 @@ public class Perk extends Entity {
     this.companyPk = companyPk;
     this.namespace = namespace;
   }
+
+  public Perk(Perk other) {
+    super(other.pk);
+    this.companyPk = other.companyPk;
+    this.namespace = other.namespace;
+  }
 }
