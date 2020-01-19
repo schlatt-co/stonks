@@ -21,6 +21,7 @@ public class ShopManager extends SpigotModule {
 
   public ShopManager(Stonks plugin) {
     super("Shop Manager", plugin);
+    PerkManager.getInstance().registerPerk(new ChestShopPerk(plugin));
   }
 
   @EventHandler

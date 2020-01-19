@@ -48,11 +48,13 @@ public class Stonks extends JavaPlugin {
     }
     taskChainFactory = BukkitTaskChainFactory.create(this);
     loadedModules.add(new Repo(this));
-    loadedModules.add(new ShopManager(this));
     loadedModules.add(new MessageManager(this));
     loadedModules.add(new GuiManager(this));
     loadedModules.add(new SettingsManager(this));
     loadedModules.add(new PerkManager(this));
+    if (getServer().getPluginManager().getPlugin("ChestShop") != null) {
+      loadedModules.add(new ShopManager(this));
+    }
     if (!setupEconomy()) {
       return;
     }
