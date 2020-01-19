@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 public class ServiceFoldersCommandSub extends ModularCommandSub {
   public ServiceFoldersCommandSub() {
     super(new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

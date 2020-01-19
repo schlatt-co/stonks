@@ -11,6 +11,7 @@ public class ServiceInfoCommandSub extends ModularCommandSub {
 
   public ServiceInfoCommandSub() {
     super(new ServiceValidator("service"));
+    setAutoComplete(false);
   }
 
   @Override

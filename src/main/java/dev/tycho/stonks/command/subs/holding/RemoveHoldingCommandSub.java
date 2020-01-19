@@ -15,6 +15,7 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
 
   public RemoveHoldingCommandSub() {
     super(new AccountValidator("account"), new StringValidator("player_name"));
+    setAutoComplete(false);
   }
 
   @Override

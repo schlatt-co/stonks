@@ -19,6 +19,7 @@ public class KickMemberCommandSub extends ModularCommandSub {
 
   public KickMemberCommandSub() {
     super(new StringValidator("player_name"), new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

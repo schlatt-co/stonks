@@ -10,6 +10,7 @@ public class InfoCommandSub extends ModularCommandSub {
 
   public InfoCommandSub() {
     super(new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

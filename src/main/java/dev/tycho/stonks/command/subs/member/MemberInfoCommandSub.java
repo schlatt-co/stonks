@@ -15,6 +15,7 @@ public class MemberInfoCommandSub extends ModularCommandSub {
 
   public MemberInfoCommandSub() {
     super(new StringValidator("player_name"), new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

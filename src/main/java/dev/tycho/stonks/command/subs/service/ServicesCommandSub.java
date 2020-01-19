@@ -11,6 +11,7 @@ public class ServicesCommandSub extends ModularCommandSub {
 
   public ServicesCommandSub() {
     super(new AccountValidator("account"));
+    setAutoComplete(false);
   }
 
   @Override

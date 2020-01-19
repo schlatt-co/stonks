@@ -15,6 +15,7 @@ public class AcceptInviteCommandSub extends ModularCommandSub {
 
   public AcceptInviteCommandSub() {
     super(new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

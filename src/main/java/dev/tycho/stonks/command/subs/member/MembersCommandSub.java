@@ -14,6 +14,7 @@ public class MembersCommandSub extends ModularCommandSub {
 
   public MembersCommandSub() {
     super(new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

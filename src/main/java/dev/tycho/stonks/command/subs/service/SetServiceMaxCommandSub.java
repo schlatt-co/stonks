@@ -14,6 +14,7 @@ public class SetServiceMaxCommandSub extends ModularCommandSub {
 
   public SetServiceMaxCommandSub() {
     super(new IntegerValidator("max_subs"));
+    setAutoComplete(false);
   }
 
   @Override

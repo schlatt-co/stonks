@@ -12,6 +12,7 @@ public class UnsubscribeCommandSub extends ModularCommandSub {
 
   public UnsubscribeCommandSub() {
     super(new ServiceValidator("service"));
+    setAutoComplete(false);
   }
 
   @Override

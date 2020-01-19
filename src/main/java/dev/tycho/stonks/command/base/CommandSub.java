@@ -15,7 +15,7 @@ public abstract class CommandSub {
 
   private final String permission;
 
-  private final boolean autoComplete;
+  private boolean autoComplete;
 
   public CommandSub() {
     this(null, true);
@@ -72,6 +72,10 @@ public abstract class CommandSub {
     } else {
       return u.getBase();
     }
+  }
+
+  public void setAutoComplete(boolean autoComplete) {
+    this.autoComplete = autoComplete;
   }
 
   String getPermission() {

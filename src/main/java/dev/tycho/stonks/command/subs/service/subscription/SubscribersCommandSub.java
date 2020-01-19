@@ -9,6 +9,7 @@ public class SubscribersCommandSub extends ModularCommandSub {
 
   public SubscribersCommandSub() {
     super(new ServiceValidator("service"));
+    setAutoComplete(false);
   }
 
   @Override

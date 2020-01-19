@@ -44,6 +44,7 @@ public class SetRoleCommandSub extends ModularCommandSub {
             return "must be a valid role (CEO, Manager, Employee, Intern)";
           }
         }, new CompanyValidator("company"));
+    setAutoComplete(false);
   }
 
   @Override

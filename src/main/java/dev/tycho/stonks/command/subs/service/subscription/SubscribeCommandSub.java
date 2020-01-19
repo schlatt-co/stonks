@@ -13,6 +13,7 @@ public class SubscribeCommandSub extends ModularCommandSub {
 
   public SubscribeCommandSub() {
     super(new ServiceValidator("service"));
+    setAutoComplete(false);
   }
 
 

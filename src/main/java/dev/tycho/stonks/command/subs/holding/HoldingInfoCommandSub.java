@@ -12,6 +12,7 @@ public class HoldingInfoCommandSub extends ModularCommandSub {
 
   public HoldingInfoCommandSub() {
     super(new AccountValidator("account"));
+    setAutoComplete(false);
   }
 
   @Override
