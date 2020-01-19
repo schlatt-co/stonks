@@ -21,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Stonks extends JavaPlugin {
 
@@ -40,7 +41,7 @@ public class Stonks extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if (getConfig().getString("mysql.database").equals("YOUR-DATABASE")) {
+    if (Objects.equals(getConfig().getString("mysql.database"), "YOUR-DATABASE")) {
       Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
