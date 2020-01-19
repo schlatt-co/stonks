@@ -29,6 +29,7 @@ public class PerkManager extends SpigotModule {
     }
     registeredPerks.put(perk.getNamespace(), perk);
     classNamespaceMap.put(perk.getClass().getName(), perk.getNamespace());
+    log("Registered perk: " + perk.getNamespace());
   }
 
   public void awardPerk(Company company, CompanyPerk perk) {
