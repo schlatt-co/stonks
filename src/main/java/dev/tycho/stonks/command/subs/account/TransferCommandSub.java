@@ -1,5 +1,6 @@
 package dev.tycho.stonks.command.subs.account;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.validators.CurrencyValidator;
@@ -10,6 +11,7 @@ import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,7 +48,7 @@ public class TransferCommandSub extends ModularCommandSub {
           new AccountSelectorGui.Builder()
               .company(company)
               .title("Select account to transfer from")
-              .accountSelected(transferFrom -> new CompanySelectorGui.Builder()
+              .accountSelected(transferFrom -> Bukkit.getScheduler().runTaskLater(Stonks.getInstance(), () -> new CompanySelectorGui.Builder()
                   .companies(list)
                   .title("Select a company to transfer to")
                   .companySelected((companyTo -> {
@@ -57,7 +59,7 @@ public class TransferCommandSub extends ModularCommandSub {
                         .accountSelected(transferTo -> payCompany(player, transferFrom, transferTo, companyTo, message, amount))
                         .show(player);
                   }))
-                  .show(player))
+                  .show(player), 1))
               .show(player);
         }))
         .show(player);

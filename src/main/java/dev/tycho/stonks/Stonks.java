@@ -25,6 +25,7 @@ import java.util.Objects;
 
 public class Stonks extends JavaPlugin {
 
+  private static Stonks instance;
   public static Essentials essentials = null;
   public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
@@ -41,6 +42,7 @@ public class Stonks extends JavaPlugin {
 
   @Override
   public void onEnable() {
+    instance = this;
     if (Objects.equals(getConfig().getString("mysql.database"), "YOUR-DATABASE")) {
       Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
@@ -164,5 +166,9 @@ public class Stonks extends JavaPlugin {
   private boolean setupEssentials() {
     essentials = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
     return (essentials != null);
+  }
+
+  public static Stonks getInstance() {
+    return instance;
   }
 }
