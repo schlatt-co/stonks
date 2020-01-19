@@ -11,7 +11,7 @@ public abstract class InventoryGui implements InventoryProvider {
   public static InventoryManager inventoryManager;
   private SmartInventory inventory;
 
-  InventoryGui(String title, int rows) {
+  public InventoryGui(String title, int rows) {
     this.inventory =
         SmartInventory.builder()
             .id(title)
