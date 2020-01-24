@@ -265,4 +265,26 @@ public class ShopManager extends SpigotModule {
       }
     }
   }
+
+  @EventHandler
+  public void onOfflinePlayerErrorMessageEvent(OfflinePlayerErrorMessageEvent event) {
+    if (!event.getAccount().getName().startsWith("#")) {
+      event.setCancelled(true);
+      return;
+    }
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getAccount().getName().split("-")[0].replaceFirst("#", "")));
+    if (account == null) {
+      event.setCancelled(true);
+      return;
+    }
+    Company company = Repo.getInstance().companies().get(account.companyPk);
+    for (Member member : company.members) {
+      if (member.hasManagamentPermission()) {
+        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
+        if (player.isOnline()) {
+          event.addTarget(player);
+        }
+      }
+    }
+  }
 }
