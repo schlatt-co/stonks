@@ -44,8 +44,10 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude module: 'bukkit'
     }
-    compileOnly "com.github.schlatt-co:ChestShop-3:63c969511e"
-    compileOnly "net.ess3:EssentialsX:2.17.0"
+    compileOnly files('libs/ChestShop.jar')
+    compileOnly("net.ess3:EssentialsX:2.17.0") {
+        exclude module: 'bukkit'
+    }
     compileOnly "com.github.schlatt-co:PluginLibrary:87bf88cde4"
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
 }

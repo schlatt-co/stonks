@@ -104,8 +104,23 @@ public class ShopManager extends SpigotModule {
   }
 
   @EventHandler
-  public void onAccountCheck(AccountCheckEvent event) {
+  public void onAccountCheck(PreAccountCheckEvent event) {
+    String accountName = event.getAccount().getName();
 
+    if (!accountName.startsWith("#")) {
+      return;
+    }
+
+    int dashIndex = accountName.indexOf("-");
+    if (dashIndex == -1) {
+      return;
+    }
+
+    int accountId = Integer.parseInt(accountName.substring(1, dashIndex));
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(accountId);
+    if (account != null) {
+      event.setCancelled(true);
+    }
   }
 
   @EventHandler
