@@ -3,6 +3,7 @@ package dev.tycho.stonks.managers;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.perks.CompanyChatPerk;
 import dev.tycho.stonks.util.Util;
 
@@ -30,8 +31,9 @@ public class PerkManager extends SpigotModule {
     log("Registered perk: " + perk.getNamespace());
   }
 
-  public void awardPerk(Company company, CompanyPerk perk) {
+  public void awardPerk(Company company, CompanyPerk perk, Member purchaser) {
     Repo.getInstance().createPerk(company, perk.getNamespace());
+    perk.onPurchase(company, purchaser);
   }
 
   public HashMap<String, CompanyPerk> getRegisteredPerks() {
