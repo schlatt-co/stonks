@@ -39,9 +39,8 @@ public class TransferCommandSub extends ModularCommandSub {
     double amount = getArgument("amount");
     String message = getArgument("message");
 
-    List<Company> list = Repo.getInstance().companies().getAll();
     new CompanySelectorGui.Builder()
-        .companies(list)
+        .companies(Repo.getInstance().companiesWithWithdrawableAccount(player))
         .title("Select company to transfer from")
         .companySelected((company -> {
           //Cache the next screen
@@ -49,7 +48,7 @@ public class TransferCommandSub extends ModularCommandSub {
               .company(company)
               .title("Select account to transfer from")
               .accountSelected(transferFrom -> Bukkit.getScheduler().runTaskLater(Stonks.getInstance(), () -> new CompanySelectorGui.Builder()
-                  .companies(list)
+                  .companies(Repo.getInstance().companies().getAll())
                   .title("Select a company to transfer to")
                   .companySelected((companyTo -> {
                     //Cache the next screen
