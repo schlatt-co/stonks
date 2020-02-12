@@ -109,6 +109,7 @@ public class Stonks extends JavaPlugin {
         //If none exists then make a new one
         String name = Repo.getInstance().companies().get(a.companyPk).name;
         Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
+        NameManager.createAccount(newCSaccount);
       }
     }
     for (HoldingsAccount a : Repo.getInstance().holdingsAccounts().getAll()) {
@@ -118,7 +119,7 @@ public class Stonks extends JavaPlugin {
         //If none exists then make a new one
         String name = Repo.getInstance().companies().get(a.companyPk).name;
         Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
-
+        NameManager.createAccount(newCSaccount);
       }
     }
   }
