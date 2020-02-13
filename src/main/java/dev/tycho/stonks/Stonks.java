@@ -3,11 +3,15 @@ package dev.tycho.stonks;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import com.Acrobot.ChestShop.Database.Account;
+import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.MainCommand;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
 import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
 import dev.tycho.stonks.managers.*;
+import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import net.milkbowl.vault.economy.Economy;
@@ -89,7 +93,34 @@ public class Stonks extends JavaPlugin {
     getCommand("cc").setExecutor(new CompanyChatCommand());
     getCommand("ccr").setExecutor(new CompanyChatReplyCommand());
 
+    Bukkit.getLogger().info("Creating any missing chestshop accounts");
+    createMissingChestshopAccounts();
+
+
     Bukkit.getLogger().info("Loaded!");
+  }
+
+  private void createMissingChestshopAccounts() {
+    for (CompanyAccount a : Repo.getInstance().companyAccounts().getAll()) {
+      Account CSaccount = NameManager.getAccount(a.uuid);
+      if (CSaccount == null) {
+        Bukkit.getLogger().info(" - Creating CS account for holding account " + a.pk + " [" + a.uuid + "]");
+        //If none exists then make a new one
+        String name = Repo.getInstance().companies().get(a.companyPk).name;
+        Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
+        NameManager.createAccount(newCSaccount);
+      }
+    }
+    for (HoldingsAccount a : Repo.getInstance().holdingsAccounts().getAll()) {
+      Bukkit.getLogger().info(" - Creating CS account for company account " + a.pk + " [" + a.uuid + "]");
+      Account CSaccount = NameManager.getAccount(a.uuid);
+      if (CSaccount == null) {
+        //If none exists then make a new one
+        String name = Repo.getInstance().companies().get(a.companyPk).name;
+        Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
+        NameManager.createAccount(newCSaccount);
+      }
+    }
   }
 
   private void renewSubscription(Subscription subscription) {
