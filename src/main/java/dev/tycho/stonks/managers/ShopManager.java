@@ -4,6 +4,7 @@ import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
+import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
@@ -236,7 +237,11 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
+        User user = Stonks.essentials.getUser(member.playerUUID);
+        if (user == null) {
+          continue;
+        }
+        Player player = user.getBase();
         if (player.isOnline()) {
           event.addTarget(player);
         }
