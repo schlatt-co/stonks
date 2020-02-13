@@ -93,19 +93,18 @@ public class Stonks extends JavaPlugin {
     getCommand("cc").setExecutor(new CompanyChatCommand());
     getCommand("ccr").setExecutor(new CompanyChatReplyCommand());
 
-    Bukkit.getLogger().info("Starting UUID hotfix:");
-    hotfix();
-    Bukkit.getLogger().info("UUID hotfix done:");
+    Bukkit.getLogger().info("Creating any missing chestshop accounts");
+    createMissingChestshopAccounts();
 
 
     Bukkit.getLogger().info("Loaded!");
   }
 
-  private void hotfix() {
+  private void createMissingChestshopAccounts() {
     for (CompanyAccount a : Repo.getInstance().companyAccounts().getAll()) {
       Account CSaccount = NameManager.getAccount(a.uuid);
       if (CSaccount == null) {
-        Bukkit.getLogger().info("Creating CS account for holding account " + a.pk + " [" + a.uuid + "]");
+        Bukkit.getLogger().info(" - Creating CS account for holding account " + a.pk + " [" + a.uuid + "]");
         //If none exists then make a new one
         String name = Repo.getInstance().companies().get(a.companyPk).name;
         Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
@@ -113,7 +112,7 @@ public class Stonks extends JavaPlugin {
       }
     }
     for (HoldingsAccount a : Repo.getInstance().holdingsAccounts().getAll()) {
-      Bukkit.getLogger().info("Creating CS account for company account " + a.pk + " [" + a.uuid + "]");
+      Bukkit.getLogger().info(" - Creating CS account for company account " + a.pk + " [" + a.uuid + "]");
       Account CSaccount = NameManager.getAccount(a.uuid);
       if (CSaccount == null) {
         //If none exists then make a new one
