@@ -285,7 +285,11 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
+        User user = Stonks.essentials.getUser(member.playerUUID);
+        if (user == null) {
+          return;
+        }
+        Player player = user.getBase();
         if (player.isOnline()) {
           event.addTarget(player);
         }
