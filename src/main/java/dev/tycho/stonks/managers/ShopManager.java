@@ -9,8 +9,11 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.perks.ChestShopPerk;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import java.util.UUID;
 
@@ -156,12 +159,25 @@ public class ShopManager extends SpigotModule {
     event.setCancelled(true);
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onEconomyCheck(AccountCheckEvent event) {
+    if (event.hasAccount()) {
+      return;
+    }
+
     //Try to see if we have an account for this UUID
     dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithUUID(event.getAccount());
     if (account != null) {
       event.hasAccount(true);
+    } else if (!event.getAccountObj().getShortName().startsWith("#")) {
+      try {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(event.getAccount());
+        if (player.hasPlayedBefore()) {
+          event.hasAccount(Stonks.economy.createPlayerAccount(player));
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
     }
   }
 
