@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.base;
 
-import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.util.StonksUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -66,12 +66,8 @@ public abstract class CommandSub {
 
 
   protected Player playerFromName(String name) {
-    User u = Stonks.essentials.getOfflineUser(name);
-    if (u == null) {
-      return null;
-    } else {
-      return u.getBase();
-    }
+    StonksUser u = Stonks.getOfflineUser(name);
+    return u.getBase();
   }
 
   public void setAutoComplete(boolean autoComplete) {

@@ -4,11 +4,11 @@ import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.Events.*;
 import com.Acrobot.ChestShop.Events.Economy.AccountCheckEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
-import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.core.*;
 import dev.tycho.stonks.perks.ChestShopPerk;
+import dev.tycho.stonks.util.StonksUser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -253,8 +253,8 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        User user = Stonks.essentials.getUser(member.playerUUID);
-        if (user == null) {
+        StonksUser user = Stonks.getUser(member.playerUUID);
+        if (user.getBase() == null) {
           continue;
         }
         Player player = user.getBase();
@@ -279,8 +279,8 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        Player player = Stonks.essentials.getUser(member.playerUUID).getBase();
-        if (player.isOnline()) {
+        Player player = Stonks.getUser(member.playerUUID).getBase();
+        if (player != null && player.isOnline()) {
           event.addTarget(player);
         }
       }
@@ -301,8 +301,8 @@ public class ShopManager extends SpigotModule {
     Company company = Repo.getInstance().companies().get(account.companyPk);
     for (Member member : company.members) {
       if (member.hasManagamentPermission()) {
-        User user = Stonks.essentials.getUser(member.playerUUID);
-        if (user == null) {
+        StonksUser user = Stonks.getUser(member.playerUUID);
+        if (user.getBase() == null) {
           return;
         }
         Player player = user.getBase();

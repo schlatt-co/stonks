@@ -14,6 +14,9 @@ import dev.tycho.stonks.model.core.CompanyAccount;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
+import dev.tycho.stonks.util.BukkitUser;
+import dev.tycho.stonks.util.EssentialsUser;
+import dev.tycho.stonks.util.StonksUser;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,11 +29,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Stonks extends JavaPlugin {
 
   private static Stonks instance;
-  public static Essentials essentials = null;
+  private static Essentials essentials = null;
   public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
   private List<SpigotModule> loadedModules = new ArrayList<>();
@@ -64,8 +68,10 @@ public class Stonks extends JavaPlugin {
     if (!setupEconomy()) {
       return;
     }
-    if (!setupEssentials()) {
-      return;
+    if (this.getServer().getPluginManager().getPlugin("Essentials") != null) {
+      if (!setupEssentials()) {
+        return;
+      }
     }
     for (SpigotModule module : loadedModules) {
       module.onEnable();
@@ -87,11 +93,11 @@ public class Stonks extends JavaPlugin {
     }, 0, 6000);
 
     MainCommand command = new MainCommand();
-    getCommand("company").setTabCompleter(command);
-    getCommand("company").setExecutor(command);
+    Objects.requireNonNull(getCommand("company")).setTabCompleter(command);
+    Objects.requireNonNull(getCommand("company")).setExecutor(command);
 
-    getCommand("cc").setExecutor(new CompanyChatCommand());
-    getCommand("ccr").setExecutor(new CompanyChatReplyCommand());
+    Objects.requireNonNull(getCommand("cc")).setExecutor(new CompanyChatCommand());
+    Objects.requireNonNull(getCommand("ccr")).setExecutor(new CompanyChatReplyCommand());
 
     Bukkit.getLogger().info("Creating any missing chestshop accounts");
     createMissingChestshopAccounts();
@@ -197,6 +203,23 @@ public class Stonks extends JavaPlugin {
   private boolean setupEssentials() {
     essentials = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
     return (essentials != null);
+  }
+
+  public static StonksUser getUser(UUID uuid) {
+    if (essentials != null) {
+      return new EssentialsUser(essentials.getUser(uuid));
+    } else {
+      return new BukkitUser(Bukkit.getPlayer(uuid));
+    }
+  }
+
+  public static StonksUser getOfflineUser(String  name) {
+    if (essentials != null) {
+      return new EssentialsUser(essentials.getOfflineUser(name));
+    } else {
+      //noinspection deprecation - bukkit is stupid
+      return new BukkitUser(Bukkit.getOfflinePlayer(name));
+    }
   }
 
   public static Stonks getInstance() {

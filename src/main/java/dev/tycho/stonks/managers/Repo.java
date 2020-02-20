@@ -1,6 +1,5 @@
 package dev.tycho.stonks.managers;
 
-import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.database.AsyncSaveStore;
 import dev.tycho.stonks.database.DatabaseStore;
@@ -13,6 +12,7 @@ import dev.tycho.stonks.model.dbis.*;
 import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
+import dev.tycho.stonks.util.StonksUser;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -202,8 +202,7 @@ public class Repo extends SpigotModule {
 
 
   public void sendMessageToPlayer(UUID playerUUID, String message) {
-    User u = Stonks.essentials.getUser(playerUUID);
-    if (u == null) return;
+    StonksUser u = Stonks.getUser(playerUUID);
     Player player = u.getBase();
     if (player == null || !player.isOnline()) return;
     sendMessage(player, message);

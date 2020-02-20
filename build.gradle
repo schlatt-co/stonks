@@ -10,8 +10,8 @@ bukkit {
     apiVersion = '1.14'
     main = 'dev.tycho.stonks.Stonks'
     authors = ['TychoVI', 'Tsarcasm', 'JRoy']
-    softDepend = ['ChestShop']
-    depend = ['PluginLibrary', 'Vault', 'Essentials']
+    softDepend = ['ChestShop', 'Essentials']
+    depend = ['PluginLibrary', 'Vault']
     commands {
         company {
             description = 'Main Stonks Command'

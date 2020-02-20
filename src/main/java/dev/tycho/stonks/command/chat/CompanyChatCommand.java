@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.chat;
 
-import com.earth2me.essentials.User;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.PlayerData;
@@ -8,6 +7,7 @@ import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Member;
 import dev.tycho.stonks.perks.CompanyChatPerk;
+import dev.tycho.stonks.util.StonksUser;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -56,8 +56,7 @@ public class CompanyChatCommand implements CommandExecutor {
 
     for (Member member : company.members) {
       if (member.acceptedInvite) {
-        User u = Stonks.essentials.getUser(member.playerUUID);
-        if (u == null) continue;
+        StonksUser u = Stonks.getUser(member.playerUUID);
         Player p = u.getBase();
         if (p == null || !player.isOnline()) continue;
         p.sendMessage(message.toString());
