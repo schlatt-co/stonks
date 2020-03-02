@@ -1,15 +1,15 @@
 package dev.tycho.stonks.command;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.subs.FeesCommandSub;
-import dev.tycho.stonks.command.subs.HelpCommandSub;
-import dev.tycho.stonks.command.subs.ListCommandSub;
-import dev.tycho.stonks.command.subs.TopCommandSub;
+import dev.tycho.stonks.command.subs.FeesSubCommand;
+import dev.tycho.stonks.command.subs.HelpSubCommand;
+import dev.tycho.stonks.command.subs.ListSubCommand;
+import dev.tycho.stonks.command.subs.TopSubCommand;
 import dev.tycho.stonks.command.subs.account.*;
 import dev.tycho.stonks.command.subs.company.*;
 import dev.tycho.stonks.command.subs.holding.CreateHoldingSubCommand;
 import dev.tycho.stonks.command.subs.holding.HoldingInfoSubCommand;
-import dev.tycho.stonks.command.subs.holding.MyHoldingsCommandSub;
+import dev.tycho.stonks.command.subs.holding.MyHoldingsSubCommand;
 import dev.tycho.stonks.command.subs.holding.RemoveHoldingSubCommand;
 import dev.tycho.stonks.command.subs.member.*;
 import dev.tycho.stonks.command.subs.moderator.*;
@@ -19,41 +19,41 @@ import dev.tycho.stonks.command.subs.service.subscription.*;
 public class MainCommand extends CommandBase {
 
   public MainCommand() {
-    super("command", new ListCommandSub());
+    super(new ListSubCommand());
     addSubCommand("accounts", new AccountsSubCommand());
     addSubCommand("acceptinvite", new AcceptInviteSubCommand());
     addSubCommand("createaccount", new CreateAccountSubCommand());
     addSubCommand("create", new CreateSubCommand());
     addSubCommand("createholding", new CreateHoldingSubCommand());
     addSubCommand("declineinvite", new DeclineInviteSubCommand());
-    addSubCommand("fees", new FeesCommandSub());
-    addSubCommand("help", new HelpCommandSub());
-    addSubCommand("hide", new HideCommandSub());
+    addSubCommand("fees", new FeesSubCommand());
+    addSubCommand("help", new HelpSubCommand());
+    addSubCommand("hide", new HideSubCommand());
     addSubCommand("history", new HistorySubCommand());
     addSubCommand("holdinginfo", new HoldingInfoSubCommand());
     addSubCommand("info", new InfoSubCommand());
     addSubCommand("invite", new InviteSubCommand());
-    addSubCommand("invites", new InvitesCommandSub());
+    addSubCommand("invites", new InvitesSubCommand());
     addSubCommand("kickmember", new KickMemberSubCommand());
-    addSubCommand("list", new ListCommandSub());
-    addSubCommand("listhidden", new ListHiddenCommandSub());
-    addSubCommand("setlogo", new LogoCommandSub());
+    addSubCommand("list", new ListSubCommand());
+    addSubCommand("listhidden", new ListHiddenSubCommand());
+    addSubCommand("setlogo", new LogoSubCommand());
     addSubCommand("memberinfo", new MemberInfoSubCommand());
     addSubCommand("members", new MembersSubCommand());
-    addSubCommand("myholdings", new MyHoldingsCommandSub());
+    addSubCommand("myholdings", new MyHoldingsSubCommand());
     addSubCommand("pay", new PaySubCommand());
     addSubCommand("payuser", new PayUserSubCommand());
     addSubCommand("transfer", new TransferSubCommand());
     addSubCommand("perks", new PerksSubCommand());
-    addSubCommand("refresh", new RefreshCommandSub());
+    addSubCommand("refresh", new RefreshSubCommand());
     addSubCommand("removeholding", new RemoveHoldingSubCommand());
     addSubCommand("rename", new RenameSubCommand());
     addSubCommand("setrole", new SetRoleSubCommand());
-    addSubCommand("baltop", new TopCommandSub());
-    addSubCommand("top", new TopCommandSub());
-    addSubCommand("unhide", new UnHideCommandSub());
-    addSubCommand("unverify", new UnVerifyCommandSub());
-    addSubCommand("verify", new VerifyCommandSub());
+    addSubCommand("baltop", new TopSubCommand());
+    addSubCommand("top", new TopSubCommand());
+    addSubCommand("unhide", new UnHideSubCommand());
+    addSubCommand("unverify", new UnVerifySubCommand());
+    addSubCommand("verify", new VerifySubCommand());
     addSubCommand("withdraw", new WithdrawSubCommand());
 
     addSubCommand("createservice", new CreateServiceSubCommand());
@@ -64,7 +64,7 @@ public class MainCommand extends CommandBase {
     addSubCommand("setservicemax", new SetServiceMaxSubCommand());
     addSubCommand("subscribe", new SubscribeSubCommand());
     addSubCommand("subscribers", new SubscribersSubCommand());
-    addSubCommand("subscriptions", new SubscriptionsCommandSub());
+    addSubCommand("subscriptions", new SubscriptionsSubCommand());
     addSubCommand("unsubscribe", new UnsubscribeSubCommand());
   }
 }

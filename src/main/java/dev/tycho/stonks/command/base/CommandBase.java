@@ -13,8 +13,9 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
   private HashMap<String, SubCommand> subCommands;
 
-  public CommandBase() {
+  public CommandBase(SubCommand defaultCommand) {
     subCommands = new HashMap<>();
+    subCommands.put("default", defaultCommand);
   }
 
   public boolean addSubCommand(String alias, SubCommand subCommand) {
@@ -30,8 +31,6 @@ public class CommandBase implements CommandExecutor, TabCompleter {
       return true;
     }
     Player player = (Player) sender;
-
-
     if (args.length == 0) {
       subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {

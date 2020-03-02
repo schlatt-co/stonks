@@ -29,8 +29,8 @@ public abstract class SubCommand {
 
   public abstract void onCommand(Player player, String alias, String[] args);
 
-  public static SubCommand opPerms(SubCommand c) {
-    c.setPermission("op");
+  public static SubCommand perms(String p, SubCommand c) {
+    c.setPermission(p);
     return c;
   }
 
