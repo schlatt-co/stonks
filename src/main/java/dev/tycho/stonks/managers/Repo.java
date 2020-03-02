@@ -1,7 +1,7 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.database.AsyncSaveStore;
+import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
 import dev.tycho.stonks.database.TransactionStore;
@@ -103,14 +103,14 @@ public class Repo extends SpigotModule {
   public void enable() {
     createDataSource();
 
-    companyStore = new AsyncSaveStore<>(Company::new);
-    companyAccountStore = new AsyncSaveStore<>(CompanyAccount::new);
-    holdingsAccountStore = new AsyncSaveStore<>(HoldingsAccount::new);
-    holdingStore = new AsyncSaveStore<>(Holding::new);
-    memberStore = new AsyncSaveStore<>(Member::new);
-    serviceStore = new AsyncSaveStore<>(Service::new);
-    subscriptionStore = new AsyncSaveStore<>(Subscription::new);
-    perkStore = new AsyncSaveStore<>(Perk::new);
+    companyStore = new SyncStore<>();
+    companyAccountStore = new SyncStore<>();
+    holdingsAccountStore = new SyncStore<>();
+    holdingStore = new SyncStore<>();
+    memberStore = new SyncStore<>();
+    serviceStore = new SyncStore<>();
+    subscriptionStore = new SyncStore<>();
+    perkStore = new SyncStore<>();
     transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
     transactionStore.createTable();
 
