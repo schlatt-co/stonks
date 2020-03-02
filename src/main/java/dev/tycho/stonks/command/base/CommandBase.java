@@ -6,22 +6,21 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandBase implements CommandExecutor, TabCompleter {
 
-  private final String name;
+  private HashMap<String, SubCommand> subCommands;
 
-  private Map<String, CommandSub> subCommands = new HashMap<>();
+  public CommandBase() {
+    subCommands = new HashMap<>();
+  }
 
-  public CommandBase(String name, CommandSub defaultSub) {
-    this.name = name;
-    addSubCommand("default", defaultSub);
+  public boolean addSubCommand(String alias, SubCommand subCommand) {
+    if (subCommands.containsKey(alias)) return false;
+    subCommands.put(alias, subCommand);
+    return true;
   }
 
   @Override
@@ -34,10 +33,9 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
 
     if (args.length == 0) {
-//      showAllCommands(player);
       subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
-      CommandSub sub = subCommands.get(args[0]);
+      SubCommand sub = subCommands.get(args[0]);
       if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {
         sendMessage(player, "You have insufficient permissions to execute this command!");
         return true;
@@ -51,37 +49,10 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-    List<String> completions = new ArrayList<>();
-    if (args.length == 1) {
-      List<String> cmds = new ArrayList<>();
-      for (Map.Entry<String, CommandSub> subCmd : subCommands.entrySet()) {
-        if (subCmd.getValue().isAutoComplete() && (subCmd.getValue().getPermission() == null || sender.hasPermission(subCmd.getValue().getPermission()))) {
-          cmds.add(subCmd.getKey());
-        }
-      }
-      StringUtil.copyPartialMatches(args[0], cmds, completions);
-    } else if (args.length > 1 && subCommands.containsKey(args[0])) {
-      List<String> result = subCommands.get(args[0]).onTabComplete(sender, alias, args);
-      if (result != null) {
-        completions = result;
-      }
-    }
-    return completions;
+    return null;
   }
 
-  protected void addSubCommand(String name, CommandSub commandSub) {
-    subCommands.put(name, commandSub);
-  }
-
-  private void sendMessage(CommandSender sender, String message) {
+  public static void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
-
-  public void showAllCommands(Player player) {
-    for (Map.Entry<String, CommandSub> e : subCommands.entrySet()) {
-      player.sendMessage("/stonks " + e.getKey() + e.getValue().getArgs());
-//      System.out.println("/stonks " + e.getKey() + e.getValue().getArgs());
-    }
-  }
-
 }

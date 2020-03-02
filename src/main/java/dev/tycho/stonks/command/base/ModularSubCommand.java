@@ -1,23 +1,13 @@
 package dev.tycho.stonks.command.base;
 
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 @SuppressWarnings({"unchecked", "rawtypes"})
-public abstract class ModularCommandSub extends CommandSub {
+public abstract class ModularSubCommand extends SubCommand {
   final ArgumentValidator[] arguments;
 
-  protected ModularCommandSub(String perms, ArgumentValidator argument, ArgumentValidator... arguments) {
-    super(perms);
-    this.arguments = new ArgumentValidator[arguments.length + 1];
-    this.arguments[0] = argument;
-    System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
-  }
-
-  protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
+  protected ModularSubCommand(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
     this.arguments[0] = argument;
     System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
@@ -40,7 +30,6 @@ public abstract class ModularCommandSub extends CommandSub {
         }
       }
 
-
       //If this is the last argument and it wants concatenated strings
       String argString;
       if (i == arguments.length - 1 && argument.concatIfLastArg()) {
@@ -49,7 +38,7 @@ public abstract class ModularCommandSub extends CommandSub {
         argString = args[i + 1];
       }
       if (!argument.provide(argString)) {
-        sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
+        CommandBase.sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
         return;
       }
     }
@@ -58,7 +47,6 @@ public abstract class ModularCommandSub extends CommandSub {
     execute(player);
   }
 
-  @Override
   public String getArgs() {
     StringBuilder usage = new StringBuilder();
     for (ArgumentValidator argument : arguments) {
@@ -69,9 +57,8 @@ public abstract class ModularCommandSub extends CommandSub {
 
   private void sendCorrectUsage(Player player, String alias, String commandName) {
     String usage = "Correct usage: /" + alias + " " + commandName + getArgs();
-    sendMessage(player, usage);
+    CommandBase.sendMessage(player, usage);
   }
-
 
   protected final <T> T getArgument(String name) {
     for (ArgumentValidator argument : arguments) {
@@ -83,10 +70,5 @@ public abstract class ModularCommandSub extends CommandSub {
   }
 
   public abstract void execute(Player player);
-
-  @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
-  }
 
 }
