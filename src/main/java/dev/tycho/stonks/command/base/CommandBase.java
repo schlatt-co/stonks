@@ -13,16 +13,16 @@ import java.util.List;
 
 public class CommandBase implements CommandExecutor, TabCompleter {
 
-  private HashMap<String, SubCommand> subCommands;
+  private HashMap<String, CommandSub> subCommands;
 
-  public CommandBase(SubCommand defaultCommand) {
+  public CommandBase(CommandSub defaultCommand) {
     subCommands = new HashMap<>();
     subCommands.put("default", defaultCommand);
   }
 
-  public boolean addSubCommand(String alias, SubCommand subCommand) {
+  public boolean addSubCommand(String alias, CommandSub commandSub) {
     if (subCommands.containsKey(alias)) return false;
-    subCommands.put(alias, subCommand);
+    subCommands.put(alias, commandSub);
     return true;
   }
 
@@ -36,7 +36,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     if (args.length == 0) {
       subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
-      SubCommand sub = subCommands.get(args[0]);
+      CommandSub sub = subCommands.get(args[0]);
       if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {
         sendMessage(player, "You have insufficient permissions to execute this command!");
         return true;
@@ -72,8 +72,8 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     // Return the names of all subcommands that match what the player has entered
     for (String subcommandName : subCommands.keySet()) {
       if (subcommandName.contains(arg)) {
-        SubCommand subCommand = subCommands.get(subcommandName);
-        if (subCommand.getPermission() == null || player.hasPermission(subCommand.getPermission())) {
+        CommandSub commandSub = subCommands.get(subcommandName);
+        if (commandSub.getPermission() == null || player.hasPermission(commandSub.getPermission())) {
           matches.add(subcommandName);
         }
       }

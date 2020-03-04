@@ -1,16 +1,16 @@
 package dev.tycho.stonks.command.stonks;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.base.LambdaSubCommand;
-import dev.tycho.stonks.command.base.SubCommand;
-import dev.tycho.stonks.command.stonks.subs.FeesSubCommand;
-import dev.tycho.stonks.command.stonks.subs.ListSubCommand;
-import dev.tycho.stonks.command.stonks.subs.TopSubCommand;
+import dev.tycho.stonks.command.base.LambdaCommandSub;
+import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.stonks.subs.FeesCommandSub;
+import dev.tycho.stonks.command.stonks.subs.ListCommandSub;
+import dev.tycho.stonks.command.stonks.subs.TopCommandSub;
 import dev.tycho.stonks.command.stonks.subs.account.*;
 import dev.tycho.stonks.command.stonks.subs.company.*;
-import dev.tycho.stonks.command.stonks.subs.holding.CreateHoldingSubCommand;
-import dev.tycho.stonks.command.stonks.subs.holding.HoldingInfoSubCommand;
-import dev.tycho.stonks.command.stonks.subs.holding.RemoveHoldingSubCommand;
+import dev.tycho.stonks.command.stonks.subs.holding.CreateHoldingCommandSub;
+import dev.tycho.stonks.command.stonks.subs.holding.HoldingInfoCommandSub;
+import dev.tycho.stonks.command.stonks.subs.holding.RemoveHoldingCommandSub;
 import dev.tycho.stonks.command.stonks.subs.member.*;
 import dev.tycho.stonks.command.stonks.subs.moderator.*;
 import dev.tycho.stonks.command.stonks.subs.service.*;
@@ -20,75 +20,75 @@ import dev.tycho.stonks.gui.AllPlayerHoldingsGui;
 public class StonksCommand extends CommandBase {
 
   public StonksCommand() {
-    super(new ListSubCommand());
+    super(new ListCommandSub());
 
 
     // Company Commands
-    addSubCommand("info", new InfoSubCommand());
-    addSubCommand("list", new ListSubCommand());
-    addSubCommand("members", new MembersSubCommand());
-    addSubCommand("perks", new PerksSubCommand());
-    addSubCommand("accounts", new AccountsSubCommand());
-    addSubCommand("services", new ServicesSubCommand());
-    addSubCommand("create", new CreateSubCommand());
-    addSubCommand("setlogo", new LogoSubCommand());
+    addSubCommand("info", new InfoCommandSub());
+    addSubCommand("list", new ListCommandSub());
+    addSubCommand("members", new MembersCommandSub());
+    addSubCommand("perks", new PerksCommandSub());
+    addSubCommand("accounts", new AccountsCommandSub());
+    addSubCommand("services", new ServicesCommandSub());
+    addSubCommand("create", new CreateCommandSub());
+    addSubCommand("setlogo", new LogoCommandSub());
 
     // Membership Commands
-    addSubCommand("acceptinvite", new AcceptInviteSubCommand());
-    addSubCommand("declineinvite", new DeclineInviteSubCommand());
-    addSubCommand("invite", new InviteSubCommand());
-    addSubCommand("invites", new InvitesSubCommand());
-    addSubCommand("setrole", new SetRoleSubCommand());
-    addSubCommand("kickmember", new KickMemberSubCommand());
-    addSubCommand("memberinfo", new MemberInfoSubCommand());
+    addSubCommand("acceptinvite", new AcceptInviteCommandSub());
+    addSubCommand("declineinvite", new DeclineInviteCommandSub());
+    addSubCommand("invite", new InviteCommandSub());
+    addSubCommand("invites", new InvitesCommandSub());
+    addSubCommand("setrole", new SetRoleCommandSub());
+    addSubCommand("kickmember", new KickMemberCommandSub());
+    addSubCommand("memberinfo", new MemberInfoCommandSub());
 
     // Account Commands
-    addSubCommand("createaccount", new CreateAccountSubCommand());
-    addSubCommand("history", new HistorySubCommand());
+    addSubCommand("createaccount", new CreateAccountCommandSub());
+    addSubCommand("history", new HistoryCommandSub());
 
     // Holding Commands
-    addSubCommand("createholding", new CreateHoldingSubCommand());
-    addSubCommand("removeholding", new RemoveHoldingSubCommand());
-    addSubCommand("holdinginfo", new HoldingInfoSubCommand());
-    addSubCommand("myholdings", new LambdaSubCommand((p) -> new AllPlayerHoldingsGui(p).show(p)));
+    addSubCommand("createholding", new CreateHoldingCommandSub());
+    addSubCommand("removeholding", new RemoveHoldingCommandSub());
+    addSubCommand("holdinginfo", new HoldingInfoCommandSub());
+    addSubCommand("myholdings", new LambdaCommandSub((p) -> new AllPlayerHoldingsGui(p).show(p)));
 
     // Payment Commands
-    addSubCommand("pay", new PaySubCommand());
-    addSubCommand("withdraw", new WithdrawSubCommand());
-    addSubCommand("payuser", new PayUserSubCommand());
-    addSubCommand("transfer", new TransferSubCommand());
+    addSubCommand("pay", new PayCommandSub());
+    addSubCommand("withdraw", new WithdrawCommandSub());
+    addSubCommand("payuser", new PayUserCommandSub());
+    addSubCommand("transfer", new TransferCommandSub());
 
     // Service Commands
-    addSubCommand("createservice", new CreateServiceSubCommand());
-    addSubCommand("serviceinfo", new ServiceInfoSubCommand());
-    addSubCommand("servicefolders", new ServiceFoldersSubCommand());
-    addSubCommand("setservicemax", new SetServiceMaxSubCommand());
-    addSubCommand("subscribers", new SubscribersSubCommand());
+    addSubCommand("createservice", new CreateServiceCommandSub());
+    addSubCommand("serviceinfo", new ServiceInfoCommandSub());
+    addSubCommand("servicefolders", new ServiceFoldersCommandSub());
+    addSubCommand("setservicemax", new SetServiceMaxCommandSub());
+    addSubCommand("subscribers", new SubscribersCommandSub());
 
     // Subscription Commands
-    addSubCommand("subscribe", new SubscribeSubCommand());
-    addSubCommand("unsubscribe", new UnsubscribeSubCommand());
-    addSubCommand("paysubscription", new PaySubscriptionSubCommand());
-    addSubCommand("subscriptions", new SubscriptionsSubCommand());
+    addSubCommand("subscribe", new SubscribeCommandSub());
+    addSubCommand("unsubscribe", new UnsubscribeCommandSub());
+    addSubCommand("paysubscription", new PaySubscriptionCommandSub());
+    addSubCommand("subscriptions", new SubscriptionsCommandSub());
 
     // Admin commands
-    addSubCommand("hide", SubCommand.perms("trevor.mod", new HideSubCommand()));
-    addSubCommand("unhide", SubCommand.perms("trevor.mod", new UnHideSubCommand()));
-    addSubCommand("verify", SubCommand.perms("trevor.mod", new VerifySubCommand()));
-    addSubCommand("unverify", SubCommand.perms("trevor.mod", new UnVerifySubCommand()));
-    addSubCommand("rename", SubCommand.perms("trevor.mod", new RenameSubCommand()));
-    addSubCommand("listhidden", SubCommand.perms("trevor.mod", new ListHiddenSubCommand()));
-    addSubCommand("refresh", SubCommand.perms("trevor.admin", new RefreshSubCommand()));
+    addSubCommand("hide", CommandSub.perms("trevor.mod", new HideCommandSub()));
+    addSubCommand("unhide", CommandSub.perms("trevor.mod", new UnHideCommandSub()));
+    addSubCommand("verify", CommandSub.perms("trevor.mod", new VerifyCommandSub()));
+    addSubCommand("unverify", CommandSub.perms("trevor.mod", new UnVerifyCommandSub()));
+    addSubCommand("rename", CommandSub.perms("trevor.mod", new RenameCommandSub()));
+    addSubCommand("listhidden", CommandSub.perms("trevor.mod", new ListHiddenCommandSub()));
+    addSubCommand("refresh", CommandSub.perms("trevor.admin", new RefreshCommandSub()));
 
     // Misc Commands
 
-    addSubCommand("help", new LambdaSubCommand((p) -> {
+    addSubCommand("help", new LambdaCommandSub((p) -> {
       sendMessage(p, "Command Help:");
       sendMessage(p, "To view all commands and more info about the plugin please go to https://stonks.company/");
     }));
-    addSubCommand("baltop", new TopSubCommand());
-    addSubCommand("top", new TopSubCommand());
-    addSubCommand("fees", new FeesSubCommand());
+    addSubCommand("baltop", new TopCommandSub());
+    addSubCommand("top", new TopCommandSub());
+    addSubCommand("fees", new FeesCommandSub());
 
   }
 }
