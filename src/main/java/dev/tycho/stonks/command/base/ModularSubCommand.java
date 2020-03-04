@@ -1,14 +1,20 @@
 package dev.tycho.stonks.command.base;
 
+import dev.tycho.stonks.command.base.autocompleters.ArgumentAutocompleter;
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ModularSubCommand extends SubCommand {
   final ArgumentValidator[] arguments;
-
+  HashMap<String, ArgumentAutocompleter> autocompleters;
   protected ModularSubCommand(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
+    this.autocompleters = new HashMap<>();
     this.arguments[0] = argument;
     System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
   }
@@ -69,6 +75,36 @@ public abstract class ModularSubCommand extends SubCommand {
     throw new IllegalArgumentException("Argument with name " + name + " not found");
   }
 
+  protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
+    for (ArgumentValidator argument : arguments) {
+      if (argument.getName() == argumentName) {
+        autocompleters.put(argumentName, autocompleter);
+        return;
+      }
+    }
+    throw new IllegalArgumentException("Argument name (" + argumentName + ") for autocompleter does not match an argument");
+  }
+
+  @Override
+  public final List<String> getTabCompletions(Player player, String[] args) {
+    List<String> completions = new ArrayList<>();
+    //Attempt to get tab completions
+    if (args.length - 2 >= arguments.length) {
+      return null;
+    }
+    //Do we have an autocompleter for this argument?
+    String argName = arguments[args.length - 2].getName();
+    //Add a prompt
+    if (args[args.length - 1].isEmpty()) completions.add("<" + argName + ">");
+    if (autocompleters.containsKey(argName)) {
+      //If we do, append the list of autocompletions for the argument
+      completions.addAll(autocompleters.get(argName).getCompletions(player, args[args.length - 1]));
+    }
+    return completions;
+  }
+
+
   public abstract void execute(Player player);
+
 
 }

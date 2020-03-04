@@ -7,7 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class CommandBase implements CommandExecutor, TabCompleter {
 
@@ -48,8 +50,33 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-    return null;
+    if (!(sender instanceof Player)) return null;
+    Player player = (Player) sender;
+    if (args.length == 1) {
+      return subCommandCompletions(player, args[0]);
+    } else if (args.length > 1) {
+      String arg = args[0];
+      if (subCommands.containsKey(arg)) {
+        List<String> comp = subCommands.get(arg).getTabCompletions(player, args);
+        return comp == null ? new ArrayList<>() : comp;
+      }
+    }
+    return new ArrayList<>();
   }
+
+  private List<String> subCommandCompletions(Player player, String arg) {
+    ArrayList<String> matches = new ArrayList<>();
+    for (String subcommandName : subCommands.keySet()) {
+      if (subcommandName.contains(arg)) {
+        SubCommand subCommand = subCommands.get(subcommandName);
+        if (subCommand.getPermission() == null || player.hasPermission(subCommand.getPermission())) {
+          matches.add(subcommandName);
+        }
+      }
+    }
+    return matches;
+  }
+
 
   public static void sendMessage(CommandSender sender, String message) {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);

@@ -6,7 +6,7 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.earth2me.essentials.Essentials;
-import dev.tycho.stonks.command.MainCommand;
+import dev.tycho.stonks.command.stonks.StonksCommand;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
 import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
 import dev.tycho.stonks.managers.*;
@@ -92,7 +92,7 @@ public class Stonks extends JavaPlugin {
       }
     }, 0, 6000);
 
-    MainCommand command = new MainCommand();
+    StonksCommand command = new StonksCommand();
     Objects.requireNonNull(getCommand("company")).setTabCompleter(command);
     Objects.requireNonNull(getCommand("company")).setExecutor(command);
 

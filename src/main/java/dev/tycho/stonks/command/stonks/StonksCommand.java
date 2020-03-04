@@ -1,25 +1,25 @@
-package dev.tycho.stonks.command;
+package dev.tycho.stonks.command.stonks;
 
 import dev.tycho.stonks.command.base.CommandBase;
 import dev.tycho.stonks.command.base.LambdaSubCommand;
 import dev.tycho.stonks.command.base.SubCommand;
-import dev.tycho.stonks.command.subs.FeesSubCommand;
-import dev.tycho.stonks.command.subs.ListSubCommand;
-import dev.tycho.stonks.command.subs.TopSubCommand;
-import dev.tycho.stonks.command.subs.account.*;
-import dev.tycho.stonks.command.subs.company.*;
-import dev.tycho.stonks.command.subs.holding.CreateHoldingSubCommand;
-import dev.tycho.stonks.command.subs.holding.HoldingInfoSubCommand;
-import dev.tycho.stonks.command.subs.holding.RemoveHoldingSubCommand;
-import dev.tycho.stonks.command.subs.member.*;
-import dev.tycho.stonks.command.subs.moderator.*;
-import dev.tycho.stonks.command.subs.service.*;
-import dev.tycho.stonks.command.subs.service.subscription.*;
+import dev.tycho.stonks.command.stonks.subs.FeesSubCommand;
+import dev.tycho.stonks.command.stonks.subs.ListSubCommand;
+import dev.tycho.stonks.command.stonks.subs.TopSubCommand;
+import dev.tycho.stonks.command.stonks.subs.account.*;
+import dev.tycho.stonks.command.stonks.subs.company.*;
+import dev.tycho.stonks.command.stonks.subs.holding.CreateHoldingSubCommand;
+import dev.tycho.stonks.command.stonks.subs.holding.HoldingInfoSubCommand;
+import dev.tycho.stonks.command.stonks.subs.holding.RemoveHoldingSubCommand;
+import dev.tycho.stonks.command.stonks.subs.member.*;
+import dev.tycho.stonks.command.stonks.subs.moderator.*;
+import dev.tycho.stonks.command.stonks.subs.service.*;
+import dev.tycho.stonks.command.stonks.subs.service.subscription.*;
 import dev.tycho.stonks.gui.AllPlayerHoldingsGui;
 
-public class MainCommand extends CommandBase {
+public class StonksCommand extends CommandBase {
 
-  public MainCommand() {
+  public StonksCommand() {
     super(new ListSubCommand());
 
 
@@ -51,7 +51,6 @@ public class MainCommand extends CommandBase {
     addSubCommand("removeholding", new RemoveHoldingSubCommand());
     addSubCommand("holdinginfo", new HoldingInfoSubCommand());
     addSubCommand("myholdings", new LambdaSubCommand((p) -> new AllPlayerHoldingsGui(p).show(p)));
-
 
     // Payment Commands
     addSubCommand("pay", new PaySubCommand());

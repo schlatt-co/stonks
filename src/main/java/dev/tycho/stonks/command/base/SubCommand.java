@@ -29,6 +29,8 @@ public abstract class SubCommand {
 
   public abstract void onCommand(Player player, String alias, String[] args);
 
+  public abstract List<String> getTabCompletions(Player player, String[] args);
+
   public static SubCommand perms(String p, SubCommand c) {
     c.setPermission(p);
     return c;

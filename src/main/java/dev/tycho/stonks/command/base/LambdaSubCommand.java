@@ -2,6 +2,8 @@ package dev.tycho.stonks.command.base;
 
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class LambdaSubCommand extends SubCommand {
 
   private final LambdaCommandExecutor executor;
@@ -18,5 +20,11 @@ public class LambdaSubCommand extends SubCommand {
   public interface LambdaCommandExecutor {
     void execute(Player player);
   }
+
+  @Override
+  public final List<String> getTabCompletions(Player player, String[] args) {
+    return null;
+  }
+
 
 }
