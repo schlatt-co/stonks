@@ -52,12 +52,15 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
     if (!(sender instanceof Player)) return null;
     Player player = (Player) sender;
+    // If we have no subcommand yet, show a list of possible completions
     if (args.length == 1) {
       return subCommandCompletions(player, args[0]);
     } else if (args.length > 1) {
+      // Else get the completion list from the subcommand
       String arg = args[0];
       if (subCommands.containsKey(arg)) {
         List<String> comp = subCommands.get(arg).getTabCompletions(player, args);
+        // Avoid returning a null list since this causes MC to show a list of players as autocomplete options
         return comp == null ? new ArrayList<>() : comp;
       }
     }
@@ -66,6 +69,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
 
   private List<String> subCommandCompletions(Player player, String arg) {
     ArrayList<String> matches = new ArrayList<>();
+    // Return the names of all subcommands that match what the player has entered
     for (String subcommandName : subCommands.keySet()) {
       if (subcommandName.contains(arg)) {
         SubCommand subCommand = subCommands.get(subcommandName);

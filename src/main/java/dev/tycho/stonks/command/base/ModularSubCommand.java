@@ -11,7 +11,8 @@ import java.util.List;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ModularSubCommand extends SubCommand {
   final ArgumentValidator[] arguments;
-  HashMap<String, ArgumentAutocompleter> autocompleters;
+  private HashMap<String, ArgumentAutocompleter> autocompleters;
+
   protected ModularSubCommand(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
     this.autocompleters = new HashMap<>();
@@ -76,6 +77,7 @@ public abstract class ModularSubCommand extends SubCommand {
   }
 
   protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
+    // Make sure an argument exists with the same argumentName
     for (ArgumentValidator argument : arguments) {
       if (argument.getName().equals(argumentName)) {
         autocompleters.put(argumentName, autocompleter);
