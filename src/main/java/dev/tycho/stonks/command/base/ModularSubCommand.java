@@ -77,7 +77,7 @@ public abstract class ModularSubCommand extends SubCommand {
 
   protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
     for (ArgumentValidator argument : arguments) {
-      if (argument.getName() == argumentName) {
+      if (argument.getName().equals(argumentName)) {
         autocompleters.put(argumentName, autocompleter);
         return;
       }
