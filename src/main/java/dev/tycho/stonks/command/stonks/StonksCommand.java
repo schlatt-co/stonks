@@ -1,21 +1,21 @@
 package dev.tycho.stonks.command.stonks;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.base.LambdaCommandSub;
 import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.command.stonks.subs.FeesCommandSub;
+import dev.tycho.stonks.command.stonks.subs.HelpCommandSub;
 import dev.tycho.stonks.command.stonks.subs.ListCommandSub;
 import dev.tycho.stonks.command.stonks.subs.TopCommandSub;
 import dev.tycho.stonks.command.stonks.subs.account.*;
 import dev.tycho.stonks.command.stonks.subs.company.*;
 import dev.tycho.stonks.command.stonks.subs.holding.CreateHoldingCommandSub;
 import dev.tycho.stonks.command.stonks.subs.holding.HoldingInfoCommandSub;
+import dev.tycho.stonks.command.stonks.subs.holding.MyHoldingsCommandSub;
 import dev.tycho.stonks.command.stonks.subs.holding.RemoveHoldingCommandSub;
 import dev.tycho.stonks.command.stonks.subs.member.*;
 import dev.tycho.stonks.command.stonks.subs.moderator.*;
 import dev.tycho.stonks.command.stonks.subs.service.*;
 import dev.tycho.stonks.command.stonks.subs.service.subscription.*;
-import dev.tycho.stonks.gui.AllPlayerHoldingsGui;
 
 public class StonksCommand extends CommandBase {
 
@@ -50,7 +50,7 @@ public class StonksCommand extends CommandBase {
     addSubCommand("createholding", new CreateHoldingCommandSub());
     addSubCommand("removeholding", new RemoveHoldingCommandSub());
     addSubCommand("holdinginfo", new HoldingInfoCommandSub());
-    addSubCommand("myholdings", new LambdaCommandSub((p) -> new AllPlayerHoldingsGui(p).show(p)));
+    addSubCommand("myholdings", new MyHoldingsCommandSub());
 
     // Payment Commands
     addSubCommand("pay", new PayCommandSub());
@@ -82,10 +82,7 @@ public class StonksCommand extends CommandBase {
 
     // Misc Commands
 
-    addSubCommand("help", new LambdaCommandSub((p) -> {
-      sendMessage(p, "Command Help:");
-      sendMessage(p, "To view all commands and more info about the plugin please go to https://stonks.company/");
-    }));
+    addSubCommand("help", new HelpCommandSub());
     addSubCommand("baltop", new TopCommandSub());
     addSubCommand("top", new TopCommandSub());
     addSubCommand("fees", new FeesCommandSub());
