@@ -10,10 +10,6 @@ public class LambdaSubCommand extends SubCommand {
     this.executor = executor;
   }
 
-  public LambdaSubCommand() {
-    this.executor = null;
-  }
-
   @Override
   public void onCommand(Player player, String alias, String[] args) {
     executor.execute(player);

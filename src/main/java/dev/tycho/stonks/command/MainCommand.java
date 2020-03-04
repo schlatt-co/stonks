@@ -1,70 +1,95 @@
 package dev.tycho.stonks.command;
 
 import dev.tycho.stonks.command.base.CommandBase;
+import dev.tycho.stonks.command.base.LambdaSubCommand;
+import dev.tycho.stonks.command.base.SubCommand;
 import dev.tycho.stonks.command.subs.FeesSubCommand;
-import dev.tycho.stonks.command.subs.HelpSubCommand;
 import dev.tycho.stonks.command.subs.ListSubCommand;
 import dev.tycho.stonks.command.subs.TopSubCommand;
 import dev.tycho.stonks.command.subs.account.*;
 import dev.tycho.stonks.command.subs.company.*;
 import dev.tycho.stonks.command.subs.holding.CreateHoldingSubCommand;
 import dev.tycho.stonks.command.subs.holding.HoldingInfoSubCommand;
-import dev.tycho.stonks.command.subs.holding.MyHoldingsSubCommand;
 import dev.tycho.stonks.command.subs.holding.RemoveHoldingSubCommand;
 import dev.tycho.stonks.command.subs.member.*;
 import dev.tycho.stonks.command.subs.moderator.*;
 import dev.tycho.stonks.command.subs.service.*;
 import dev.tycho.stonks.command.subs.service.subscription.*;
+import dev.tycho.stonks.gui.AllPlayerHoldingsGui;
 
 public class MainCommand extends CommandBase {
 
   public MainCommand() {
     super(new ListSubCommand());
-    addSubCommand("accounts", new AccountsSubCommand());
-    addSubCommand("acceptinvite", new AcceptInviteSubCommand());
-    addSubCommand("createaccount", new CreateAccountSubCommand());
-    addSubCommand("create", new CreateSubCommand());
-    addSubCommand("createholding", new CreateHoldingSubCommand());
-    addSubCommand("declineinvite", new DeclineInviteSubCommand());
-    addSubCommand("fees", new FeesSubCommand());
-    addSubCommand("help", new HelpSubCommand());
-    addSubCommand("hide", new HideSubCommand());
-    addSubCommand("history", new HistorySubCommand());
-    addSubCommand("holdinginfo", new HoldingInfoSubCommand());
+
+
+    // Company Commands
     addSubCommand("info", new InfoSubCommand());
+    addSubCommand("list", new ListSubCommand());
+    addSubCommand("members", new MembersSubCommand());
+    addSubCommand("perks", new PerksSubCommand());
+    addSubCommand("accounts", new AccountsSubCommand());
+    addSubCommand("services", new ServicesSubCommand());
+    addSubCommand("create", new CreateSubCommand());
+    addSubCommand("setlogo", new LogoSubCommand());
+
+    // Membership Commands
+    addSubCommand("acceptinvite", new AcceptInviteSubCommand());
+    addSubCommand("declineinvite", new DeclineInviteSubCommand());
     addSubCommand("invite", new InviteSubCommand());
     addSubCommand("invites", new InvitesSubCommand());
+    addSubCommand("setrole", new SetRoleSubCommand());
     addSubCommand("kickmember", new KickMemberSubCommand());
-    addSubCommand("list", new ListSubCommand());
-    addSubCommand("listhidden", new ListHiddenSubCommand());
-    addSubCommand("setlogo", new LogoSubCommand());
     addSubCommand("memberinfo", new MemberInfoSubCommand());
-    addSubCommand("members", new MembersSubCommand());
-    addSubCommand("myholdings", new MyHoldingsSubCommand());
+
+    // Account Commands
+    addSubCommand("createaccount", new CreateAccountSubCommand());
+    addSubCommand("history", new HistorySubCommand());
+
+    // Holding Commands
+    addSubCommand("createholding", new CreateHoldingSubCommand());
+    addSubCommand("removeholding", new RemoveHoldingSubCommand());
+    addSubCommand("holdinginfo", new HoldingInfoSubCommand());
+    addSubCommand("myholdings", new LambdaSubCommand((p) -> new AllPlayerHoldingsGui(p).show(p)));
+
+
+    // Payment Commands
     addSubCommand("pay", new PaySubCommand());
+    addSubCommand("withdraw", new WithdrawSubCommand());
     addSubCommand("payuser", new PayUserSubCommand());
     addSubCommand("transfer", new TransferSubCommand());
-    addSubCommand("perks", new PerksSubCommand());
-    addSubCommand("refresh", new RefreshSubCommand());
-    addSubCommand("removeholding", new RemoveHoldingSubCommand());
-    addSubCommand("rename", new RenameSubCommand());
-    addSubCommand("setrole", new SetRoleSubCommand());
-    addSubCommand("baltop", new TopSubCommand());
-    addSubCommand("top", new TopSubCommand());
-    addSubCommand("unhide", new UnHideSubCommand());
-    addSubCommand("unverify", new UnVerifySubCommand());
-    addSubCommand("verify", new VerifySubCommand());
-    addSubCommand("withdraw", new WithdrawSubCommand());
 
+    // Service Commands
     addSubCommand("createservice", new CreateServiceSubCommand());
-    addSubCommand("paysubscription", new PaySubscriptionSubCommand());
     addSubCommand("serviceinfo", new ServiceInfoSubCommand());
     addSubCommand("servicefolders", new ServiceFoldersSubCommand());
-    addSubCommand("services", new ServicesSubCommand());
     addSubCommand("setservicemax", new SetServiceMaxSubCommand());
-    addSubCommand("subscribe", new SubscribeSubCommand());
     addSubCommand("subscribers", new SubscribersSubCommand());
-    addSubCommand("subscriptions", new SubscriptionsSubCommand());
+
+    // Subscription Commands
+    addSubCommand("subscribe", new SubscribeSubCommand());
     addSubCommand("unsubscribe", new UnsubscribeSubCommand());
+    addSubCommand("paysubscription", new PaySubscriptionSubCommand());
+    addSubCommand("subscriptions", new SubscriptionsSubCommand());
+
+    // Admin commands
+    addSubCommand("hide", SubCommand.perms("trevor.mod", new HideSubCommand()));
+    addSubCommand("unhide", SubCommand.perms("trevor.mod", new UnHideSubCommand()));
+    addSubCommand("verify", SubCommand.perms("trevor.mod", new VerifySubCommand()));
+    addSubCommand("unverify", SubCommand.perms("trevor.mod", new UnVerifySubCommand()));
+    addSubCommand("rename", SubCommand.perms("trevor.mod", new RenameSubCommand()));
+    addSubCommand("listhidden", SubCommand.perms("trevor.mod", new ListHiddenSubCommand()));
+    addSubCommand("refresh", SubCommand.perms("trevor.admin", new RefreshSubCommand()));
+
+    // Misc Commands
+
+    addSubCommand("help", new LambdaSubCommand((p) -> {
+      sendMessage(p, "Command Help:");
+      sendMessage(p, "To view all commands and more info about the plugin please go to https://stonks.company/");
+    }));
+    addSubCommand("baltop", new TopSubCommand());
+    addSubCommand("top", new TopSubCommand());
+    addSubCommand("fees", new FeesSubCommand());
+
   }
 }
