@@ -3,9 +3,15 @@ package dev.tycho.stonks.command.stonks.subs.holding;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
+import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.logging.Transaction;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.UUID;
 
 public class RemoveHoldingCommandSub extends ModularCommandSub {
 
@@ -35,6 +41,7 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
       sendMessage(player, "Could not find company for account");
       return;
     }
+
     Member member = company.getMember(player);
     //Is the player a member of that company
     if (member == null) {
@@ -42,9 +49,9 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
       return;
     }
 
-    //Does the player have permission to create a holding in that account?
-    if (!member.hasManagamentPermission()) {
-      sendMessage(player, "You do not have permission to create a holding account! Ask to be promoted.");
+    //Make sure we don't remove the last holding in an account
+    if (holdingsAccount.holdings.size() < 2) {
+      sendMessage(player, "You cannot remove the last holding in a holdings account");
       return;
     }
 
@@ -54,28 +61,62 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
       sendMessage(player, "That player has never played on the server!");
       return;
     }
-    Holding playerHolding = holdingsAccount.getPlayerHolding(op.getUniqueId());
-    if (playerHolding == null) {
+    Holding holding = holdingsAccount.getPlayerHolding(op.getUniqueId());
+    if (holding == null) {
       sendMessage(player, "There is no holding for this player!");
       return;
     }
-    //That player has a holding
-    //If their balance is lower than 1 we can remove it
-    //This isn't == 0 because of possible floating point errors
-    if (playerHolding.balance > 1) {
-      sendMessage(player, "That account is worth more than $1! Please get the player to withdraw the money from it!");
-      return;
-    }
-    if (holdingsAccount.holdings.size() < 2) {
-      sendMessage(player, "There needs to be at least one holding per holding account!");
-      return;
-    }
-    //We can delete the holding
-    if (Repo.getInstance().deleteHolding(playerHolding)) {
-      sendMessage(player, "Holding removed successfully!");
-    } else {
-      sendMessage(player, "Error deleting holding");
+
+    // If player doesnt own that holding make sure they are can remove it
+    if (!holding.playerUUID.equals(player.getUniqueId())) {
+      if (company.getMember(player).role != Role.CEO) {
+        sendMessage(player, "Only a CEO can remove someone else's holding");
+        return;
+      }
+      //Now find out the last time that player withdrew from the account
+      long recentWithdraw = findMostRecentWithdraw(
+          Repo.getInstance().transactions().getTransactionsForAccount(holdingsAccount), player.getUniqueId());
+      if (System.currentTimeMillis() - recentWithdraw < 604800000L) {
+        //If a withdraw happened less than 7 days ago then the account is still active
+        sendMessage(player, "That holding is still active (was withdrawn from less than 7 days ago) so you cannot remove it.");
+        return;
+      }
+      // We can remove the holding
+
     }
 
+
+    //If there is money in the holding then prompt to confirm
+    if (holding.balance > 1) {
+      new ConfirmationGui.Builder().title("That holding has money in it, proceed?")
+          .info(Arrays.asList(
+              "That holding still has money in it",
+              "Deleting it will distribute the money proportionally",
+              "amongst the other holding owners",
+              "If this is your holding, withdraw your money!",
+              ""))
+          .yes(() -> {
+                // Delete the holding
+                if (Repo.getInstance().removeHolding(holding, player.getUniqueId())) {
+                  sendMessage(player, "Holding removed successfully!");
+                } else {
+                  sendMessage(player, "Error deleting holding");
+                }
+              }
+          )
+          .no(() -> sendMessage(player, "Deleting holding cancelled"))
+          .show(player);
+    }
+  }
+
+  private long findMostRecentWithdraw(Collection<Transaction> transactions, UUID playerUUID) {
+    long highestMillis = 0;
+    // Find the most
+    for (Transaction transaction : transactions) {
+      if (transaction.payeeUUID.equals(playerUUID) && transaction.amount < 0) {
+        highestMillis = Math.max(highestMillis, transaction.timestamp.getTime());
+      }
+    }
+    return highestMillis;
   }
 }

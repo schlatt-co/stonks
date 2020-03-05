@@ -457,12 +457,14 @@ public class Repo extends SpigotModule {
     return holding;
   }
 
-  public boolean deleteHolding(Holding holding) {
+  public boolean removeHolding(Holding holding, UUID player) {
+    double balance = holding.balance;
     if (holdingStore.delete(holding.pk)) {
       //Update the company and account
       holdingsAccountStore.refreshRelations(holding.accountPk);
       HoldingsAccount ha = holdingsAccountStore.get(holding.accountPk);
       companyStore.refreshRelations(ha.companyPk);
+      payAccount(player, "Holding removal payout", ha, balance);
       return true;
     }
     return false;
