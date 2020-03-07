@@ -24,6 +24,7 @@ public class CreateServiceCommandSub extends ModularCommandSub {
     addAutocompleter("cost", new CurrencyAutocompleter());
     addAutocompleter("max_subs", new OptionListAutocompleter("0 [unlimited]", "1", "2", "10"));
   }
+
   @Override
   public void execute(Player player) {
     double duration = getArgument("duration");

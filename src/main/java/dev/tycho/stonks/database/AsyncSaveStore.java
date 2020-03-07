@@ -12,6 +12,7 @@ public class AsyncSaveStore<T extends Entity> extends DatabaseStore<T> {
 
   protected LinkedBlockingQueue<T> saveQueue = new LinkedBlockingQueue<>();
   protected Function<T, T> duplicator;
+
   public AsyncSaveStore(Function<T, T> duplicator) {
     this.duplicator = duplicator;
     ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();

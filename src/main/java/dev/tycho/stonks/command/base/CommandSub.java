@@ -15,21 +15,9 @@ public abstract class CommandSub {
 
   protected String permission;
 
-  private void setPermission(String permission) {
-    this.permission = permission;
-  }
-
-  public String getPermission() {
-    return permission;
-  }
-
   public CommandSub() {
     this.permission = null;
   }
-
-  public abstract void onCommand(Player player, String alias, String[] args);
-
-  public abstract List<String> getTabCompletions(Player player, String[] args);
 
   public static CommandSub perms(String p, CommandSub c) {
     c.setPermission(p);
@@ -61,10 +49,21 @@ public abstract class CommandSub {
     return copyPartialMatches(search, playerNames);
   }
 
-
   protected static Player playerFromName(String name) {
     StonksUser u = Stonks.getOfflineUser(name);
     return u.getBase();
   }
+
+  public String getPermission() {
+    return permission;
+  }
+
+  private void setPermission(String permission) {
+    this.permission = permission;
+  }
+
+  public abstract void onCommand(Player player, String alias, String[] args);
+
+  public abstract List<String> getTabCompletions(Player player, String[] args);
 }
 

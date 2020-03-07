@@ -12,6 +12,13 @@ public abstract class JavaSqlDBI<T extends Entity> implements DatabaseInterface<
     this.dataSource = dataSource;
   }
 
+  public static UUID uuidFromString(String string) {
+    if (string == null) {
+      return null;
+    }
+    return UUID.fromString(string);
+  }
+
   protected abstract boolean createTable();
 
   protected Connection getConnection() throws SQLException {
@@ -20,13 +27,6 @@ public abstract class JavaSqlDBI<T extends Entity> implements DatabaseInterface<
 
   protected String uuidToStr(UUID uuid) {
     return uuid == null ? null : uuid.toString();
-  }
-
-  public static UUID uuidFromString(String string) {
-    if (string == null) {
-      return null;
-    }
-    return UUID.fromString(string);
   }
 
 }

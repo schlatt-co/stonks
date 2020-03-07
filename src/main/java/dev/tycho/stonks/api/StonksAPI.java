@@ -13,6 +13,7 @@ public class StonksAPI {
 
   /**
    * Registers a perk for companies.
+   *
    * @param perk Perk to register
    */
   public static void registerPerk(CompanyPerk perk) {
@@ -21,6 +22,7 @@ public class StonksAPI {
 
   /**
    * Returns the Main account for the Admins company.
+   *
    * @return The main admin company account.
    * @throws StonksAPIException Should be never thrown.
    */
@@ -30,6 +32,7 @@ public class StonksAPI {
 
   /**
    * Creates (if one isn't already present) and returns the Admins company.
+   *
    * @return The admin company object.
    * @throws StonksAPIException Should be never thrown.
    */
@@ -43,6 +46,7 @@ public class StonksAPI {
 
   /**
    * Returns the company of the given name or null if no such company exists.
+   *
    * @param name The name of the company.
    * @return The company object if the company exists, otherwise null.
    */
@@ -53,7 +57,8 @@ public class StonksAPI {
 
   /**
    * Creates and returns the company with the given name and player.
-   * @param name The name of the company.
+   *
+   * @param name  The name of the company.
    * @param owner The owner of the company.
    * @return The company just created.
    * @throws StonksAPIException If a company with that name already exists.
@@ -67,10 +72,10 @@ public class StonksAPI {
   }
 
 
-
   /**
    * Creates and returns the account with the given name.
-   * @param company The company to create the account from.
+   *
+   * @param company     The company to create the account from.
    * @param accountName The name of the account to be created.
    * @return The account just created.
    * @throws StonksAPIException If an account with that name already exists.
@@ -85,7 +90,8 @@ public class StonksAPI {
 
   /**
    * Gets the account from a company or creates one if it's not present.
-   * @param company The company to fetch/create the account from/to.
+   *
+   * @param company     The company to fetch/create the account from/to.
    * @param accountName The name of the account to fetch/create.
    * @return The account fetched or just created.
    * @throws StonksAPIException If something goes horribly wrong.

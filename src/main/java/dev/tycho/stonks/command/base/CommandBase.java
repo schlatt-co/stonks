@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,14 +21,16 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     subCommands.put("default", defaultCommand);
   }
 
-  public boolean addSubCommand(String alias, CommandSub commandSub) {
-    if (subCommands.containsKey(alias)) return false;
+  public static void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
+  }
+
+  public void addSubCommand(String alias, CommandSub commandSub) {
     subCommands.put(alias, commandSub);
-    return true;
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
     if (!(sender instanceof Player)) {
       sender.sendMessage(ChatColor.RED + "This command can only used by a player!");
       return true;
@@ -49,7 +52,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
     if (!(sender instanceof Player)) return null;
     Player player = (Player) sender;
     // If we have no subcommand yet, show a list of possible completions
@@ -79,10 +82,5 @@ public class CommandBase implements CommandExecutor, TabCompleter {
       }
     }
     return matches;
-  }
-
-
-  public static void sendMessage(CommandSender sender, String message) {
-    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 }

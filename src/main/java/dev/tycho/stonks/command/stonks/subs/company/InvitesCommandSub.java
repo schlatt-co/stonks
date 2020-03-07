@@ -1,7 +1,7 @@
 package dev.tycho.stonks.command.stonks.subs.company;
 
-import dev.tycho.stonks.command.base.SimpleCommandSub;
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.SimpleCommandSub;
 import dev.tycho.stonks.gui.InviteListGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Member;

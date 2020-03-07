@@ -6,9 +6,9 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.Acrobot.ChestShop.Database.Account;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
 import com.earth2me.essentials.Essentials;
-import dev.tycho.stonks.command.stonks.StonksCommand;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
 import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
+import dev.tycho.stonks.command.stonks.StonksCommand;
 import dev.tycho.stonks.managers.*;
 import dev.tycho.stonks.model.core.CompanyAccount;
 import dev.tycho.stonks.model.core.HoldingsAccount;
@@ -33,9 +33,9 @@ import java.util.UUID;
 
 public class Stonks extends JavaPlugin {
 
+  public static Economy economy = null;
   private static Stonks instance;
   private static Essentials essentials = null;
-  public static Economy economy = null;
   private static TaskChainFactory taskChainFactory;
   private List<SpigotModule> loadedModules = new ArrayList<>();
 
@@ -46,6 +46,27 @@ public class Stonks extends JavaPlugin {
   // Here for maybe future use
   public static <T> TaskChain<T> newSharedChain(String name) {
     return taskChainFactory.newSharedChain(name);
+  }
+
+  public static StonksUser getUser(UUID uuid) {
+    if (essentials != null) {
+      return new EssentialsUser(essentials.getUser(uuid));
+    } else {
+      return new BukkitUser(Bukkit.getPlayer(uuid));
+    }
+  }
+
+  public static StonksUser getOfflineUser(String name) {
+    if (essentials != null) {
+      return new EssentialsUser(essentials.getOfflineUser(name));
+    } else {
+      //noinspection deprecation - bukkit is stupid
+      return new BukkitUser(Bukkit.getOfflinePlayer(name));
+    }
+  }
+
+  public static Stonks getInstance() {
+    return instance;
   }
 
   @Override
@@ -199,30 +220,8 @@ public class Stonks extends JavaPlugin {
     return (economy != null);
   }
 
-
   private boolean setupEssentials() {
     essentials = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
     return (essentials != null);
-  }
-
-  public static StonksUser getUser(UUID uuid) {
-    if (essentials != null) {
-      return new EssentialsUser(essentials.getUser(uuid));
-    } else {
-      return new BukkitUser(Bukkit.getPlayer(uuid));
-    }
-  }
-
-  public static StonksUser getOfflineUser(String  name) {
-    if (essentials != null) {
-      return new EssentialsUser(essentials.getOfflineUser(name));
-    } else {
-      //noinspection deprecation - bukkit is stupid
-      return new BukkitUser(Bukkit.getOfflinePlayer(name));
-    }
-  }
-
-  public static Stonks getInstance() {
-    return instance;
   }
 }

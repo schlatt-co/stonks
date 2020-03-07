@@ -17,6 +17,10 @@ public class CompanyRenameEvent extends Event {
     this.newName = newName;
   }
 
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
+
   public Company getCompany() {
     return company;
   }
@@ -28,10 +32,6 @@ public class CompanyRenameEvent extends Event {
   @NotNull
   @Override
   public HandlerList getHandlers() {
-    return handlers;
-  }
-
-  public static HandlerList getHandlerList() {
     return handlers;
   }
 }
