@@ -4,6 +4,7 @@ import dev.tycho.stonks.command.base.SimpleCommandSub;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("ConstantConditions")
 public class FeesCommandSub extends SimpleCommandSub {
 
   private final static double COMPANY_FEE = Bukkit.getPluginManager().getPlugin("Stonks").getConfig().getDouble("fees.companycreation");

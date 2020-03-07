@@ -2,8 +2,8 @@ package dev.tycho.stonks.command.stonks;
 
 import dev.tycho.stonks.command.base.CommandBase;
 import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.command.base.SimpleCommandSub;
 import dev.tycho.stonks.command.stonks.subs.FeesCommandSub;
-import dev.tycho.stonks.command.stonks.subs.HelpCommandSub;
 import dev.tycho.stonks.command.stonks.subs.ListCommandSub;
 import dev.tycho.stonks.command.stonks.subs.TopCommandSub;
 import dev.tycho.stonks.command.stonks.subs.account.*;
@@ -16,6 +16,7 @@ import dev.tycho.stonks.command.stonks.subs.member.*;
 import dev.tycho.stonks.command.stonks.subs.moderator.*;
 import dev.tycho.stonks.command.stonks.subs.service.*;
 import dev.tycho.stonks.command.stonks.subs.service.subscription.*;
+import org.bukkit.entity.Player;
 
 public class StonksCommand extends CommandBase {
 
@@ -82,7 +83,13 @@ public class StonksCommand extends CommandBase {
 
     // Misc Commands
 
-    addSubCommand("help", new HelpCommandSub());
+    addSubCommand("help", new SimpleCommandSub() {
+      @Override
+      public void execute(Player player) {
+        sendMessage(player, "Command Help:");
+        sendMessage(player, "To view all commands and more info about the plugin please go to https://stonks.company/");
+      }
+    });
     addSubCommand("baltop", new TopCommandSub());
     addSubCommand("top", new TopCommandSub());
     addSubCommand("fees", new FeesCommandSub());
