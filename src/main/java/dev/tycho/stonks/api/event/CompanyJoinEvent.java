@@ -18,6 +18,10 @@ public class CompanyJoinEvent extends Event {
     this.player = player;
   }
 
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
+
   public Company getCompany() {
     return company;
   }
@@ -29,10 +33,6 @@ public class CompanyJoinEvent extends Event {
   @NotNull
   @Override
   public HandlerList getHandlers() {
-    return handlers;
-  }
-
-  public static HandlerList getHandlerList() {
     return handlers;
   }
 }

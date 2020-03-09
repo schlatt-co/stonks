@@ -13,37 +13,18 @@ import java.util.List;
 
 public abstract class CommandSub {
 
-  private final String permission;
-
-  private boolean autoComplete;
+  protected String permission;
 
   public CommandSub() {
-    this(null, true);
+    this.permission = null;
   }
 
-  public CommandSub(boolean autoComplete) {
-    this(null, autoComplete);
+  public static CommandSub perms(String p, CommandSub c) {
+    c.setPermission(p);
+    return c;
   }
 
-  public CommandSub(String permission) {
-    this(permission, true);
-  }
-
-  public CommandSub(String permission, boolean autoComplete) {
-    this.permission = permission;
-    this.autoComplete = autoComplete;
-  }
-
-  public abstract List<String> onTabComplete(CommandSender sender, String alias, String[] args);
-
-  public abstract void onCommand(Player player, String alias, String[] args);
-
-  protected final void sendMessage(CommandSender sender, String message) {
-    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
-  }
-
-
-  protected String concatArgs(int startArg, String[] args) {
+  protected static String concatArgs(int startArg, String[] args) {
     StringBuilder concat = new StringBuilder();
     for (int i = startArg; i < args.length; i++) {
       if (i > startArg) concat.append(" ");
@@ -52,37 +33,37 @@ public abstract class CommandSub {
     return concat.toString();
   }
 
-  protected List<String> copyPartialMatches(String search, Iterable<String> stack) {
+  public static void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
+  }
+
+  protected static List<String> copyPartialMatches(String search, Iterable<String> stack) {
     List<String> matches = new ArrayList<>();
     StringUtil.copyPartialMatches(search, stack, matches);
     return matches;
   }
 
-  protected List<String> matchPlayerName(String search) {
+  protected static List<String> matchPlayerName(String search) {
     List<String> playerNames = new ArrayList<>();
     Bukkit.getOnlinePlayers().forEach(o -> playerNames.add(o.getName()));
     return copyPartialMatches(search, playerNames);
   }
 
-
-  protected Player playerFromName(String name) {
+  protected static Player playerFromName(String name) {
     StonksUser u = Stonks.getOfflineUser(name);
     return u.getBase();
   }
 
-  public void setAutoComplete(boolean autoComplete) {
-    this.autoComplete = autoComplete;
-  }
-
-  String getPermission() {
+  public String getPermission() {
     return permission;
   }
 
-  boolean isAutoComplete() {
-    return autoComplete;
+  private void setPermission(String permission) {
+    this.permission = permission;
   }
 
-  public String getArgs() {
-    return "";
-  }
+  public abstract void onCommand(Player player, String alias, String[] args);
+
+  public abstract List<String> getTabCompletions(Player player, String[] args);
 }
+

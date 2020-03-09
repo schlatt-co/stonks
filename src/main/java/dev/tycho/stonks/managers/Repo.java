@@ -1,9 +1,9 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
+import dev.tycho.stonks.database.SyncStore;
 import dev.tycho.stonks.database.TransactionStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
@@ -457,12 +457,14 @@ public class Repo extends SpigotModule {
     return holding;
   }
 
-  public boolean deleteHolding(Holding holding) {
+  public boolean removeHolding(Holding holding, UUID player) {
+    double balance = holding.balance;
     if (holdingStore.delete(holding.pk)) {
       //Update the company and account
       holdingsAccountStore.refreshRelations(holding.accountPk);
       HoldingsAccount ha = holdingsAccountStore.get(holding.accountPk);
       companyStore.refreshRelations(ha.companyPk);
+      payAccount(player, "Holding removal payout", ha, balance);
       return true;
     }
     return false;

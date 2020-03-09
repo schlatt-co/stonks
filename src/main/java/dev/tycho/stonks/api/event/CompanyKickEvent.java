@@ -18,6 +18,10 @@ public class CompanyKickEvent extends Event {
     this.kickedPlayer = kickedPlayer;
   }
 
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
+
   public Company getCompany() {
     return company;
   }
@@ -29,10 +33,6 @@ public class CompanyKickEvent extends Event {
   @NotNull
   @Override
   public HandlerList getHandlers() {
-    return handlers;
-  }
-
-  public static HandlerList getHandlerList() {
     return handlers;
   }
 }

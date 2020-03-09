@@ -1,24 +1,21 @@
 package dev.tycho.stonks.command.base;
 
+import dev.tycho.stonks.command.base.autocompleters.ArgumentAutocompleter;
 import dev.tycho.stonks.command.base.validators.ArgumentValidator;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ModularCommandSub extends CommandSub {
   final ArgumentValidator[] arguments;
-
-  protected ModularCommandSub(String perms, ArgumentValidator argument, ArgumentValidator... arguments) {
-    super(perms);
-    this.arguments = new ArgumentValidator[arguments.length + 1];
-    this.arguments[0] = argument;
-    System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
-  }
+  private HashMap<String, ArgumentAutocompleter> autocompleters;
 
   protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
     this.arguments = new ArgumentValidator[arguments.length + 1];
+    this.autocompleters = new HashMap<>();
     this.arguments[0] = argument;
     System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
   }
@@ -40,7 +37,6 @@ public abstract class ModularCommandSub extends CommandSub {
         }
       }
 
-
       //If this is the last argument and it wants concatenated strings
       String argString;
       if (i == arguments.length - 1 && argument.concatIfLastArg()) {
@@ -49,7 +45,7 @@ public abstract class ModularCommandSub extends CommandSub {
         argString = args[i + 1];
       }
       if (!argument.provide(argString)) {
-        sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
+        CommandBase.sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
         return;
       }
     }
@@ -58,7 +54,6 @@ public abstract class ModularCommandSub extends CommandSub {
     execute(player);
   }
 
-  @Override
   public String getArgs() {
     StringBuilder usage = new StringBuilder();
     for (ArgumentValidator argument : arguments) {
@@ -69,9 +64,8 @@ public abstract class ModularCommandSub extends CommandSub {
 
   private void sendCorrectUsage(Player player, String alias, String commandName) {
     String usage = "Correct usage: /" + alias + " " + commandName + getArgs();
-    sendMessage(player, usage);
+    CommandBase.sendMessage(player, usage);
   }
-
 
   protected final <T> T getArgument(String name) {
     for (ArgumentValidator argument : arguments) {
@@ -82,11 +76,37 @@ public abstract class ModularCommandSub extends CommandSub {
     throw new IllegalArgumentException("Argument with name " + name + " not found");
   }
 
-  public abstract void execute(Player player);
+  protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
+    // Make sure an argument exists with the same argumentName
+    for (ArgumentValidator argument : arguments) {
+      if (argument.getName().equals(argumentName)) {
+        autocompleters.put(argumentName, autocompleter);
+        return;
+      }
+    }
+    throw new IllegalArgumentException("Argument name (" + argumentName + ") for autocompleter does not match an argument");
+  }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, String alias, String[] args) {
-    return null;
+  public final List<String> getTabCompletions(Player player, String[] args) {
+    List<String> completions = new ArrayList<>();
+    //Attempt to get tab completions
+    if (args.length - 2 >= arguments.length) {
+      return null;
+    }
+    //Do we have an autocompleter for this argument?
+    String argName = arguments[args.length - 2].getName();
+    //Add a prompt
+    if (args[args.length - 1].isEmpty()) completions.add("<" + argName + ">");
+    if (autocompleters.containsKey(argName)) {
+      //If we do, append the list of autocompletions for the argument
+      completions.addAll(autocompleters.get(argName).getCompletions(player, args[args.length - 1]));
+    }
+    return completions;
   }
+
+
+  public abstract void execute(Player player);
+
 
 }

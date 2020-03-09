@@ -22,6 +22,13 @@ public class PerkManager extends SpigotModule {
     registerPerk(new CompanyChatPerk(plugin));
   }
 
+  public static PerkManager getInstance() {
+    if (!Util.isCalledInternally()) {
+      throw new RuntimeException("Improper use of internal stonks classes.");
+    }
+    return instance;
+  }
+
   public void registerPerk(CompanyPerk perk) {
     if (!Util.isCalledInternally()) {
       throw new RuntimeException("Improper use of internal stonks classes.");
@@ -42,12 +49,5 @@ public class PerkManager extends SpigotModule {
 
   public HashMap<String, String> getClassNamespaceMap() {
     return classNamespaceMap;
-  }
-
-  public static PerkManager getInstance() {
-    if (!Util.isCalledInternally()) {
-      throw new RuntimeException("Improper use of internal stonks classes.");
-    }
-    return instance;
   }
 }

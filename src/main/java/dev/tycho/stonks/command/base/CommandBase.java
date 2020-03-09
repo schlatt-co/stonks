@@ -6,35 +6,37 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CommandBase implements CommandExecutor, TabCompleter {
 
-  private final String name;
+  private HashMap<String, CommandSub> subCommands;
 
-  private Map<String, CommandSub> subCommands = new HashMap<>();
+  public CommandBase(CommandSub defaultCommand) {
+    subCommands = new HashMap<>();
+    subCommands.put("default", defaultCommand);
+  }
 
-  public CommandBase(String name, CommandSub defaultSub) {
-    this.name = name;
-    addSubCommand("default", defaultSub);
+  public static void sendMessage(CommandSender sender, String message) {
+    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
+  }
+
+  public void addSubCommand(String alias, CommandSub commandSub) {
+    subCommands.put(alias, commandSub);
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
     if (!(sender instanceof Player)) {
       sender.sendMessage(ChatColor.RED + "This command can only used by a player!");
       return true;
     }
     Player player = (Player) sender;
-
-
     if (args.length == 0) {
-//      showAllCommands(player);
       subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
       CommandSub sub = subCommands.get(args[0]);
@@ -50,38 +52,35 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-    List<String> completions = new ArrayList<>();
+  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    if (!(sender instanceof Player)) return null;
+    Player player = (Player) sender;
+    // If we have no subcommand yet, show a list of possible completions
     if (args.length == 1) {
-      List<String> cmds = new ArrayList<>();
-      for (Map.Entry<String, CommandSub> subCmd : subCommands.entrySet()) {
-        if (subCmd.getValue().isAutoComplete() && (subCmd.getValue().getPermission() == null || sender.hasPermission(subCmd.getValue().getPermission()))) {
-          cmds.add(subCmd.getKey());
+      return subCommandCompletions(player, args[0]);
+    } else if (args.length > 1) {
+      // Else get the completion list from the subcommand
+      String arg = args[0];
+      if (subCommands.containsKey(arg)) {
+        List<String> comp = subCommands.get(arg).getTabCompletions(player, args);
+        // Avoid returning a null list since this causes MC to show a list of players as autocomplete options
+        return comp == null ? new ArrayList<>() : comp;
+      }
+    }
+    return new ArrayList<>();
+  }
+
+  private List<String> subCommandCompletions(Player player, String arg) {
+    ArrayList<String> matches = new ArrayList<>();
+    // Return the names of all subcommands that match what the player has entered
+    for (String subcommandName : subCommands.keySet()) {
+      if (subcommandName.contains(arg)) {
+        CommandSub commandSub = subCommands.get(subcommandName);
+        if (commandSub.getPermission() == null || player.hasPermission(commandSub.getPermission())) {
+          matches.add(subcommandName);
         }
       }
-      StringUtil.copyPartialMatches(args[0], cmds, completions);
-    } else if (args.length > 1 && subCommands.containsKey(args[0])) {
-      List<String> result = subCommands.get(args[0]).onTabComplete(sender, alias, args);
-      if (result != null) {
-        completions = result;
-      }
     }
-    return completions;
+    return matches;
   }
-
-  protected void addSubCommand(String name, CommandSub commandSub) {
-    subCommands.put(name, commandSub);
-  }
-
-  private void sendMessage(CommandSender sender, String message) {
-    sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
-  }
-
-  public void showAllCommands(Player player) {
-    for (Map.Entry<String, CommandSub> e : subCommands.entrySet()) {
-      player.sendMessage("/stonks " + e.getKey() + e.getValue().getArgs());
-//      System.out.println("/stonks " + e.getKey() + e.getValue().getArgs());
-    }
-  }
-
 }
