@@ -1,6 +1,5 @@
 package dev.tycho.stonks.command.base.validators;
 
-@SuppressWarnings("rawtypes")
 public abstract class ArgumentValidator<T> {
   private final String name;
   protected boolean concatIfLastArg;
@@ -13,19 +12,19 @@ public abstract class ArgumentValidator<T> {
     this.optional = false;
   }
 
-  public static ArgumentValidator optional(ArgumentValidator arg) {
-    arg.setOptional(true);
+  public static <Z> ArgumentValidator<Z> optional(ArgumentValidator<Z> arg) {
+    arg.setOptional();
     return arg;
   }
 
-  public static ArgumentValidator concatIfLast(ArgumentValidator arg) {
-    arg.setConcat(true);
+  public static <Z> ArgumentValidator<Z> concatIfLast(ArgumentValidator<Z> arg) {
+    arg.setConcat();
     return arg;
   }
 
-  public static ArgumentValidator optionalAndConcatIfLast(ArgumentValidator arg) {
-    arg.setConcat(true);
-    arg.setOptional(true);
+  public static <Z> ArgumentValidator<Z> optionalAndConcatIfLast(ArgumentValidator<Z> arg) {
+    arg.setConcat();
+    arg.setOptional();
     return arg;
   }
 
@@ -41,8 +40,8 @@ public abstract class ArgumentValidator<T> {
     return name;
   }
 
-  private void setConcat(boolean val) {
-    this.concatIfLastArg = val;
+  private void setConcat() {
+    this.concatIfLastArg = true;
   }
 
   public final boolean concatIfLastArg() {
@@ -53,8 +52,8 @@ public abstract class ArgumentValidator<T> {
     return optional;
   }
 
-  private void setOptional(boolean val) {
-    this.optional = val;
+  private void setOptional() {
+    this.optional = true;
   }
 
   public String getUsage() {
