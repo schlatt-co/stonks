@@ -23,8 +23,9 @@ public class ListCommandSub extends ModularCommandSub {
 
   @Override
   public void execute(Player player) {
-    if (getArgument("options") != null) {
-      switch ((String) getArgument("options")) {
+    String option = getArgument("options");
+    if (option != null) {
+      switch (option) {
         case "all":
           openCompanyList(player, CompanyListOptions.ALL);
           return;
