@@ -2,20 +2,22 @@ package dev.tycho.stonks.command.base.validators;
 
 import org.apache.commons.lang.StringUtils;
 
-public class IntegerValidator extends ArgumentValidator<Integer> {
+public class IntegerValidator extends ArgumentProvider<Integer> {
+
   public IntegerValidator(String name) {
-    super(name);
+    super(name, Integer.class);
   }
 
   @Override
-  public boolean provide(String str) {
-    if (!StringUtils.isNumeric(str)) return false;
-    value = Integer.parseInt(str);
-    return true;
+  public Integer provideArgument(String arg) {
+    if (!StringUtils.isNumeric(arg)) {
+      return null;
+    }
+    return Integer.parseInt(arg);
   }
 
   @Override
-  public String getPrompt() {
-    return "must be a whole number (integer)";
+  public String getHelp() {
+    return "Must be a whole number (Integer).";
   }
 }

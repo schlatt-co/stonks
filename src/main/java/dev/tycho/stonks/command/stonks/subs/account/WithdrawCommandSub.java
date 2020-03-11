@@ -4,7 +4,7 @@ import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CurrencyAutocompleter;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
-import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CurrencyValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
@@ -16,15 +16,15 @@ import org.bukkit.entity.Player;
 public class WithdrawCommandSub extends ModularCommandSub {
 
   public WithdrawCommandSub() {
-    super(new CurrencyValidator("amount"), ArgumentValidator.optional(new AccountValidator("account_id")));
+    super(new CurrencyValidator("amount"), new AccountValidator("account_id").setOptional());
     addAutocompleter("amount", new CurrencyAutocompleter());
   }
 
 
   @Override
-  public void execute(Player player) {
-    double amount = getArgument("amount");
-    Account account = getArgument("account_id");
+  public void execute(Player player, ArgumentStore store) {
+    double amount = getArgument("amount", store);
+    Account account = getArgument("account_id", store);
 
     if (account != null) {
       withdrawFromAccount(player, account, amount);

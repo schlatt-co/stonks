@@ -3,24 +3,19 @@ package dev.tycho.stonks.command.base.validators;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class OnlinePlayerValidator extends ArgumentValidator<Player> {
+public class OnlinePlayerValidator extends ArgumentProvider<Player> {
 
   public OnlinePlayerValidator(String name) {
-    super(name);
+    super(name, Player.class);
   }
 
   @Override
-  public boolean provide(String str) {
-    Player player = Bukkit.getPlayer(str);
-    if (player == null) {
-      return false;
-    }
-    value = player;
-    return true;
+  public Player provideArgument(String arg) {
+    return Bukkit.getPlayer(arg);
   }
 
   @Override
-  public String getPrompt() {
-    return "must be an online player";
+  public String getHelp() {
+    return "Must be an online player.";
   }
 }

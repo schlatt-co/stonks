@@ -4,20 +4,22 @@ import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.service.Service;
 import org.apache.commons.lang.StringUtils;
 
-public class ServiceValidator extends ArgumentValidator<Service> {
+public class ServiceValidator extends ArgumentProvider<Service> {
+
   public ServiceValidator(String name) {
-    super(name);
+    super(name, Service.class);
   }
 
   @Override
-  public boolean provide(String str) {
-    if (!StringUtils.isNumeric(str)) return false;
-    value = Repo.getInstance().services().get(Integer.parseInt(str));
-    return value != null;
+  public Service provideArgument(String arg) {
+    if (!StringUtils.isNumeric(arg)) {
+      return null;
+    }
+    return Repo.getInstance().services().get(Integer.parseInt(arg));
   }
 
   @Override
-  public String getPrompt() {
-    return "must be a valid service id";
+  public String getHelp() {
+    return "Must be a valid service pk.";
   }
 }

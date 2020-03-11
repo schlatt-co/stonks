@@ -2,6 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.service.subscription;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.ServiceValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
@@ -17,8 +18,8 @@ public class SubscribeCommandSub extends ModularCommandSub {
 
 
   @Override
-  public void execute(Player player) {
-    subscribe(player, getArgument("service"), true);
+  public void execute(Player player, ArgumentStore store) {
+    subscribe(player, getArgument("service", store), true);
 //    List<String> info = new ArrayList<>();
 //    info.add("Automatic billing will automatically renew your");
 //    info.add("subscription to this service.");

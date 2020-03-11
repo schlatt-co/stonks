@@ -1,6 +1,7 @@
 package dev.tycho.stonks.command.stonks.subs.service.subscription;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.ServiceValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
@@ -15,8 +16,8 @@ public class UnsubscribeCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    Service service = getArgument("service");
+  public void execute(Player player, ArgumentStore store) {
+    Service service = getArgument("service", store);
 
     Subscription subscription = service.getSubscription(player);
     if (subscription == null) {

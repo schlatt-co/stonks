@@ -3,7 +3,8 @@ package dev.tycho.stonks.command.stonks.subs.member;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentProvider;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.Repo;
@@ -29,20 +30,19 @@ public class SetRoleCommandSub extends ModularCommandSub {
 
   public SetRoleCommandSub() {
     super(new StringValidator("player_name"),
-        new ArgumentValidator<Role>("role") {
+        new ArgumentProvider<>("role", Role.class) {
           @Override
-          public boolean provide(String str) {
+          public Role provideArgument(String arg) {
             try {
-              value = Role.valueOf(str);
-              return true;
+              return Role.valueOf(arg);
             } catch (IllegalArgumentException e) {
-              return false;
+              return null;
             }
           }
 
           @Override
-          public String getPrompt() {
-            return "must be a valid role (CEO, Manager, Employee, Intern)";
+          public String getHelp() {
+            return "Must be a valid company role.";
           }
         }, new CompanyValidator("company"));
     addAutocompleter("role", new OptionListAutocompleter(ROLES));
@@ -50,10 +50,10 @@ public class SetRoleCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    String playerName = getArgument("player_name");
-    Role role = getArgument("role");
-    Company company = getArgument("company");
+  public void execute(Player player, ArgumentStore store) {
+    String playerName = getArgument("player_name", store);
+    Role role = getArgument("role", store);
+    Company company = getArgument("company", store);
     setRole(player, playerName, role, company);
   }
 

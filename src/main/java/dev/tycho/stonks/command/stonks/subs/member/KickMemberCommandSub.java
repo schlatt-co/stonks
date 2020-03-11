@@ -3,6 +3,7 @@ package dev.tycho.stonks.command.stonks.subs.member;
 import dev.tycho.stonks.api.event.CompanyKickEvent;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.managers.PlayerData;
@@ -21,9 +22,9 @@ public class KickMemberCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    Company company = getArgument("company");
-    kickMember(player, company, getArgument("player_name"));
+  public void execute(Player player, ArgumentStore store) {
+    Company company = getArgument("company", store);
+    kickMember(player, company, getArgument("player_name", store));
   }
 
   private void kickMember(Player player, Company company, String playerName) {

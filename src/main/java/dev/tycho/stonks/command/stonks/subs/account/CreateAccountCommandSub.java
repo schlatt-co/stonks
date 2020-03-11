@@ -2,6 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.account;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountTypeSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
@@ -25,8 +26,8 @@ public class CreateAccountCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    String accountName = getArgument("account_name");
+  public void execute(Player player, ArgumentStore store) {
+    String accountName = getArgument("account_name", store);
     new AccountTypeSelectorGui.Builder()
         .title("Select an account type")
         .typeSelected(type -> {

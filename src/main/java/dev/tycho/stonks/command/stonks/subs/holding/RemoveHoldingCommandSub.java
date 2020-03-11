@@ -2,6 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.holding;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
@@ -20,8 +21,8 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    removeHolding(player, getArgument("account"), getArgument("player_name"));
+  public void execute(Player player, ArgumentStore store) {
+    removeHolding(player, getArgument("account", store), getArgument("player_name", store));
   }
 
   private void removeHolding(Player player, Account account, String playerName) {

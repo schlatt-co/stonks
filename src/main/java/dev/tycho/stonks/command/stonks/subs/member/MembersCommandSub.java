@@ -2,6 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.member;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.MemberListGui;
 import dev.tycho.stonks.model.core.Company;
@@ -17,8 +18,8 @@ public class MembersCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    Company company = getArgument("company");
+  public void execute(Player player, ArgumentStore store) {
+    Company company = getArgument("company", store);
     new MemberListGui(company, company.members.stream().filter(m -> m.acceptedInvite).collect(Collectors.toList())).show(player);
   }
 }

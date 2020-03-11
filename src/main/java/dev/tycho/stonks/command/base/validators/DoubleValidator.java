@@ -2,21 +2,23 @@ package dev.tycho.stonks.command.base.validators;
 
 import org.apache.commons.lang.math.NumberUtils;
 
-public class DoubleValidator extends ArgumentValidator<Double> {
+public class DoubleValidator extends ArgumentProvider<Double> {
+
   public DoubleValidator(String name) {
-    super(name);
+    super(name, Double.class);
   }
 
   @Override
-  public boolean provide(String str) {
-    if (!NumberUtils.isNumber(str)) return false;
-    value = Double.parseDouble(str);
-    return true;
+  public Double provideArgument(String str) {
+    if (!NumberUtils.isNumber(str)) {
+      return null;
+    }
+    return Double.parseDouble(str);
   }
 
   @Override
-  public String getPrompt() {
-    return "must be a number (decimal points allowed)";
+  public String getHelp() {
+    return "Must be a positive number.";
   }
 
 }
