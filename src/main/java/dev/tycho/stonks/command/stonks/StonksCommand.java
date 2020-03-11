@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 public class StonksCommand extends CommandBase {
 
   public StonksCommand() {
-    super(new ListCommandSub());
+    super("stonks", new ListCommandSub());
 
 
     // Company Commands

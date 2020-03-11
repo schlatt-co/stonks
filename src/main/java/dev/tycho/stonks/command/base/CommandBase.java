@@ -1,11 +1,9 @@
 package dev.tycho.stonks.command.base;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -14,11 +12,18 @@ import java.util.List;
 
 public class CommandBase implements CommandExecutor, TabCompleter {
 
+  private static JavaPlugin plugin;
   private HashMap<String, CommandSub> subCommands;
 
-  public CommandBase(CommandSub defaultCommand) {
+  public CommandBase(String name, CommandSub defaultCommand) {
     subCommands = new HashMap<>();
     subCommands.put("default", defaultCommand);
+    PluginCommand command = plugin.getCommand(name);
+    if (command == null) {
+      throw new RuntimeException("Invalid command name: " + name);
+    }
+    command.setExecutor(this);
+    command.setTabCompleter(this);
   }
 
   public static void sendMessage(CommandSender sender, String message) {
@@ -82,5 +87,9 @@ public class CommandBase implements CommandExecutor, TabCompleter {
       }
     }
     return matches;
+  }
+
+  public static void setPlugin(JavaPlugin plugin) {
+    CommandBase.plugin = plugin;
   }
 }

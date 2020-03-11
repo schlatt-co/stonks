@@ -5,27 +5,25 @@ import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ModularCommandSub extends CommandSub {
-  final ArgumentValidator[] arguments;
-  private HashMap<String, ArgumentAutocompleter> autocompleters;
+  private final List<ArgumentValidator<?>> argumentValidators;
+  private HashMap<String, ArgumentAutocompleter> autoCompleters = new HashMap<>();
 
-  protected ModularCommandSub(ArgumentValidator argument, ArgumentValidator... arguments) {
-    this.arguments = new ArgumentValidator[arguments.length + 1];
-    this.autocompleters = new HashMap<>();
-    this.arguments[0] = argument;
-    System.arraycopy(arguments, 0, this.arguments, 1, this.arguments.length - 1);
+  protected ModularCommandSub(ArgumentValidator<?>... arguments) {
+    argumentValidators = new ArrayList<>(Arrays.asList(arguments));
   }
 
   public final void onCommand(Player player, String alias, String[] args) {
     //If there aren't enough arguments then send the correct usage and return
 
     //Validate each argument
-    for (int i = 0; i < arguments.length; i++) {
-      ArgumentValidator argument = arguments[i];
+    int i = -1;
+    for (ArgumentValidator<?> argument : argumentValidators) {
+      i++;
       if (i >= args.length - 1) {
         //We don't have enough args
         if (argument.isOptional()) {
@@ -39,7 +37,7 @@ public abstract class ModularCommandSub extends CommandSub {
 
       //If this is the last argument and it wants concatenated strings
       String argString;
-      if (i == arguments.length - 1 && argument.concatIfLastArg()) {
+      if (i == argumentValidators.size() - 1 && argument.concatIfLastArg()) {
         argString = concatArgs(i + 1, args);
       } else {
         argString = args[i + 1];
@@ -56,7 +54,7 @@ public abstract class ModularCommandSub extends CommandSub {
 
   public String getArgs() {
     StringBuilder usage = new StringBuilder();
-    for (ArgumentValidator argument : arguments) {
+    for (ArgumentValidator<?> argument : argumentValidators) {
       usage.append(" ").append(argument.getUsage());
     }
     return usage.toString();
@@ -68,8 +66,9 @@ public abstract class ModularCommandSub extends CommandSub {
   }
 
   protected final <T> T getArgument(String name) {
-    for (ArgumentValidator argument : arguments) {
+    for (ArgumentValidator<?> argument : argumentValidators) {
       if (argument.getName().equals(name)) {
+        //noinspection unchecked
         return (T) argument.get();
       }
     }
@@ -78,9 +77,9 @@ public abstract class ModularCommandSub extends CommandSub {
 
   protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
     // Make sure an argument exists with the same argumentName
-    for (ArgumentValidator argument : arguments) {
+    for (ArgumentValidator<?> argument : argumentValidators) {
       if (argument.getName().equals(argumentName)) {
-        autocompleters.put(argumentName, autocompleter);
+        autoCompleters.put(argumentName, autocompleter);
         return;
       }
     }
@@ -91,16 +90,16 @@ public abstract class ModularCommandSub extends CommandSub {
   public final List<String> getTabCompletions(Player player, String[] args) {
     List<String> completions = new ArrayList<>();
     //Attempt to get tab completions
-    if (args.length - 2 >= arguments.length) {
+    if (args.length - 2 >= argumentValidators.size()) {
       return null;
     }
     //Do we have an autocompleter for this argument?
-    String argName = arguments[args.length - 2].getName();
+    String argName = argumentValidators.get(args.length - 2).getName();
     //Add a prompt
     if (args[args.length - 1].isEmpty()) completions.add("<" + argName + ">");
-    if (autocompleters.containsKey(argName)) {
+    if (autoCompleters.containsKey(argName)) {
       //If we do, append the list of autocompletions for the argument
-      completions.addAll(autocompleters.get(argName).getCompletions(player, args[args.length - 1]));
+      completions.addAll(autoCompleters.get(argName).getCompletions(player, args[args.length - 1]));
     }
     return completions;
   }

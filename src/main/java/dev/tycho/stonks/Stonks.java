@@ -4,6 +4,7 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.earth2me.essentials.Essentials;
+import dev.tycho.stonks.command.base.CommandBase;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
 import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
 import dev.tycho.stonks.command.stonks.StonksCommand;
@@ -68,6 +69,7 @@ public class Stonks extends JavaPlugin {
   @Override
   public void onEnable() {
     instance = this;
+    CommandBase.setPlugin(this);
     if (Objects.equals(getConfig().getString("mysql.database"), "YOUR-DATABASE")) {
       Bukkit.getLogger().severe("It seems like you haven't set up your database in the config.yml yet, disabling plugin.");
       Bukkit.getPluginManager().disablePlugin(this);
@@ -109,10 +111,7 @@ public class Stonks extends JavaPlugin {
       }
     }, 0, 6000);
 
-    StonksCommand command = new StonksCommand();
-    Objects.requireNonNull(getCommand("company")).setTabCompleter(command);
-    Objects.requireNonNull(getCommand("company")).setExecutor(command);
-
+    new StonksCommand();
     Objects.requireNonNull(getCommand("cc")).setExecutor(new CompanyChatCommand());
     Objects.requireNonNull(getCommand("ccr")).setExecutor(new CompanyChatReplyCommand());
 
