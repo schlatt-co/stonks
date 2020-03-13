@@ -27,6 +27,7 @@ public abstract class ModularCommandSub extends CommandSub {
     int i = -1;
     for (ArgumentProvider<?> argument : argumentValidators) {
       i++;
+      store.addArgument(argument.getName(), new ArgumentValue<>(null));
       if (i >= args.length - 1) {
         //We don't have enough args
         if (argument.isOptional()) {
@@ -70,7 +71,7 @@ public abstract class ModularCommandSub extends CommandSub {
   }
 
   protected final <T> T getArgument(String name, ArgumentStore store) {
-    @SuppressWarnings("unchecked") T value = (T) store.getArgument(name);
+    @SuppressWarnings("unchecked") T value = (T) store.getArgument(name).getValue();
     return value;
   }
 
