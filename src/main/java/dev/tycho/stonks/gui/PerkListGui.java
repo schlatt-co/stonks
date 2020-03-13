@@ -1,6 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.api.StonksAPI;
+import dev.tycho.stonks.api.StonksAPIException;
 import dev.tycho.stonks.api.perks.CompanyPerk;
 import dev.tycho.stonks.managers.PerkManager;
 import dev.tycho.stonks.managers.Repo;
@@ -11,8 +12,6 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import java.util.Objects;
 
 public class PerkListGui extends CollectionGui<CompanyPerk> {
 
@@ -63,9 +62,10 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
 
         Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice());
         PerkManager.getInstance().awardPerk(company, perk, company.getMember(player));
-        if (StonksAPI.getCompany("Admins") != null) {
-          //noinspection OptionalGetWithoutIsPresent
-          Repo.getInstance().payAccount(player.getUniqueId(), "Perk Purchase for " + company.name, Objects.requireNonNull(StonksAPI.getCompany("Admins")).accounts.stream().filter(p -> p.name.equals("Main")).findFirst().get(), perk.getPrice());
+        try {
+          Repo.getInstance().payAccount(player.getUniqueId(), "Perk Purchase for " + company.name, StonksAPI.getAdminAccount(), perk.getPrice());
+        } catch (StonksAPIException e) {
+          e.printStackTrace();
         }
         sendMessage(player, "Perk purchased successfully!");
         Repo.getInstance().sendMessageToAllOnlineMembers(company, player.getName() + " has purchased the " + perk.getName() + " perk for the company: " + company.name);
