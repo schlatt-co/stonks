@@ -1,4 +1,5 @@
 # IntelliJ
+.git-rewrite/
 out/
 .idea/
 .idea/workspace.xml
