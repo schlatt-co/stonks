@@ -4,27 +4,24 @@ import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
 import org.apache.commons.lang.StringUtils;
 
-public class CompanyValidator extends ArgumentValidator<Company> {
+public class CompanyValidator extends ArgumentProvider<Company> {
 
   public CompanyValidator(String name) {
-    super(name);
-    this.concatIfLastArg = true;
+    super(name, Company.class, false, true);
   }
 
   @Override
-  public boolean provide(String str) {
-    //If the name is a number then it is actually the PK (e.g. in some gui screens)
-    if (StringUtils.isNumeric(str)) {
-      int pk = Integer.parseInt(str);
-      this.value = Repo.getInstance().companies().get(pk);
+  public Company provideArgument(String arg) {
+    if (StringUtils.isNumeric(arg)) {
+      int pk = Integer.parseInt(arg);
+      return Repo.getInstance().companies().get(pk);
     } else {
-      this.value = Repo.getInstance().companyWithName(str);
+      return Repo.getInstance().companyWithName(arg);
     }
-    return this.value != null;
   }
 
   @Override
-  public String getPrompt() {
-    return "must be a valid company";
+  public String getHelp() {
+    return "Must be a company name or pk.";
   }
 }

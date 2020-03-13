@@ -2,6 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.service;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.ServiceFoldersListGui;
 import dev.tycho.stonks.model.core.Company;
@@ -14,8 +15,8 @@ public class ServiceFoldersCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    Company company = getArgument("company");
+  public void execute(Player player, ArgumentStore store) {
+    Company company = getArgument("company", store);
     new ServiceFoldersListGui(company).show(player);
   }
 }

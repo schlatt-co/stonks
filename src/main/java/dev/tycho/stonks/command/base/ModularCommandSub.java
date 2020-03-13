@@ -1,7 +1,9 @@
 package dev.tycho.stonks.command.base;
 
 import dev.tycho.stonks.command.base.autocompleters.ArgumentAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentProvider;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
+import dev.tycho.stonks.command.base.validators.ArgumentValue;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -10,19 +12,20 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class ModularCommandSub extends CommandSub {
-  private final List<ArgumentValidator<?>> argumentValidators;
+  private final List<ArgumentProvider<?>> argumentValidators;
   private HashMap<String, ArgumentAutocompleter> autoCompleters = new HashMap<>();
 
-  protected ModularCommandSub(ArgumentValidator<?>... arguments) {
+  protected ModularCommandSub(ArgumentProvider<?>... arguments) {
     argumentValidators = new ArrayList<>(Arrays.asList(arguments));
   }
 
   public final void onCommand(Player player, String alias, String[] args) {
-    //If there aren't enough arguments then send the correct usage and return
+    //Create an argument store
+    ArgumentStore store = new ArgumentStore();
 
     //Validate each argument
     int i = -1;
-    for (ArgumentValidator<?> argument : argumentValidators) {
+    for (ArgumentProvider<?> argument : argumentValidators) {
       i++;
       if (i >= args.length - 1) {
         //We don't have enough args
@@ -37,25 +40,26 @@ public abstract class ModularCommandSub extends CommandSub {
 
       //If this is the last argument and it wants concatenated strings
       String argString;
-      if (i == argumentValidators.size() - 1 && argument.concatIfLastArg()) {
+      if (i == argumentValidators.size() - 1 && argument.isConcat()) {
         argString = concatArgs(i + 1, args);
       } else {
         argString = args[i + 1];
       }
-      if (!argument.provide(argString)) {
-        CommandBase.sendMessage(player, argument.getUsage() + " " + argument.getPrompt());
+      if (argument.parseArgument(argString) == null) {
+        CommandBase.sendMessage(player, argument.getHelp());
         return;
       }
+      store.addArgument(argument.getName(), new ArgumentValue<>(argument.parseArgument(argString)));
     }
 
     //At this point, all are validated and have a value
-    execute(player);
+    execute(player, store);
   }
 
   public String getArgs() {
     StringBuilder usage = new StringBuilder();
-    for (ArgumentValidator<?> argument : argumentValidators) {
-      usage.append(" ").append(argument.getUsage());
+    for (ArgumentProvider<?> argument : argumentValidators) {
+      usage.append(" ").append(argument.getHelp());
     }
     return usage.toString();
   }
@@ -65,19 +69,14 @@ public abstract class ModularCommandSub extends CommandSub {
     CommandBase.sendMessage(player, usage);
   }
 
-  protected final <T> T getArgument(String name) {
-    for (ArgumentValidator<?> argument : argumentValidators) {
-      if (argument.getName().equals(name)) {
-        //noinspection unchecked
-        return (T) argument.get();
-      }
-    }
-    throw new IllegalArgumentException("Argument with name " + name + " not found");
+  protected final <T> T getArgument(String name, ArgumentStore store) {
+    @SuppressWarnings("unchecked") T value = (T) store.getArgument(name);
+    return value;
   }
 
   protected void addAutocompleter(String argumentName, ArgumentAutocompleter autocompleter) {
     // Make sure an argument exists with the same argumentName
-    for (ArgumentValidator<?> argument : argumentValidators) {
+    for (ArgumentProvider<?> argument : argumentValidators) {
       if (argument.getName().equals(argumentName)) {
         autoCompleters.put(argumentName, autocompleter);
         return;
@@ -105,7 +104,7 @@ public abstract class ModularCommandSub extends CommandSub {
   }
 
 
-  public abstract void execute(Player player);
+  public abstract void execute(Player player, ArgumentStore store);
 
 
 }

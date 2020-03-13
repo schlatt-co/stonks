@@ -3,7 +3,7 @@ package dev.tycho.stonks.command.stonks.subs.account;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CurrencyAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CurrencyValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
@@ -19,14 +19,14 @@ import org.bukkit.entity.Player;
 public class TransferCommandSub extends ModularCommandSub {
 
   public TransferCommandSub() {
-    super(new CurrencyValidator("amount"), ArgumentValidator.optionalAndConcatIfLast(new StringValidator("message", 200)));
+    super(new CurrencyValidator("amount"), new StringValidator("message", 200).setOptionalAndConcat());
     addAutocompleter("amount", new CurrencyAutocompleter());
   }
 
   @Override
-  public void execute(Player player) {
-    double amount = getArgument("amount");
-    String message = getArgument("message");
+  public void execute(Player player, ArgumentStore store) {
+    double amount = getArgument("amount", store);
+    String message = getArgument("message", store);
 
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWithWithdrawableAccount(player))

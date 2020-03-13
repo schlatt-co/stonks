@@ -1,6 +1,7 @@
 package dev.tycho.stonks.command.stonks.subs.member;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.Repo;
@@ -19,20 +20,20 @@ public class InviteCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
+  public void execute(Player player, ArgumentStore store) {
 
     Collection<Company> list = Repo.getInstance().companiesWhereManager(player);
     new CompanySelectorGui.Builder()
         .companies(list)
         .title("Select a company to invite to")
-        .companySelected((company -> invitePlayerToCompany(player, company, getArgument("player_name"))))
+        .companySelected((company -> invitePlayerToCompany(player, company, getArgument("player_name", store))))
         .show(player);
   }
 
 
   public void invitePlayerToCompany(Player player, Company company, String playerToInvite) {
     Player playerToInviteObject = playerFromName(playerToInvite);
-    if (player == null) {
+    if (playerToInviteObject == null) {
       sendMessage(player, playerToInvite + " has never played on the server before!");
       return;
     }

@@ -3,10 +3,7 @@ package dev.tycho.stonks.command.stonks.subs.service;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CurrencyAutocompleter;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
-import dev.tycho.stonks.command.base.validators.CurrencyValidator;
-import dev.tycho.stonks.command.base.validators.DoubleValidator;
-import dev.tycho.stonks.command.base.validators.IntegerValidator;
-import dev.tycho.stonks.command.base.validators.StringValidator;
+import dev.tycho.stonks.command.base.validators.*;
 import dev.tycho.stonks.gui.AccountSelectorGui;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.managers.Repo;
@@ -26,11 +23,11 @@ public class CreateServiceCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player) {
-    double duration = getArgument("duration");
-    double cost = getArgument("cost");
-    int maxSubs = getArgument("max_subs");
-    String name = getArgument("name");
+  public void execute(Player player, ArgumentStore store) {
+    double duration = getArgument("duration", store);
+    double cost = getArgument("cost", store);
+    int maxSubs = getArgument("max_subs", store);
+    String name = getArgument("name", store);
 
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWhereManager(player))
