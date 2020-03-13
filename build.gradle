@@ -6,7 +6,7 @@ plugins {
 
 bukkit {
     name = 'Stonks'
-    version = '2.1-' + getGitHash()
+    version = '2.2-' + getGitHash()
     apiVersion = '1.14'
     main = 'dev.tycho.stonks.Stonks'
     authors = ['TychoVI', 'Tsarcasm', 'JRoy']
