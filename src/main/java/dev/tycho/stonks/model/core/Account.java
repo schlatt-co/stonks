@@ -1,8 +1,9 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.database.Entity;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.service.Service;
+import uk.tsarcasm.tsorm.Entity;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
