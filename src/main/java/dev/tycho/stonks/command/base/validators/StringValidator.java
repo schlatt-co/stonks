@@ -1,27 +1,30 @@
 package dev.tycho.stonks.command.base.validators;
 
-public class StringValidator extends ArgumentProvider<String> {
+public class StringValidator extends ArgumentValidator<String> {
   private final int maxLength;
 
   public StringValidator(String name) {
-    this(name, 255);
+    super(name);
+    this.maxLength = 255;
   }
 
   public StringValidator(String name, int maxLength) {
-    super(name, String.class);
+    super(name);
     this.maxLength = maxLength;
   }
 
   @Override
-  public String provideArgument(String arg) {
-    if (arg.length() > maxLength) {
-      return null;
-    }
-    return arg;
+  public boolean provide(String str) {
+    this.value = str;
+    return str.length() <= maxLength;
   }
 
   @Override
-  public String getHelp() {
-    return "Must be a string (Max length of " + maxLength + ".";
+  public String getPrompt() {
+    if (value.length() > maxLength) {
+      return "Must be fewer than " + maxLength + " letters long";
+    } else {
+      return "Expected a string";
+    }
   }
 }

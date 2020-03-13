@@ -3,7 +3,7 @@ package dev.tycho.stonks.command.stonks.subs;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.managers.Repo;
@@ -17,13 +17,13 @@ import java.util.List;
 public class ListCommandSub extends ModularCommandSub {
 
   public ListCommandSub() {
-    super(new StringValidator("options").setOptional());
+    super(ArgumentValidator.optional(new StringValidator("options")));
     addAutocompleter("options", new OptionListAutocompleter("all", "member-of", "not-hidden", "verified"));
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    String option = getArgument("options", store);
+  public void execute(Player player) {
+    String option = getArgument("options");
     if (option != null) {
       switch (option) {
         case "all":

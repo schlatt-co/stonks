@@ -3,7 +3,6 @@ package dev.tycho.stonks.command.stonks.subs.account;
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.validators.AccountValidator;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.gui.TransactionHistoryGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
@@ -21,8 +20,8 @@ public class HistoryCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    Account account = getArgument("account", store);
+  public void execute(Player player) {
+    Account account = getArgument("account");
     if (account == null) {
       player.sendMessage(ChatColor.RED + "Account not found");
       return;

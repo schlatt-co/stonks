@@ -2,7 +2,7 @@ package dev.tycho.stonks.command.stonks.subs.company;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.command.base.ModularCommandSub;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.PlayerData;
@@ -15,20 +15,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Objects;
-
 public class CreateCommandSub extends ModularCommandSub {
 
-  private final static double CREATION_FEE = Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("Stonks")).getConfig().getDouble("fees.companycreation");
+  private final static double CREATION_FEE = Bukkit.getPluginManager().getPlugin("Stonks").getConfig().getDouble("fees.companycreation");
 
   public CreateCommandSub() {
-    super(new StringValidator("company_name").setConcat());
+    super(ArgumentValidator.concatIfLast(new StringValidator("company_name")));
   }
 
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    String companyName = getArgument("company_name", store);
+  public void execute(Player player) {
+    String companyName = getArgument("company_name");
     new ConfirmationGui.Builder()
         .title("Accept $" + CREATION_FEE + " creation fee?")
         .yes(() ->

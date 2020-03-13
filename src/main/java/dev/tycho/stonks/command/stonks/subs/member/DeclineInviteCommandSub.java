@@ -2,7 +2,6 @@ package dev.tycho.stonks.command.stonks.subs.member;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
@@ -18,8 +17,8 @@ public class DeclineInviteCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    Company company = getArgument("company", store);
+  public void execute(Player player) {
+    Company company = getArgument("company");
     Member member = company.getMember(player);
     if (member == null) {
       sendMessage(player, "You have no invite for this company");

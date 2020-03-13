@@ -2,22 +2,22 @@ package dev.tycho.stonks.command.base.validators;
 
 import java.util.regex.Pattern;
 
-public class CurrencyValidator extends ArgumentProvider<Double> {
-
+public class CurrencyValidator extends ArgumentValidator<Double> {
   public CurrencyValidator(String name) {
-    super(name, Double.class);
+    super(name);
   }
 
   @Override
-  public Double provideArgument(String arg) {
-    if (!Pattern.matches("([0-9]*)\\.?([0-9]*)?", arg)) {
-      return null;
+  public boolean provide(String str) {
+    if (!Pattern.matches("([0-9]*)\\.?([0-9]*)?", str)) {
+      return false;
     }
-    return Double.parseDouble(arg);
+    this.value = Double.parseDouble(str);
+    return true;
   }
 
   @Override
-  public String getHelp() {
-    return "Must be a positive number.";
+  public String getPrompt() {
+    return "must be a positive number";
   }
 }

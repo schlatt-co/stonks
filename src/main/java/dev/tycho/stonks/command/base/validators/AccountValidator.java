@@ -4,22 +4,23 @@ import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
 import org.apache.commons.lang.StringUtils;
 
-public class AccountValidator extends ArgumentProvider<Account> {
+public class AccountValidator extends ArgumentValidator<Account> {
 
   public AccountValidator(String name) {
-    super(name, Account.class);
+    super(name);
   }
 
   @Override
-  public Account provideArgument(String arg) {
-    if (!StringUtils.isNumeric(arg)) {
-      return null;
+  public boolean provide(String str) {
+    if (!StringUtils.isNumeric(str)) {
+      return false;
     }
-    return Repo.getInstance().accountWithId(Integer.parseInt(arg));
+    value = Repo.getInstance().accountWithId(Integer.parseInt(str));
+    return value != null;
   }
 
   @Override
-  public String getHelp() {
-    return "Must be a valid account pk.";
+  public String getPrompt() {
+    return "must be a valid account id";
   }
 }

@@ -3,7 +3,6 @@ package dev.tycho.stonks.command.stonks.subs.holding;
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
 import dev.tycho.stonks.command.base.autocompleters.PlayerNameAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.DoubleValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
@@ -27,9 +26,9 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    double share = getArgument("share", store);
-    String otherPlayer = getArgument("player_name", store);
+  public void execute(Player player) {
+    double share = getArgument("share");
+    String otherPlayer = getArgument("player_name");
 
     Collection<Company> companies = Repo.getInstance().companiesWhereManager(player);
     new CompanySelectorGui.Builder()

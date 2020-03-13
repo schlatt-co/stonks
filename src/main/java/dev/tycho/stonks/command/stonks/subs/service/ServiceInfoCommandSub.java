@@ -1,7 +1,6 @@
 package dev.tycho.stonks.command.stonks.subs.service;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.ServiceValidator;
 import dev.tycho.stonks.gui.ServiceInfoGui;
 import dev.tycho.stonks.managers.Repo;
@@ -15,8 +14,8 @@ public class ServiceInfoCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    Service service = getArgument("service", store);
+  public void execute(Player player) {
+    Service service = getArgument("service");
     if (service == null) {
       player.sendMessage("Service id not found");
       return;

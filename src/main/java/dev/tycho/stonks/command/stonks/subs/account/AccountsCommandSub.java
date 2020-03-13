@@ -2,7 +2,6 @@ package dev.tycho.stonks.command.stonks.subs.account;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.AccountListGui;
 import dev.tycho.stonks.model.core.Company;
@@ -16,8 +15,8 @@ public class AccountsCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
-    Company company = getArgument("company", store);
+  public void execute(Player player) {
+    Company company = getArgument("company");
     new AccountListGui(company).show(player);
   }
 }

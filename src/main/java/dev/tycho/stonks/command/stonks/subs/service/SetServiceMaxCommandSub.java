@@ -2,7 +2,6 @@ package dev.tycho.stonks.command.stonks.subs.service;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
-import dev.tycho.stonks.command.base.validators.ArgumentStore;
 import dev.tycho.stonks.command.base.validators.IntegerValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ServiceSelectorGui;
@@ -20,7 +19,7 @@ public class SetServiceMaxCommandSub extends ModularCommandSub {
   }
 
   @Override
-  public void execute(Player player, ArgumentStore store) {
+  public void execute(Player player) {
 
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWhereManager(player))
@@ -29,7 +28,7 @@ public class SetServiceMaxCommandSub extends ModularCommandSub {
             .company(company)
             .title("Select a service")
             .serviceSelected(
-                service -> changeServiceMaxSubs(player, getArgument("max_subs", store), company, service)
+                service -> changeServiceMaxSubs(player, getArgument("max_subs"), company, service)
             ).show(player))
         .show(player);
   }
