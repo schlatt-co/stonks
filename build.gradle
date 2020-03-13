@@ -48,7 +48,7 @@ dependencies {
     compileOnly("net.ess3:EssentialsX:2.17.0") {
         exclude module: 'bukkit'
     }
-    compileOnly "com.github.schlatt-co:PluginLibrary:87bf88cde4"
+    compileOnly "com.github.schlatt-co:PluginLibrary:ebc40dba58"
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
 }
 
