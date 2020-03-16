@@ -1,4 +1,4 @@
-package dev.tycho.stonks.model.dbi_new;
+package dev.tycho.stonks.model.dbi_new.fields;
 
 import uk.tsarcasm.tsorm.modulardbi.Field;
 

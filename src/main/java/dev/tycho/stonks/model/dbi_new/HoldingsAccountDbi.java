@@ -1,72 +1,76 @@
 package dev.tycho.stonks.model.dbi_new;
 
-import dev.tycho.stonks.model.core.CompanyAccount;
+import dev.tycho.stonks.model.core.Holding;
+import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.model.dbi_new.fields.UUIDField;
 import dev.tycho.stonks.model.service.Service;
 import uk.tsarcasm.tsorm.Store;
 import uk.tsarcasm.tsorm.modulardbi.ModularDbi;
-import uk.tsarcasm.tsorm.modulardbi.fields.DoubleField;
 import uk.tsarcasm.tsorm.modulardbi.fields.IntField;
 import uk.tsarcasm.tsorm.modulardbi.fields.StringField;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 
-public class CompanyAccountDbi extends ModularDbi<CompanyAccount> {
+public class HoldingsAccountDbi extends ModularDbi<HoldingsAccount> {
     Store<Service> serviceStore;
+    Store<Holding> holdingStore;
 
-    public CompanyAccountDbi(DataSource dataSource) {
+    public HoldingsAccountDbi(DataSource dataSource, Store<Service> serviceStore, Store<Holding> holdingStore) {
         super(dataSource, false);
+
+        this.serviceStore = serviceStore;
+        this.holdingStore = holdingStore;
+
         addPk();
         addField("name", new StringField());
         addField("uuid", new UUIDField());
         addField("company_pk", new IntField());
-        addField("balance", new DoubleField());
 
         setupQueryStrings();
     }
 
     @Override
-    protected CompanyAccount instantiateSelect() {
+    protected HoldingsAccount instantiateSelect() {
         int pk = getValue("pk");
-        return new CompanyAccount(
+        return new HoldingsAccount(
                 pk,
                 getValue("name"),
                 getValue("uuid"),
                 getValue("company_pk"),
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == pk)),
-                getValue("balance")
-        );
+                new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == pk))
+                );
     }
 
     @Override
-    protected CompanyAccount instantiateInsert(int pk) {
-        return new CompanyAccount(
+    protected HoldingsAccount instantiateInsert(int pk) {
+        return new HoldingsAccount(
                 pk,
                 getValue("name"),
                 getValue("uuid"),
                 getValue("company_pk"),
                 new ArrayList<>(),
-                getValue("balance")
+                new ArrayList<>()
         );
     }
 
     @Override
-    protected void entityToFieldValues(CompanyAccount obj) {
+    protected void entityToFieldValues(HoldingsAccount obj) {
         setValue("pk", obj.pk);
         setValue("uuid", obj.uuid);
         setValue("company_pk", obj.companyPk);
-        setValue("balance", obj.balance);
     }
 
     @Override
-    public CompanyAccount refreshRelations(CompanyAccount obj) {
-        return new CompanyAccount(
+    public HoldingsAccount refreshRelations(HoldingsAccount obj) {
+        return new HoldingsAccount(
                 obj.pk,
                 obj.name,
                 obj.uuid,
                 obj.companyPk,
                 new ArrayList<>(serviceStore.getAllWhere(s -> s.accountPk == obj.pk)),
-                obj.balance);
+                new ArrayList<>(holdingStore.getAllWhere(h -> h.accountPk == obj.pk))
+        );
     }
 }

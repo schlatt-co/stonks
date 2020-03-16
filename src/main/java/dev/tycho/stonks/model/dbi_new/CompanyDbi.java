@@ -1,6 +1,7 @@
 package dev.tycho.stonks.model.dbi_new;
 
 import dev.tycho.stonks.model.core.*;
+import dev.tycho.stonks.model.dbi_new.fields.BooleanField;
 import uk.tsarcasm.tsorm.Store;
 import uk.tsarcasm.tsorm.modulardbi.Field;
 import uk.tsarcasm.tsorm.modulardbi.ModularDbi;
