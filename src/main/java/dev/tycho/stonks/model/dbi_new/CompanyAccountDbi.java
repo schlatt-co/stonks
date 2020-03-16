@@ -13,10 +13,11 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 
 public class CompanyAccountDbi extends ModularDbi<CompanyAccount> {
-    Store<Service> serviceStore;
+    final Store<Service> serviceStore;
 
-    public CompanyAccountDbi(DataSource dataSource) {
+    public CompanyAccountDbi(DataSource dataSource, Store<Service> serviceStore) {
         super(dataSource, false);
+        this.serviceStore = serviceStore;
         addPk();
         addField("name", new StringField());
         addField("uuid", new UUIDField());

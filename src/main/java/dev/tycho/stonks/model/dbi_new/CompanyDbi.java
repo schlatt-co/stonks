@@ -17,8 +17,8 @@ public class CompanyDbi extends ModularDbi<Company> {
     private final Store<Member> memberStore;
     private final Store<Perk> perkStore;
 
-    public CompanyDbi(DataSource dataSource, boolean canDelete, Store<CompanyAccount> companyAccountStore, Store<HoldingsAccount> holdingsAccountStore, Store<Member> memberStore, Store<Perk> perkStore) {
-        super(dataSource, canDelete);
+    public CompanyDbi(DataSource dataSource, Store<CompanyAccount> companyAccountStore, Store<HoldingsAccount> holdingsAccountStore, Store<Member> memberStore, Store<Perk> perkStore) {
+        super(dataSource, false);
         this.companyAccountStore = companyAccountStore;
         this.holdingsAccountStore = holdingsAccountStore;
         this.memberStore = memberStore;

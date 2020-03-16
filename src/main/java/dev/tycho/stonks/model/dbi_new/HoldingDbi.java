@@ -9,8 +9,8 @@ import uk.tsarcasm.tsorm.modulardbi.fields.IntField;
 import javax.sql.DataSource;
 
 public class HoldingDbi extends ModularDbi<Holding> {
-    public HoldingDbi(DataSource dataSource, boolean canDelete) {
-        super(dataSource, canDelete);
+    public HoldingDbi(DataSource dataSource) {
+        super(dataSource, true);
         addPk();
         addField("player_uuid", new UUIDField());
         addField("account_pk", new IntField());

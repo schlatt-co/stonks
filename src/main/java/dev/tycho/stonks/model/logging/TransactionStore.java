@@ -3,7 +3,6 @@ package dev.tycho.stonks.model.logging;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import dev.tycho.stonks.model.core.Account;
-import dev.tycho.stonks.model.logging.Transaction;
 import org.apache.commons.dbcp2.BasicDataSource;
 import uk.tsarcasm.tsorm.JavaSqlDBI;
 
