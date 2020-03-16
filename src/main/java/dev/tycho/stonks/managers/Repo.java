@@ -1,21 +1,22 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
-import dev.tycho.stonks.database.DatabaseStore;
-import dev.tycho.stonks.database.Store;
-import dev.tycho.stonks.database.SyncStore;
-import dev.tycho.stonks.database.TransactionStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
-import dev.tycho.stonks.model.dbis.*;
+import dev.tycho.stonks.model.dbi_new.*;
+import dev.tycho.stonks.model.dbi_new.TransactionDbi;
 import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.logging.TransactionStore;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.StonksUser;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import uk.tsarcasm.tsorm.DatabaseStore;
+import uk.tsarcasm.tsorm.Store;
+import uk.tsarcasm.tsorm.SyncStore;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -111,18 +112,18 @@ public class Repo extends SpigotModule {
     serviceStore = new SyncStore<>();
     subscriptionStore = new SyncStore<>();
     perkStore = new SyncStore<>();
-    transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
+    transactionStore = new TransactionStore(dataSource, new TransactionDbi(dataSource));
     transactionStore.createTable();
 
 
-    companyStore.setDbi(new CompanyDBI(dataSource, memberStore, companyAccountStore, holdingsAccountStore, perkStore));
-    perkStore.setDbi(new PerkDBI(dataSource));
-    companyAccountStore.setDbi(new CompanyAccountDBI(dataSource, serviceStore));
-    holdingsAccountStore.setDbi(new HoldingsAccountDBI(dataSource, serviceStore, holdingStore));
-    holdingStore.setDbi(new HoldingDBI(dataSource));
-    memberStore.setDbi(new MemberDBI(dataSource));
-    serviceStore.setDbi(new ServiceDBI(dataSource, subscriptionStore));
-    subscriptionStore.setDbi(new SubscriptionDBI(dataSource));
+    companyStore.setDbi(new CompanyDbi(dataSource,  companyAccountStore, holdingsAccountStore, memberStore,perkStore));
+    perkStore.setDbi(new PerkDbi(dataSource));
+    companyAccountStore.setDbi(new CompanyAccountDbi(dataSource, serviceStore));
+    holdingsAccountStore.setDbi(new HoldingsAccountDbi(dataSource, serviceStore, holdingStore));
+    holdingStore.setDbi(new HoldingDbi(dataSource));
+    memberStore.setDbi(new MemberDbi(dataSource));
+    serviceStore.setDbi(new ServiceDbi(dataSource, subscriptionStore));
+    subscriptionStore.setDbi(new SubscriptionDbi(dataSource));
 
     repopulateAll();
   }
