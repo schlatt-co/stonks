@@ -8,10 +8,7 @@ import dev.tycho.stonks.command.stonks.subs.ListCommandSub;
 import dev.tycho.stonks.command.stonks.subs.TopCommandSub;
 import dev.tycho.stonks.command.stonks.subs.account.*;
 import dev.tycho.stonks.command.stonks.subs.company.*;
-import dev.tycho.stonks.command.stonks.subs.holding.CreateHoldingCommandSub;
-import dev.tycho.stonks.command.stonks.subs.holding.HoldingInfoCommandSub;
-import dev.tycho.stonks.command.stonks.subs.holding.MyHoldingsCommandSub;
-import dev.tycho.stonks.command.stonks.subs.holding.RemoveHoldingCommandSub;
+import dev.tycho.stonks.command.stonks.subs.holding.*;
 import dev.tycho.stonks.command.stonks.subs.member.*;
 import dev.tycho.stonks.command.stonks.subs.moderator.*;
 import dev.tycho.stonks.command.stonks.subs.service.*;
@@ -50,6 +47,7 @@ public class StonksCommand extends CommandBase {
     // Holding Commands
     addSubCommand("createholding", new CreateHoldingCommandSub());
     addSubCommand("removeholding", new RemoveHoldingCommandSub());
+    addSubCommand("removeholdinguuid", new RemoveHoldingUUIDCommandSub());
     addSubCommand("holdinginfo", new HoldingInfoCommandSub());
     addSubCommand("myholdings", new MyHoldingsCommandSub());
 

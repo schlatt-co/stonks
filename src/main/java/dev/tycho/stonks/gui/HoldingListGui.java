@@ -41,7 +41,7 @@ public class HoldingListGui extends CollectionGui<Holding> {
     return ClickableItem.of(Util.playerHead(offlinePlayer.getName(), offlinePlayer,
         lore), e -> {
       if (e.getClick().isRightClick()) {
-        player.performCommand("stonks removeholding " + holdingsAccount.pk + " " + offlinePlayer.getName());
+        player.performCommand("stonks removeholdinguuid " + holdingsAccount.pk + " " + offlinePlayer.getUniqueId().toString());
       } else if (e.getClick().isLeftClick() && player.getUniqueId().equals(obj.playerUUID)) {
         player.performCommand("stonks withdraw " + obj.balance + " " + holdingsAccount.pk);
       }
