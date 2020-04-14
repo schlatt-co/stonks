@@ -13,18 +13,28 @@ public abstract class CompanyPerk {
   private final String name;
   private final Material icon;
   private final double price;
+  private final boolean verifiedOnly;
   private final String[] description;
   private final CompanyPerkAction[] perkActions;
 
   public CompanyPerk(Plugin plugin, String name, Material icon, double price, String... description) {
-    this(plugin, name, icon, price, description, new CompanyPerkAction[]{});
+    this(plugin, name, icon, price, false, description, new CompanyPerkAction[]{});
+  }
+
+  public CompanyPerk(Plugin plugin, String name, Material icon, double price, boolean verifiedOnly, String... description) {
+    this(plugin, name, icon, price, verifiedOnly, description, new CompanyPerkAction[]{});
   }
 
   public CompanyPerk(Plugin plugin, String name, Material icon, double price, String[] description, CompanyPerkAction... companyPerkActions) {
+    this(plugin, name, icon, price, false, description, companyPerkActions);
+  }
+
+  public CompanyPerk(Plugin plugin, String name, Material icon, double price, boolean verifiedOnly, String[] description, CompanyPerkAction... companyPerkActions) {
     this.plugin = plugin;
     this.name = name;
     this.icon = icon;
     this.price = price;
+    this.verifiedOnly = verifiedOnly;
     this.description = description;
     this.perkActions = companyPerkActions;
   }
@@ -45,6 +55,10 @@ public abstract class CompanyPerk {
 
   public final double getPrice() {
     return price;
+  }
+
+  public boolean isVerifiedOnly() {
+    return verifiedOnly;
   }
 
   public final String[] getDescription() {

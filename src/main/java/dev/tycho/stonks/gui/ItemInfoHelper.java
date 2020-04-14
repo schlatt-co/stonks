@@ -44,8 +44,14 @@ public class ItemInfoHelper {
     ItemMeta meta = itemStack.getItemMeta();
     assert meta != null;
     List<String> lore = meta.getLore();
+    assert lore != null;
+    if (!company.ownsPerk(perk.getNamespace()) && (perk.isVerifiedOnly() && !company.verified)) {
+      lore.add(ChatColor.RED + "Only verified companies can buy");
+      lore.add(ChatColor.RED + "this perk! Have an Admin verify");
+      lore.add(ChatColor.RED + "this company.");
+      lore.add("");
+    }
     for (String curString : perk.getDescription()) {
-      assert lore != null;
       lore.add(ChatColor.GRAY + ChatColor.translateAlternateColorCodes('&', curString));
     }
     meta.setLore(lore);

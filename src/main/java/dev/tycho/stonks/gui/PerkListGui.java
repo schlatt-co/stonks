@@ -41,6 +41,9 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
       } else if (member == null || !member.hasManagamentPermission()) {
         sendMessage(player, "You have insufficient permissions to purchase perks for this company!");
         getInventory().close(player);
+      } else if (obj.isVerifiedOnly() && !company.verified) {
+        sendMessage(player, "This perk is for verified companies only! Please have you company verified in order to purchase this perk!");
+        getInventory().close(player);
       } else {
         new AccountSelectorGui.Builder()
             .company(company)
