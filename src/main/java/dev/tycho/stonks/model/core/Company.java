@@ -6,6 +6,7 @@ import dev.tycho.stonks.managers.PerkManager;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class Company extends Entity {
 
@@ -48,6 +49,14 @@ public class Company extends Entity {
   public Member getMember(Player player) {
     for (Member member : members) {
       if (member.playerUUID.equals(player.getUniqueId())) {
+        return member;
+      }
+    }
+    return null;
+  }
+  public Member getMember(UUID playerUUID) {
+    for (Member member : members) {
+      if (member.playerUUID.equals(playerUUID)) {
         return member;
       }
     }
