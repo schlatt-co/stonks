@@ -109,16 +109,17 @@ public class StonksAPI {
 
 
   /**
-   * Adds a commandsub to the main stonks command with an alias
+   * Adds a {@link dev.tycho.stonks.command.base.CommandSub CommandSub} to the main stonks command with an alias.
    *
-   * @param alias The string alias players type to use the command
-   * @param commandSub The commandsub that executes the command
-   * @return Boolean - True if we overwrote an existing command, false if we created a new one
-   * @throws StonksAPIException - Never.
+   * @param alias The string alias players type to use the command.
+   * @param commandSub The {@link dev.tycho.stonks.command.base.CommandSub CommandSub} that executes the command
+   * @throws StonksAPIException - If a command sub with the given alias already exists.
    */
-  @NotNull
-  public static Boolean addStonksCommandSub(String alias, CommandSub commandSub) throws StonksAPIException {
-    return CommandManager.getInstance().registerStonksCommand(alias, commandSub);
+  public static void addStonksCommandSub(String alias, CommandSub commandSub) throws StonksAPIException {
+    if (CommandManager.getInstance().isCommandSub(alias)) {
+      throw new StonksAPIException("CommandSub with the given alias already exists!");
+    }
+    CommandManager.getInstance().registerStonksCommand(alias, commandSub);
   }
 
 }

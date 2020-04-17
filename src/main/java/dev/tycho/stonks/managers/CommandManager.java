@@ -32,6 +32,15 @@ public class CommandManager extends SpigotModule {
   }
 
   /**
+   * Checks if a command sub is already registered with the given alias.
+   * @param alias Alias to check.
+   * @return true if command sub with given alias is registered.
+   */
+  public boolean isCommandSub(String alias) {
+    return stonksCommand.isSubCommand(alias);
+  }
+
+  /**
    * Registers a Stonks CommandSub.
    * @param alias The name of the CommandSub.
    * @param commandSub The CommandSub object.
