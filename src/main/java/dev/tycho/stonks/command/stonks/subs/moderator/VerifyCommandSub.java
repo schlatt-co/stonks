@@ -22,7 +22,7 @@ public class VerifyCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      Verify(comp);
+      verify(comp);
       return;
     }
     new CompanySelectorGui.Builder()
@@ -30,12 +30,12 @@ public class VerifyCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.verified))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Verify " + company.name + "?")
-            .yes(() -> Verify(company))
+            .yes(() -> verify(company))
             .show(player))
         .show(player);
   }
 
-  private void Verify(Company company) {
+  private void verify(Company company) {
     Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden);
 
     Repo.getInstance().sendMessageToAllOnlineManagers(

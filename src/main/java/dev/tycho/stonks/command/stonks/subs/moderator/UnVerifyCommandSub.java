@@ -21,7 +21,7 @@ public class UnVerifyCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      Unverify(comp);
+      unverify(comp);
       return;
     }
 
@@ -30,11 +30,11 @@ public class UnVerifyCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> c.verified))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Unverify " + company.name + "?")
-            .yes(() -> Unverify(company))
+            .yes(() -> unverify(company))
             .show(player))
         .show(player);
   }
-  private void Unverify(Company company) {
+  private void unverify(Company company) {
     Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, false, company.hidden);
 
     Repo.getInstance().sendMessageToAllOnlineManagers(

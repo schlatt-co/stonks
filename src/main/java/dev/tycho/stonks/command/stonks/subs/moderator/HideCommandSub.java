@@ -21,7 +21,7 @@ public class HideCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      Hide(comp);
+      hide(comp);
       return;
     }
 
@@ -31,12 +31,12 @@ public class HideCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Hide " + company.name + "?")
-            .yes(() -> Hide(company))
+            .yes(() -> hide(company))
             .show(player))
         .show(player);
   }
 
-  private void Hide(Company company) {
+  private void hide(Company company) {
     Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true);
   }
 }

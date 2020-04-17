@@ -21,7 +21,7 @@ public class DeleteCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      Delete(comp, player);
+      delete(comp, player);
       return;
     }
 
@@ -31,12 +31,12 @@ public class DeleteCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("ARE YOU SURE " + company.name + "?")
-            .yes(() -> Delete(company, player))
+            .yes(() -> delete(company, player))
             .show(player))
         .show(player);
   }
 
-  private void Delete(Company company, Player player) {
+  private void delete(Company company, Player player) {
     Repo.getInstance().modifyCompany(company, "_", Material.BARRIER.name(), false, true);
     sendMessage(player, "Company Deleted");
   }

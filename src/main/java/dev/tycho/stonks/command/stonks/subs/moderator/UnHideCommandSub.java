@@ -20,7 +20,7 @@ public class UnHideCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      UnHide(comp);
+      unHide(comp);
       return;
     }
 
@@ -29,12 +29,12 @@ public class UnHideCommandSub extends ModularCommandSub {
         .companies(Repo.getInstance().companies().getAllWhere(c -> c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Unhide " + company.name + "?")
-            .yes(() -> UnHide(company))
+            .yes(() -> unHide(company))
             .show(player))
         .show(player);
   }
 
-  private void UnHide(Company company) {
+  private void unHide(Company company) {
     Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, false);
   }
 }
