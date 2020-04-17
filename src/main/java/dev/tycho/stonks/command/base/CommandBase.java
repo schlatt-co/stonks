@@ -30,8 +30,10 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     sender.sendMessage(ChatColor.DARK_GREEN + "Stonks> " + ChatColor.GREEN + message);
   }
 
-  public void addSubCommand(String alias, CommandSub commandSub) {
+  public boolean addSubCommand(String alias, CommandSub commandSub) {
+    boolean exists = subCommands.containsKey(alias);
     subCommands.put(alias, commandSub);
+    return exists;
   }
 
   @Override

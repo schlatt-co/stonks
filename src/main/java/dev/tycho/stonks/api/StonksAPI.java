@@ -1,6 +1,8 @@
 package dev.tycho.stonks.api;
 
 import dev.tycho.stonks.api.perks.CompanyPerk;
+import dev.tycho.stonks.command.base.CommandSub;
+import dev.tycho.stonks.managers.CommandManager;
 import dev.tycho.stonks.managers.PerkManager;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Account;
@@ -104,4 +106,19 @@ public class StonksAPI {
     }
     return account;
   }
+
+
+  /**
+   * Adds a commandsub to the main stonks command with an alias
+   *
+   * @param alias The string alias players type to use the command
+   * @param commandSub The commandsub that executes the command
+   * @return Boolean - True if we overwrote an existing command, false if we created a new one
+   * @throws StonksAPIException - Never.
+   */
+  @NotNull
+  public static Boolean addStonksCommandSub(String alias, CommandSub commandSub) throws StonksAPIException {
+    return CommandManager.getInstance().registerStonksCommand(alias, commandSub);
+  }
+
 }
