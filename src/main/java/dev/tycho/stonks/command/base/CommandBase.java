@@ -31,9 +31,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
   }
 
   public boolean addSubCommand(String alias, CommandSub commandSub) {
-    boolean exists = subCommands.containsKey(alias);
-    subCommands.put(alias, commandSub);
-    return exists;
+    return subCommands.put(alias, commandSub) != null;
   }
 
   @Override
