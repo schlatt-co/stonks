@@ -49,7 +49,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
       subCommands.get("default").onCommand(player, label, args);
     } else if (subCommands.containsKey(args[0])) {
       CommandSub sub = subCommands.get(args[0]);
-      if (sub.getPermission() != null && !player.hasPermission(sub.getPermission())) {
+      if (sub.hasPermission(player)) {
         sendMessage(player, "You have insufficient permissions to execute this command!");
         return true;
       }
@@ -85,7 +85,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     for (String subcommandName : subCommands.keySet()) {
       if (subcommandName.contains(arg)) {
         CommandSub commandSub = subCommands.get(subcommandName);
-        if (commandSub.getPermission() == null || player.hasPermission(commandSub.getPermission())) {
+        if (commandSub.hasPermission(player)) {
           matches.add(subcommandName);
         }
       }

@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 
 public class RefreshCommandSub extends SimpleCommandSub {
 
+  public RefreshCommandSub() {
+    setPermissions("stonks.admin.refresh", "stonks.admin");
+  }
+
   @Override
   public void execute(Player player) {
     Repo.getInstance().repopulateAll();

@@ -1,7 +1,6 @@
 package dev.tycho.stonks.command.stonks;
 
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.command.base.SimpleCommandSub;
 import dev.tycho.stonks.command.stonks.subs.FeesCommandSub;
 import dev.tycho.stonks.command.stonks.subs.ListCommandSub;
@@ -71,14 +70,14 @@ public class StonksCommand extends CommandBase {
     addSubCommand("subscriptions", new SubscriptionsCommandSub());
 
     // Admin commands
-    addSubCommand("hide", CommandSub.perms("trevor.mod", new HideCommandSub()));
-    addSubCommand("unhide", CommandSub.perms("trevor.mod", new UnHideCommandSub()));
-    addSubCommand("verify", CommandSub.perms("trevor.mod", new VerifyCommandSub()));
-    addSubCommand("unverify", CommandSub.perms("trevor.mod", new UnVerifyCommandSub()));
-    addSubCommand("rename", CommandSub.perms("trevor.mod", new RenameCommandSub()));
-    addSubCommand("listhidden", CommandSub.perms("trevor.mod", new ListHiddenCommandSub()));
-    addSubCommand("delete", CommandSub.perms("trevor.mod", new DeleteCommandSub()));
-    addSubCommand("refresh", CommandSub.perms("trevor.admin", new RefreshCommandSub()));
+    addSubCommand("hide", new HideCommandSub());
+    addSubCommand("unhide", new UnHideCommandSub());
+    addSubCommand("verify", new VerifyCommandSub());
+    addSubCommand("unverify", new UnVerifyCommandSub());
+    addSubCommand("rename", new RenameCommandSub());
+    addSubCommand("listhidden", new ListHiddenCommandSub());
+    addSubCommand("delete", new DeleteCommandSub());
+    addSubCommand("refresh", new RefreshCommandSub());
 
     // Misc Commands
 

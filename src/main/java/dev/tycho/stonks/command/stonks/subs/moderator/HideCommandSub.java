@@ -15,6 +15,7 @@ public class HideCommandSub extends ModularCommandSub {
   public HideCommandSub() {
     super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
     addAutocompleter("company", new CompanyNameAutocompleter());
+    setPermissions("stonks.mod.hide", "stonks.mod");
   }
 
   @Override

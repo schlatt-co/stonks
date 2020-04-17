@@ -16,6 +16,7 @@ public class VerifyCommandSub extends ModularCommandSub {
   public VerifyCommandSub() {
     super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
     addAutocompleter("company", new CompanyNameAutocompleter());
+    setPermissions("stonks.mod.verify", "stonks.mod");
   }
 
   @Override

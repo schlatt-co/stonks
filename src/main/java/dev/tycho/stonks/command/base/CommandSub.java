@@ -13,15 +13,22 @@ import java.util.List;
 
 public abstract class CommandSub {
 
-  protected String permission;
+  protected String[] permissions;
 
   public CommandSub() {
-    this.permission = null;
+    permissions = null;
   }
 
-  public static CommandSub perms(String p, CommandSub c) {
-    c.setPermission(p);
-    return c;
+  public boolean hasPermission(Player player) {
+    if (permissions == null) {
+      return true;
+    }
+    for (String permission : permissions) {
+      if (player.hasPermission(permission)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected static String concatArgs(int startArg, String[] args) {
@@ -54,12 +61,12 @@ public abstract class CommandSub {
     return u.getBase();
   }
 
-  public String getPermission() {
-    return permission;
+  public void setPermissions(String... permissions) {
+    this.permissions = permissions;
   }
 
-  private void setPermission(String permission) {
-    this.permission = permission;
+  public String[] getPermissions() {
+    return permissions;
   }
 
   public abstract void onCommand(Player player, String alias, String[] args);

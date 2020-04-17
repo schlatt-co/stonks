@@ -14,6 +14,7 @@ public class RenameCommandSub extends ModularCommandSub {
 
   public RenameCommandSub() {
     super(ArgumentValidator.concatIfLast(new StringValidator("new_name")));
+    setPermissions("stonks.mod.rename", "stonks.mod");
   }
 
   @Override

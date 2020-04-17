@@ -12,9 +12,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class DeleteCommandSub extends ModularCommandSub {
+
   public DeleteCommandSub() {
     super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
     addAutocompleter("company", new CompanyNameAutocompleter());
+    setPermissions("stonks.mod.delete", "stonks.mod");
   }
 
   @Override

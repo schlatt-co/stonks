@@ -15,6 +15,7 @@ public class UnHideCommandSub extends ModularCommandSub {
   public UnHideCommandSub() {
     super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
     addAutocompleter("company", new CompanyNameAutocompleter());
+    setPermissions("stonks.mod.hide", "stonks.mod");
   }
   @Override
   public void execute(Player player) {
