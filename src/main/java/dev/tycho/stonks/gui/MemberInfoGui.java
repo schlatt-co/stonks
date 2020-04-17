@@ -41,6 +41,6 @@ public class MemberInfoGui extends InventoryGui {
     contents.set(1, 1, ClickableItem.of(Util.item(Material.DIAMOND_BLOCK, "Set role to CEO"), e -> player.performCommand(
         "stonks setrole " + offlinePlayer.getName() + " " + Role.CEO.toString() + " " + company.name)));
 
-    contents.set(1, 8, ClickableItem.of(Util.item(Material.LAVA_BUCKET, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + offlinePlayer.getName() + " " + company.name)));
+    contents.set(1, 8, ClickableItem.of(Util.item(Material.LAVA_BUCKET, ChatColor.RED + "Fire member from company"), e -> player.performCommand("stonks kickmember " + member.playerUUID + " " + company.name)));
   }
 }
