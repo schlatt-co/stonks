@@ -6,7 +6,7 @@ plugins {
 
 bukkit {
     name = 'Stonks'
-    version = '2.1-' + getGitHash()
+    version = '2.1-' + getGitHash() + ' (' + getGitBranch() + ')'
     apiVersion = '1.14'
     main = 'dev.tycho.stonks.Stonks'
     authors = ['TychoVI', 'Tsarcasm', 'JRoy']
@@ -63,6 +63,15 @@ String getGitHash() {
     exec {
         standardOutput = output // Only the std, not errors as it's not to worry about as long as it's a repo
         commandLine 'git', 'rev-parse', '--short', 'HEAD'
+    }
+    return output.toString().trim()
+}
+
+String getGitBranch() {
+    def output = new ByteArrayOutputStream()
+    exec {
+        standardOutput = output
+        commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
     }
     return output.toString().trim()
 }
