@@ -77,6 +77,7 @@ public class StonksCommand extends CommandBase {
     addSubCommand("unverify", CommandSub.perms("trevor.mod", new UnVerifyCommandSub()));
     addSubCommand("rename", CommandSub.perms("trevor.mod", new RenameCommandSub()));
     addSubCommand("listhidden", CommandSub.perms("trevor.mod", new ListHiddenCommandSub()));
+    addSubCommand("delete", CommandSub.perms("trevor.mod", new DeleteCommandSub()));
     addSubCommand("refresh", CommandSub.perms("trevor.admin", new RefreshCommandSub()));
 
     // Misc Commands

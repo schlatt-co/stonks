@@ -1,24 +1,42 @@
 package dev.tycho.stonks.command.stonks.subs.moderator;
 
-import dev.tycho.stonks.command.base.SimpleCommandSub;
+import dev.tycho.stonks.command.base.ModularCommandSub;
+import dev.tycho.stonks.command.base.autocompleters.CompanyNameAutocompleter;
+import dev.tycho.stonks.command.base.validators.ArgumentValidator;
+import dev.tycho.stonks.command.base.validators.CompanyValidator;
 import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.core.Company;
 import org.bukkit.entity.Player;
 
-public class HideCommandSub extends SimpleCommandSub {
+public class HideCommandSub extends ModularCommandSub {
+
+  public HideCommandSub() {
+    super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
+    addAutocompleter("company", new CompanyNameAutocompleter());
+  }
 
   @Override
   public void execute(Player player) {
+    Company comp = getArgument("company");
+    if (comp != null) {
+      Hide(comp);
+      return;
+    }
+
+
     new CompanySelectorGui.Builder()
         .title("Select company to hide")
         .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
             .title("Hide " + company.name + "?")
-            .yes(() ->
-                Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true)
-            )
+            .yes(() -> Hide(company))
             .show(player))
         .show(player);
+  }
+
+  private void Hide(Company company) {
+    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true);
   }
 }

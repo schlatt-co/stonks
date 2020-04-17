@@ -14,18 +14,23 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CompanySelectorGui extends InventoryGui {
   private Consumer<Company> onCompanySelected;
-  private Collection<Company> allcompanies;
+  private ArrayList<Company> allCompanies;
   private Collection<Company> shownCompanies;
 
   private CompanySelectorGui(Collection<Company> companies, String title, Consumer<Company> onCompanySelected) {
     super(title, 6);
-    this.allcompanies = companies;
-    this.shownCompanies = new ArrayList<>(companies);
+    // Don't show deleted companies
+    this.allCompanies = companies.stream().filter(c -> !c.name.equals("_")).collect(Collectors.toCollection(ArrayList::new));
+    this.allCompanies.sort(Comparator.comparing(c -> c.name));
+    this.shownCompanies = allCompanies.stream()
+        .filter(c -> !c.hidden)
+        .collect(Collectors.toList());
     this.onCompanySelected = onCompanySelected;
   }
 
@@ -40,7 +45,7 @@ public class CompanySelectorGui extends InventoryGui {
     // Default
     contents.set(0, 0, ClickableItem.of(Util.item(Material.GRAY_STAINED_GLASS, "Filter by: Default (hide some companies)"),
         e -> {
-          shownCompanies = allcompanies.stream()
+          shownCompanies = allCompanies.stream()
               .filter(c -> !c.hidden || c.isMember(player))
               .collect(Collectors.toList());
           getInventory().open(player, 0);
@@ -49,7 +54,7 @@ public class CompanySelectorGui extends InventoryGui {
     // Member of
     contents.set(0, 1, ClickableItem.of(Util.playerHead("Filter by: Member Of", player),
         e -> {
-          shownCompanies = allcompanies.stream()
+          shownCompanies = allCompanies.stream()
               .filter(c -> c.isMember(player))
               .collect(Collectors.toList());
           getInventory().open(player, 0);
@@ -58,7 +63,7 @@ public class CompanySelectorGui extends InventoryGui {
     // Verified Only
     contents.set(0, 2, ClickableItem.of(Util.item(Material.ENCHANTED_BOOK, "Filter by: Verified"),
         e -> {
-          shownCompanies = allcompanies.stream()
+          shownCompanies = allCompanies.stream()
               .filter(c -> c.verified)
               .collect(Collectors.toList());
           getInventory().open(player, 0);
@@ -67,7 +72,7 @@ public class CompanySelectorGui extends InventoryGui {
     // All
     contents.set(0, 3, ClickableItem.of(Util.item(Material.GLASS, "Filter by: Show All (incl. hidden)"),
         e -> {
-          shownCompanies = new ArrayList<>(allcompanies);
+          shownCompanies = new ArrayList<>(allCompanies);
           getInventory().open(player, 0);
         }));
 

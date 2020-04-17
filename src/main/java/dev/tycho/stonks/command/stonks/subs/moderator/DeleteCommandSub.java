@@ -8,12 +8,11 @@ import dev.tycho.stonks.gui.CompanySelectorGui;
 import dev.tycho.stonks.gui.ConfirmationGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
-import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class VerifyCommandSub extends ModularCommandSub {
-
-  public VerifyCommandSub() {
+public class DeleteCommandSub extends ModularCommandSub {
+  public DeleteCommandSub() {
     super(ArgumentValidator.optionalAndConcatIfLast(new CompanyValidator("company")));
     addAutocompleter("company", new CompanyNameAutocompleter());
   }
@@ -22,25 +21,23 @@ public class VerifyCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Company comp = getArgument("company");
     if (comp != null) {
-      Verify(comp);
+      Delete(comp, player);
       return;
     }
+
+
     new CompanySelectorGui.Builder()
-        .title("Select company to verify")
-        .companies(Repo.getInstance().companies().getAllWhere(c -> !c.verified))
+        .title("Select company to delete")
+        .companies(Repo.getInstance().companies().getAllWhere(c -> !c.hidden))
         .companySelected(company -> new ConfirmationGui.Builder()
-            .title("Verify " + company.name + "?")
-            .yes(() -> Verify(company))
+            .title("ARE YOU SURE " + company.name + "?")
+            .yes(() -> Delete(company, player))
             .show(player))
         .show(player);
   }
 
-  private void Verify(Company company) {
-    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden);
-
-    Repo.getInstance().sendMessageToAllOnlineManagers(
-        company, ChatColor.GOLD + company.name + ChatColor.GREEN +" was just verified!");
+  private void Delete(Company company, Player player) {
+    Repo.getInstance().modifyCompany(company, "_", Material.BARRIER.name(), false, true);
+    sendMessage(player, "Company Deleted");
   }
-
 }
-

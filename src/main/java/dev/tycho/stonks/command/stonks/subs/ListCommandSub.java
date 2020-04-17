@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListCommandSub extends ModularCommandSub {
 
@@ -70,6 +71,7 @@ public class ListCommandSub extends ModularCommandSub {
               break;
           }
           companies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
+          companies = companies.stream().filter(a-> !a.name.equals("_")).collect(Collectors.toList());
           return new CompanyListGui(companies);
         })
         .abortIfNull()

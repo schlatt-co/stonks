@@ -41,5 +41,43 @@ public class CompanyInfoGui extends InventoryGui {
       contents.set(3, 4, ClickableItem.of(Util.item(Material.DIAMOND, "Perks"),
           e -> player.performCommand("stonks perks " + company.name)));
     }
+
+    if (player.hasPermission("trevor.mod")) {
+      if (company.verified) {
+        contents.set(0, 7, ClickableItem.of(Util.item(Material.BOOK, "Unverify"),
+            e -> {
+              player.performCommand("stonks unverify " + company.pk);
+              player.performCommand("stonks list");
+            }));
+      } else {
+        contents.set(0, 7, ClickableItem.of(Util.item(Material.ENCHANTED_BOOK, "Verify"),
+            e -> {
+              player.performCommand("stonks verify " + company.pk);
+              player.performCommand("stonks list");
+            }));
+      }
+
+      if (company.hidden) {
+        contents.set(0, 8, ClickableItem.of(Util.item(Material.GREEN_STAINED_GLASS_PANE, "Unhide"),
+            e -> {
+              player.performCommand("stonks unhide " + company.pk);
+              player.performCommand("stonks list");
+            }));
+      } else {
+        contents.set(0, 8, ClickableItem.of(Util.item(Material.RED_STAINED_GLASS_PANE, "Hide"),
+            e -> {
+              player.performCommand("stonks hide " + company.pk);
+              player.performCommand("stonks list");
+            }));
+      }
+
+      contents.set(4, 8, ClickableItem.of(Util.item(Material.RED_CONCRETE, "[!] DELETE [!]"),
+          e -> {
+            player.performCommand("stonks delete " + company.pk);
+            player.performCommand("stonks list");
+          }));
+
+
+    }
   }
 }
