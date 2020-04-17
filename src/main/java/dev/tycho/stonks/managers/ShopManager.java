@@ -35,25 +35,32 @@ public class ShopManager extends SpigotModule {
   }
 
   private void populateChestshopAccounts() {
-    for (CompanyAccount a : Repo.getInstance().companyAccounts().getAll()) {
-      Account CSaccount = NameManager.getAccount(a.uuid);
-      if (CSaccount == null) {
-        log(" - Creating CS account for holding account " + a.pk + " [" + a.uuid + "]");
-        //If none exists then make a new one
-        String name = Repo.getInstance().companies().get(a.companyPk).name;
-        Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
-        NameManager.createAccount(newCSaccount);
+    try {
+
+
+      for (CompanyAccount a : Repo.getInstance().companyAccounts().getAll()) {
+        Account CSaccount = NameManager.getAccount(a.uuid);
+        if (CSaccount == null) {
+          log(" - Creating CS account for holding account " + a.pk + " [" + a.uuid + "]");
+          //If none exists then make a new one
+          String name = Repo.getInstance().companies().get(a.companyPk).name;
+          Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
+          NameManager.createAccount(newCSaccount);
+        }
       }
-    }
-    for (HoldingsAccount a : Repo.getInstance().holdingsAccounts().getAll()) {
-      log(" - Creating CS account for company account " + a.pk + " [" + a.uuid + "]");
-      Account CSaccount = NameManager.getAccount(a.uuid);
-      if (CSaccount == null) {
-        //If none exists then make a new one
-        String name = Repo.getInstance().companies().get(a.companyPk).name;
-        Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
-        NameManager.createAccount(newCSaccount);
+      for (HoldingsAccount a : Repo.getInstance().holdingsAccounts().getAll()) {
+        log(" - Creating CS account for company account " + a.pk + " [" + a.uuid + "]");
+        Account CSaccount = NameManager.getAccount(a.uuid);
+        if (CSaccount == null) {
+          //If none exists then make a new one
+          String name = Repo.getInstance().companies().get(a.companyPk).name;
+          Account newCSaccount = new Account("#" + a.pk + "-" + name, a.uuid);
+          NameManager.createAccount(newCSaccount);
+        }
       }
+    } catch (java.lang.NoSuchMethodError e) {
+      log("Error populating chest shop accounts (no such method)");
+      log("Are you using the correct ChestShop jar?");
     }
   }
 
