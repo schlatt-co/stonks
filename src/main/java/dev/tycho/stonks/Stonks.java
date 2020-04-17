@@ -5,9 +5,6 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.base.CommandBase;
-import dev.tycho.stonks.command.chat.CompanyChatCommand;
-import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
-import dev.tycho.stonks.command.stonks.StonksCommand;
 import dev.tycho.stonks.managers.*;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
@@ -81,6 +78,7 @@ public class Stonks extends JavaPlugin {
     loadedModules.add(new GuiManager(this));
     loadedModules.add(new SettingsManager(this));
     loadedModules.add(new PerkManager(this));
+    loadedModules.add(new CommandManager(this));
     if (getServer().getPluginManager().getPlugin("ChestShop") != null) {
       loadedModules.add(new ShopManager(this));
     }
@@ -96,10 +94,6 @@ public class Stonks extends JavaPlugin {
       module.onEnable();
     }
 
-//    Schedule the auto-pay services task
-//    BukkitScheduler scheduler = getServer().getScheduler();
-//    scheduler.scheduleSyncRepeatingTask(this, new SubscriptionCheckTask(), 1L, 20L * SettingsManager.SUBSCRIPTION_AUTOPAY_TASK_INTERVAL);
-
     getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
       System.out.println("Automatically renewing subscriptions");
       //We want to go through all subscriptions
@@ -110,10 +104,6 @@ public class Stonks extends JavaPlugin {
         cancelSubscriptionIfOverdue(subscription);
       }
     }, 0, 6000);
-
-    new StonksCommand();
-    Objects.requireNonNull(getCommand("cc")).setExecutor(new CompanyChatCommand());
-    Objects.requireNonNull(getCommand("ccr")).setExecutor(new CompanyChatReplyCommand());
 
     Bukkit.getLogger().info("Loaded!");
   }
