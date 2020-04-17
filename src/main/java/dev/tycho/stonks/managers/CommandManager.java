@@ -5,28 +5,38 @@ import dev.tycho.stonks.command.base.CommandSub;
 import dev.tycho.stonks.command.chat.CompanyChatCommand;
 import dev.tycho.stonks.command.chat.CompanyChatReplyCommand;
 import dev.tycho.stonks.command.stonks.StonksCommand;
-
-import java.util.Objects;
+import dev.tycho.stonks.util.Util;
 
 public class CommandManager extends SpigotModule {
-  private static CommandManager instance;
-  public static CommandManager getInstance() {
-    return instance;
-  }
 
-  private StonksCommand stonksCommand;
+  private static CommandManager instance;
+
+  private final StonksCommand stonksCommand = new StonksCommand();
 
   public CommandManager(Stonks stonks) {
     super("Command Manager", stonks);
     instance = this;
-
-    stonksCommand = new StonksCommand();
-    Objects.requireNonNull(plugin.getCommand("cc")).setExecutor(new CompanyChatCommand());
-    Objects.requireNonNull(plugin.getCommand("ccr")).setExecutor(new CompanyChatReplyCommand());
   }
 
-  // Returns true if overwritten
-  // False if just created
+  @Override
+  public void addCommands() {
+    addCommand("cc", new CompanyChatCommand());
+    addCommand("ccr", new CompanyChatReplyCommand());
+  }
+
+  public static CommandManager getInstance() {
+    if (!Util.isCalledInternally()) {
+      throw new RuntimeException("Improper use of internal stonks classes.");
+    }
+    return instance;
+  }
+
+  /**
+   * Registers a Stonks CommandSub.
+   * @param alias The name of the CommandSub.
+   * @param commandSub The CommandSub object.
+   * @return true if this operation overwrote an existing command sub, otherwise false.
+   */
   public boolean registerStonksCommand(String alias, CommandSub commandSub) {
     return stonksCommand.addSubCommand(alias, commandSub);
   }
