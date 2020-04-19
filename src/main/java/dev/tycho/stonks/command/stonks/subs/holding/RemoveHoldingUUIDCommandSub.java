@@ -71,7 +71,7 @@ public class RemoveHoldingUUIDCommandSub extends ModularCommandSub {
       }
       //Now find out the last time that player withdrew from the account
       long recentWithdraw = findMostRecentWithdraw(
-          Repo.getInstance().transactions().getTransactionsForAccount(holdingsAccount), player.getUniqueId());
+          Repo.getInstance().transactions().getTransactionsForAccount(holdingsAccount), uuid);
       if (System.currentTimeMillis() - recentWithdraw < 604800000L) {
         //If a withdraw happened less than 7 days ago then the account is still active
         sendMessage(player, "That holding is still active (was withdrawn from less than 7 days ago) so you cannot remove it.");
@@ -93,7 +93,7 @@ public class RemoveHoldingUUIDCommandSub extends ModularCommandSub {
               ""))
           .yes(() -> {
                 // Delete the holding
-                if (Repo.getInstance().removeHolding(holding, player.getUniqueId())) {
+                if (Repo.getInstance().removeHolding(holding, uuid)) {
                   sendMessage(player, "Holding removed successfully!");
                 } else {
                   sendMessage(player, "Error deleting holding");
