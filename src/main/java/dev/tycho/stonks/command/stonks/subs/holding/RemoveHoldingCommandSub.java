@@ -113,7 +113,7 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
     long highestMillis = 0;
     // Find the most
     for (Transaction transaction : transactions) {
-      if (transaction.payeeUUID.equals(playerUUID) && transaction.amount < 0) {
+      if (transaction.payeeUUID != null && transaction.payeeUUID.equals(playerUUID) && transaction.amount < 0) {
         highestMillis = Math.max(highestMillis, transaction.timestamp.getTime());
       }
     }
