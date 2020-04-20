@@ -2,7 +2,6 @@ package dev.tycho.stonks.command.stonks.subs.holding;
 
 import dev.tycho.stonks.command.base.ModularCommandSub;
 import dev.tycho.stonks.command.base.autocompleters.OptionListAutocompleter;
-import dev.tycho.stonks.command.base.autocompleters.PlayerNameAutocompleter;
 import dev.tycho.stonks.command.base.validators.DoubleValidator;
 import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.AccountSelectorGui;
@@ -21,7 +20,7 @@ public class CreateHoldingCommandSub extends ModularCommandSub {
 
   public CreateHoldingCommandSub() {
     super(new StringValidator("player_name"), new DoubleValidator("share"));
-    addAutocompleter("player_name", new PlayerNameAutocompleter());
+//    addAutocompleter("player_name", new PlayerNameAutocompleter());
     addAutocompleter("share", new OptionListAutocompleter("1", "1.5", "2", "10"));
   }
 
