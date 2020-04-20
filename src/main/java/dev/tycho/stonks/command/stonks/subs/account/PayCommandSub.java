@@ -79,7 +79,7 @@ public class PayCommandSub extends ModularCommandSub {
         .show(player);
   }
 
-  private void payAccount(Player sender, Account account, String message, double amount) {
+  static void payAccount(Player sender, Account account, String message, double amount) {
     if (amount < 0) {
       sendMessage(sender, "You cannot pay a negative number");
       return;

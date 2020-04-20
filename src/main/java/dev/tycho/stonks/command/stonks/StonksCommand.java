@@ -52,6 +52,7 @@ public class StonksCommand extends CommandBase {
 
     // Payment Commands
     addSubCommand("pay", new PayCommandSub());
+    addSubCommand("payaccount", new PayAccountCommandSub());
     addSubCommand("withdraw", new WithdrawCommandSub());
     addSubCommand("payuser", new PayUserCommandSub());
     addSubCommand("transfer", new TransferCommandSub());
