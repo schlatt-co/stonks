@@ -56,12 +56,12 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
     }
 
     //Try and find the UUID of that player
-    Player op = playerFromName(playerName);
-    if (op == null) {
+    Player holdingOwner = playerFromName(playerName);
+    if (holdingOwner == null) {
       sendMessage(player, "That player has never played on the server!");
       return;
     }
-    Holding holding = holdingsAccount.getPlayerHolding(op.getUniqueId());
+    Holding holding = holdingsAccount.getPlayerHolding(holdingOwner.getUniqueId());
     if (holding == null) {
       sendMessage(player, "There is no holding for this player!");
       return;
@@ -75,7 +75,7 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
       }
       //Now find out the last time that player withdrew from the account
       long recentWithdraw = findMostRecentWithdraw(
-          Repo.getInstance().transactions().getTransactionsForAccount(holdingsAccount), op.getUniqueId());
+          Repo.getInstance().transactions().getTransactionsForAccount(holdingsAccount), holdingOwner.getUniqueId());
       if (System.currentTimeMillis() - recentWithdraw < 604800000L) {
         //If a withdraw happened less than 7 days ago then the account is still active
         sendMessage(player, "That holding is still active (was withdrawn from less than 7 days ago) so you cannot remove it.");
@@ -97,7 +97,7 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
               ""))
           .yes(() -> {
                 // Delete the holding
-                if (Repo.getInstance().removeHolding(holding, op.getUniqueId())) {
+                if (Repo.getInstance().removeHolding(holding, holdingOwner.getUniqueId())) {
                   sendMessage(player, "Holding removed successfully!");
                 } else {
                   sendMessage(player, "Error deleting holding");
@@ -106,6 +106,12 @@ public class RemoveHoldingCommandSub extends ModularCommandSub {
           )
           .no(() -> sendMessage(player, "Deleting holding cancelled"))
           .show(player);
+    } else {
+      if (Repo.getInstance().removeHolding(holding, holdingOwner.getUniqueId())) {
+        sendMessage(player, "Holding removed successfully!");
+      } else {
+        sendMessage(player, "Error deleting holding");
+      }
     }
   }
 

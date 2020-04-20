@@ -102,6 +102,12 @@ public class RemoveHoldingUUIDCommandSub extends ModularCommandSub {
           )
           .no(() -> sendMessage(player, "Deleting holding cancelled"))
           .show(player);
+    } else {
+      if (Repo.getInstance().removeHolding(holding, uuid)) {
+        sendMessage(player, "Holding removed successfully!");
+      } else {
+        sendMessage(player, "Error deleting holding");
+      }
     }
   }
 
