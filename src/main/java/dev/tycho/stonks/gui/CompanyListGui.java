@@ -20,13 +20,12 @@ public class CompanyListGui extends CollectionGui<Company> {
     contents.set(0, 1, ClickableItem.of(Util.playerHead("Filter by: Member Of", player), e -> player.performCommand("stonks list member-of")));
     contents.set(0, 2, ClickableItem.of(Util.item(Material.ENCHANTED_BOOK, "Filter by: Verified"), e -> player.performCommand("stonks list verified")));
     contents.set(0, 3, ClickableItem.of(Util.item(Material.GLASS, "Filter by: Show All (incl. hidden)"), e -> player.performCommand("stonks list all")));
+    contents.set(0, 4, ClickableItem.of(Util.item(Material.ANVIL, "Search for Company..."), e -> player.performCommand("stonks list search")));
   }
 
   @Override
   protected ClickableItem itemProvider(Player player, Company obj) {
     return ClickableItem.of(ItemInfoHelper.companyDisplayItem(obj),
-        e -> {
-          player.performCommand("stonks info " + obj.name);
-        });
+        e -> player.performCommand("stonks info " + obj.name));
   }
 }

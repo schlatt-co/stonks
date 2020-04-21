@@ -8,7 +8,11 @@ import dev.tycho.stonks.command.base.validators.StringValidator;
 import dev.tycho.stonks.gui.CompanyListGui;
 import dev.tycho.stonks.managers.Repo;
 import dev.tycho.stonks.model.core.Company;
+import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,7 +23,7 @@ public class ListCommandSub extends ModularCommandSub {
 
   public ListCommandSub() {
     super(ArgumentValidator.optional(new StringValidator("options")));
-    addAutocompleter("options", new OptionListAutocompleter("all", "member-of", "not-hidden", "verified"));
+    addAutocompleter("options", new OptionListAutocompleter("all", "member-of", "not-hidden", "verified", "search"));
   }
 
   @Override
@@ -44,6 +48,10 @@ public class ListCommandSub extends ModularCommandSub {
           option = CompanyListOptions.VERIFIED;
           break;
         }
+        case "search": {
+          option = CompanyListOptions.SEARCH;
+          break;
+        }
         default: {
           break;
         }
@@ -55,9 +63,8 @@ public class ListCommandSub extends ModularCommandSub {
   private void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
     Stonks.newChain()
         .asyncFirst(() -> {
-          List<Company> companies;
+          List<Company> companies = new ArrayList<>();
           switch (options) {
-            default:
             case ALL:
               companies = new ArrayList<>(Repo.getInstance().companies().getAll());
               break;
@@ -75,6 +82,26 @@ public class ListCommandSub extends ModularCommandSub {
             case MEMBER_OF:
               companies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c -> c.isMember(player)));
               break;
+            case SEARCH: {
+              Bukkit.getScheduler().runTask(Stonks.getInstance(), () -> new AnvilGUI.Builder()
+                  .title("Search for a company...")
+                  .text("Type here")
+                  .item(new ItemStack(Material.PAPER))
+                  .plugin(Stonks.getInstance())
+                  .preventClose()
+                  .onComplete((opener, search) -> {
+                    Bukkit.getScheduler().runTask(Stonks.getInstance(), () -> {
+                      List<Company> filterCompanies = new ArrayList<>(Repo.getInstance().companies().getAllWhere(c ->
+                          c.name.toLowerCase().contains(search.toLowerCase())));
+                      filterCompanies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
+                      filterCompanies = filterCompanies.stream().filter(a -> !a.name.equals("_")).collect(Collectors.toList());
+                      new CompanyListGui(filterCompanies).show(player);
+                    });
+                    return AnvilGUI.Response.close();
+                  })
+                  .open(player));
+              return null;
+            }
           }
           companies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
           companies = companies.stream().filter(a -> !a.name.equals("_")).collect(Collectors.toList());
@@ -89,7 +116,8 @@ public class ListCommandSub extends ModularCommandSub {
     ALL,
     NOT_HIDDEN_OR_MEMBER,
     VERIFIED,
-    MEMBER_OF;
+    MEMBER_OF,
+    SEARCH;
 
     public static CompanyListOptions getDefault() {
       return NOT_HIDDEN_OR_MEMBER;

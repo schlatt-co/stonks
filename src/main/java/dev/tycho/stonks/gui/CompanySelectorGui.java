@@ -1,11 +1,14 @@
 package dev.tycho.stonks.gui;
 
+import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.util.Util;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
+import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -76,6 +79,24 @@ public class CompanySelectorGui extends InventoryGui {
           getInventory().open(player, 0);
         }));
 
+    // Search
+    contents.set(0, 4, ClickableItem.of(Util.item(Material.ANVIL, "Search for Company..."),
+        e -> new AnvilGUI.Builder()
+            .title("Search for a company...")
+            .text("Type here")
+            .item(new ItemStack(Material.PAPER))
+            .plugin(Stonks.getInstance())
+            .preventClose()
+            .onComplete((opener, search) -> {
+              Bukkit.getScheduler().runTask(Stonks.getInstance(), () -> {
+                shownCompanies = allCompanies.stream()
+                    .filter(c -> c.name.toLowerCase().contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
+                getInventory().open(player, 0);
+              });
+              return AnvilGUI.Response.close();
+            })
+            .open(player)));
 
     ClickableItem[] items = new ClickableItem[shownCompanies.size()];
     int i = 0;
