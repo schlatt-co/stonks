@@ -9,12 +9,17 @@ import fr.minuskube.inv.InventoryManager;
 import fr.minuskube.inv.content.InventoryContents;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 
 public class CompanyInfoGui extends InventoryGui {
 
   public static InventoryManager inventoryManager;
+  @SuppressWarnings("deprecation")
+  private final static ItemStack potion = new Potion(PotionType.INVISIBILITY, 1).toItemStack(1);
 
-  private Company company;
+  private final Company company;
 
   public CompanyInfoGui(Company company) {
     super(company.name, 5);
@@ -58,20 +63,20 @@ public class CompanyInfoGui extends InventoryGui {
       }
 
       if (company.hidden) {
-        contents.set(0, 8, ClickableItem.of(Util.item(Material.GREEN_STAINED_GLASS_PANE, "Unhide"),
+        contents.set(3, 8, ClickableItem.of(Util.item(Material.MILK_BUCKET, "Unhide"),
             e -> {
               player.performCommand("stonks unhide " + company.pk);
               player.performCommand("stonks list");
             }));
       } else {
-        contents.set(0, 8, ClickableItem.of(Util.item(Material.RED_STAINED_GLASS_PANE, "Hide"),
+        contents.set(3, 8, ClickableItem.of(Util.item(potion, "Hide"),
             e -> {
               player.performCommand("stonks hide " + company.pk);
               player.performCommand("stonks list");
             }));
       }
 
-      contents.set(4, 8, ClickableItem.of(Util.item(Material.RED_CONCRETE, "[!] DELETE [!]"),
+      contents.set(4, 8, ClickableItem.of(Util.item(Material.BARRIER, "[!] DELETE [!]"),
           e -> {
             player.performCommand("stonks delete " + company.pk);
             player.performCommand("stonks list");

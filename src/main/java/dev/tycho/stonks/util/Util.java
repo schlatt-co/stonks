@@ -20,11 +20,18 @@ import java.util.concurrent.TimeUnit;
 public class Util {
 
   public static ItemStack item(Material material, String name, String... lore) {
-    return item(material, name, Arrays.asList(lore));
+    return item(new ItemStack(material), name, lore);
+  }
+
+  public static ItemStack item(ItemStack itemStack, String name, String... lore) {
+    return item(itemStack, name, Arrays.asList(lore));
   }
 
   public static ItemStack item(Material material, String name, List<String> lore) {
-    ItemStack itemStack = new ItemStack(material);
+    return item(new ItemStack(material), name, lore);
+  }
+
+  public static ItemStack item(ItemStack itemStack, String name, List<String> lore) {
     ItemMeta itemMeta = itemStack.getItemMeta();
     if (itemMeta != null) {
       itemMeta.setDisplayName(ChatColor.RESET + name);
