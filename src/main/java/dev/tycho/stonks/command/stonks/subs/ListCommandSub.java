@@ -24,26 +24,32 @@ public class ListCommandSub extends ModularCommandSub {
 
   @Override
   public void execute(Player player) {
-    String option = getArgument("options");
-    if (option != null) {
-      switch (option) {
-        case "all":
-          openCompanyList(player, CompanyListOptions.ALL);
-          return;
-        case "member-of":
-          openCompanyList(player, CompanyListOptions.MEMBER_OF);
-          return;
-        case "not-hidden":
-          openCompanyList(player, CompanyListOptions.NOT_HIDDEN_OR_MEMBER);
-          return;
-        case "verified":
-          openCompanyList(player, CompanyListOptions.VERIFIED);
-          return;
+    String optionArg = getArgument("options");
+    CompanyListOptions option = CompanyListOptions.getDefault();
+    if (optionArg != null) {
+      switch (optionArg.toLowerCase()) {
+        case "all": {
+          option = CompanyListOptions.ALL;
+          break;
+        }
+        case "member-of": {
+          option = CompanyListOptions.MEMBER_OF;
+          break;
+        }
+        case "not-hidden": {
+          option = CompanyListOptions.NOT_HIDDEN_OR_MEMBER;
+          break;
+        }
+        case "verified": {
+          option = CompanyListOptions.VERIFIED;
+          break;
+        }
+        default: {
+          break;
+        }
       }
     }
-
-    //default to not hidden
-    openCompanyList(player, CompanyListOptions.getDefault());
+    openCompanyList(player, option);
   }
 
   private void openCompanyList(Player player, ListCommandSub.CompanyListOptions options) {
@@ -71,7 +77,7 @@ public class ListCommandSub extends ModularCommandSub {
               break;
           }
           companies.sort(Comparator.comparing(a -> a.name.toLowerCase()));
-          companies = companies.stream().filter(a-> !a.name.equals("_")).collect(Collectors.toList());
+          companies = companies.stream().filter(a -> !a.name.equals("_")).collect(Collectors.toList());
           return new CompanyListGui(companies);
         })
         .abortIfNull()
