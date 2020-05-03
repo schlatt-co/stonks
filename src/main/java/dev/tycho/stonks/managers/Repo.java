@@ -13,6 +13,7 @@ import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.StonksUser;
+import dev.tycho.stonks.util.Util;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -48,6 +49,9 @@ public class Repo extends SpigotModule {
   }
 
   public static Repo getInstance() {
+    if (!Util.isCalledInternally()) {
+      throw new RuntimeException("Improper use of internal stonks classes.");
+    }
     return instance;
   }
 
