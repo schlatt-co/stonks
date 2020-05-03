@@ -26,8 +26,7 @@ public class TransferCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     double amount = getArgument("amount");
-    String message = getArgument("message");
-
+    String msg = getArgument("message");
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWithWithdrawableAccount(player))
         .title("Select company to transfer from")
@@ -44,7 +43,11 @@ public class TransferCommandSub extends ModularCommandSub {
                     new AccountSelectorGui.Builder()
                         .company(companyTo)
                         .title("Select which account to transfer to")
-                        .accountSelected(transferTo -> payCompany(player, transferFrom, transferTo, companyTo, message, amount))
+                        .accountSelected(transferTo -> {
+                          String message = "Paid company " + company.name + " # " + transferTo.pk;
+                          if (msg != null) message += "[message: \"" + msg + "\"]";
+                          payCompany(player, transferFrom, transferTo, companyTo, message, amount);
+                        })
                         .show(player);
                   }))
                   .show(player), 1))

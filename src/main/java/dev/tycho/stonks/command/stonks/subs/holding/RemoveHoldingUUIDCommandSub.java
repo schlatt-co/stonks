@@ -77,7 +77,7 @@ public class RemoveHoldingUUIDCommandSub extends ModularCommandSub {
         sendMessage(player, "That holding is still active (was withdrawn from less than 7 days ago) so you cannot remove it.");
         return;
       }
-      // We can remove the holding
+      // Owner checks complete
 
     }
 
