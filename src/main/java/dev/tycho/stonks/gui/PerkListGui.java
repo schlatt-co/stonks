@@ -64,7 +64,7 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
           return;
         }
 
-        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice());
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice(), "Purchased perk \"" + perk.getName() + "\"");
         PerkManager.getInstance().awardPerk(company, perk, company.getMember(player));
         if (StonksAPI.getCompany("Admins") != null) {
           //noinspection OptionalGetWithoutIsPresent

@@ -35,9 +35,11 @@ public class PayAccountCommandSub extends ModularCommandSub {
   public void execute(Player player) {
     Account account = getArgument("account");
     double amount = getArgument("amount");
-    String message = getArgument("message");
+    String msg = getArgument("message");
 
     Company company = Repo.getInstance().companies().get(account.companyPk);
+    String message = "Deposit" + company.name + "#" + account.pk
+        + ((msg != null) ? " [message: \"" + msg + "\"]" : "");
     if (!company.verified) {
       List<String> info = new ArrayList<>(UNVERIFIED);
       new ConfirmationGui.Builder()

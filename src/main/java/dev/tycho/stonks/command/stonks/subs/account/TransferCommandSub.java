@@ -44,8 +44,8 @@ public class TransferCommandSub extends ModularCommandSub {
                         .company(companyTo)
                         .title("Select which account to transfer to")
                         .accountSelected(transferTo -> {
-                          String message = "Paid company " + company.name + " # " + transferTo.pk;
-                          if (msg != null) message += "[message: \"" + msg + "\"]";
+                          String message = "Transferred money to " + companyTo.name + "#" + transferTo.pk + "(" + transferTo.name + ")";
+                          if (msg != null) message += " [message: \"" + msg + "\"]";
                           payCompany(player, transferFrom, transferTo, companyTo, message, amount);
                         })
                         .show(player);

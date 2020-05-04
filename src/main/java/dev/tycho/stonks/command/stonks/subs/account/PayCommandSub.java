@@ -43,7 +43,7 @@ public class PayCommandSub extends ModularCommandSub {
   @Override
   public void execute(Player player) {
     double amount = getArgument("amount");
-    String message = getArgument("message");
+    String msg = getArgument("message");
 
     List<Company> list = Repo.getInstance().companies().getAll();
     new CompanySelectorGui.Builder()
@@ -55,7 +55,11 @@ public class PayCommandSub extends ModularCommandSub {
               new AccountSelectorGui.Builder()
                   .company(company)
                   .title("Select which account to pay")
-                  .accountSelected(account -> payAccount(player, account, message, amount));
+                  .accountSelected(account -> {
+                    String message = "Deposit" + company.name + "#" + account.pk
+                        + ((msg != null) ? " [message: \"" + msg + "\"]" : "");
+                    payAccount(player, account, message, amount);
+                  });
           List<String> info = new ArrayList<>(UNVERIFIED);
           info.add(ChatColor.GOLD + "The CEO of this company is ");
           String ceoName = "[error lol]";

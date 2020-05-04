@@ -25,7 +25,7 @@ public class PayUserCommandSub extends ModularCommandSub {
     Player target = getArgument("player");
     double amount = getArgument("amount");
     String msg = getArgument("message");
-    String message = "Paid user" + target.getName() + ((msg != null) ? "[message: \"" + msg + "\"]" : "");
+    String message = "Paid out to user " + target.getName() + ((msg != null) ? " [message: \"" + msg + "\"]" : "");
     new CompanySelectorGui.Builder()
         .companies(Repo.getInstance().companiesWithWithdrawableAccount(player))
         .title("Select a company to withdraw from")
