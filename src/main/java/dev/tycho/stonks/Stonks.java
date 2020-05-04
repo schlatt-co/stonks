@@ -43,6 +43,7 @@ public class Stonks extends JavaPlugin {
   }
 
   public static StonksUser getUser(UUID uuid) {
+    if (uuid == null) return null;
     if (essentials != null) {
       return new EssentialsUser(essentials.getUser(uuid));
     } else {
