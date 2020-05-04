@@ -1,9 +1,9 @@
 package dev.tycho.stonks.model.core;
 
 import dev.tycho.stonks.api.perks.CompanyPerk;
-import dev.tycho.stonks.database.Entity;
 import dev.tycho.stonks.managers.PerkManager;
 import org.bukkit.entity.Player;
+import uk.tsarcasm.tsorm.Entity;
 
 import java.util.Collection;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.core;
 
-import dev.tycho.stonks.database.Entity;
+import uk.tsarcasm.tsorm.Entity;
 
 public class Perk extends Entity {
   public final int companyPk;

@@ -1,8 +1,8 @@
 package dev.tycho.stonks.model.service;
 
 
-import dev.tycho.stonks.database.Entity;
 import org.bukkit.entity.Player;
+import uk.tsarcasm.tsorm.Entity;
 
 import java.util.Collection;
 

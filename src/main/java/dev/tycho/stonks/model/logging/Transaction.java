@@ -1,6 +1,6 @@
 package dev.tycho.stonks.model.logging;
 
-import dev.tycho.stonks.database.Entity;
+import uk.tsarcasm.tsorm.Entity;
 
 import java.sql.Timestamp;
 import java.util.UUID;
