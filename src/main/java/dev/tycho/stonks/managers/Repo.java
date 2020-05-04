@@ -324,7 +324,8 @@ public class Repo extends SpigotModule {
     Transaction t = new Transaction(0, account.pk, player, message, amount,
         new Timestamp(System.currentTimeMillis()));
     transactionStore.create(t);
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Bukkit.getPluginManager().callEvent(new TransactionLogEvent(t)));
+    Company company = companies().get(account.companyPk);
+    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Bukkit.getPluginManager().callEvent(new TransactionLogEvent(company, account, t)));
     //No refreshes are needed since no entities have a collection of transactions
   }
 
