@@ -56,7 +56,7 @@ public class PayCommandSub extends ModularCommandSub {
                   .company(company)
                   .title("Select which account to pay")
                   .accountSelected(account -> {
-                    String message = "Deposit" + company.name + "#" + account.pk
+                    String message = "Deposit"
                         + ((msg != null) ? " [message: \"" + msg + "\"]" : "");
                     payAccount(player, account, message, amount);
                   });

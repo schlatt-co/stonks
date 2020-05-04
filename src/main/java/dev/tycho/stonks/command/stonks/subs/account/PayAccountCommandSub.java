@@ -38,7 +38,7 @@ public class PayAccountCommandSub extends ModularCommandSub {
     String msg = getArgument("message");
 
     Company company = Repo.getInstance().companies().get(account.companyPk);
-    String message = "Deposit" + company.name + "#" + account.pk
+    String message = "Deposit"
         + ((msg != null) ? " [message: \"" + msg + "\"]" : "");
     if (!company.verified) {
       List<String> info = new ArrayList<>(UNVERIFIED);
