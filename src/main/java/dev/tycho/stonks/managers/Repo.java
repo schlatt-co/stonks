@@ -1,6 +1,7 @@
 package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
+import dev.tycho.stonks.api.event.TransactionLogEvent;
 import dev.tycho.stonks.database.DatabaseStore;
 import dev.tycho.stonks.database.Store;
 import dev.tycho.stonks.database.SyncStore;
@@ -15,6 +16,7 @@ import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.StonksUser;
 import dev.tycho.stonks.util.Util;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -322,6 +324,7 @@ public class Repo extends SpigotModule {
     Transaction t = new Transaction(0, account.pk, player, message, amount,
         new Timestamp(System.currentTimeMillis()));
     transactionStore.create(t);
+    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Bukkit.getPluginManager().callEvent(new TransactionLogEvent(t)));
     //No refreshes are needed since no entities have a collection of transactions
   }
 
