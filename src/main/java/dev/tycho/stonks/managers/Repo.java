@@ -2,15 +2,11 @@ package dev.tycho.stonks.managers;
 
 import dev.tycho.stonks.Stonks;
 import dev.tycho.stonks.api.event.TransactionLogEvent;
-import dev.tycho.stonks.database.DatabaseStore;
-import dev.tycho.stonks.database.Store;
-import dev.tycho.stonks.database.SyncStore;
-import dev.tycho.stonks.database.TransactionStore;
 import dev.tycho.stonks.model.accountvisitors.IAccountVisitor;
 import dev.tycho.stonks.model.accountvisitors.ReturningAccountVisitor;
 import dev.tycho.stonks.model.core.*;
-import dev.tycho.stonks.model.dbis.*;
 import dev.tycho.stonks.model.logging.Transaction;
+import dev.tycho.stonks.model.meta.*;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.StonksUser;
@@ -19,6 +15,10 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import uk.tsarcasm.tsorm.DatabaseStore;
+import uk.tsarcasm.tsorm.Store;
+import uk.tsarcasm.tsorm.SyncDatabaseStore;
+import uk.tsarcasm.tsorm.modulardbi.ModularDbi;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -109,26 +109,34 @@ public class Repo extends SpigotModule {
   public void enable() {
     createDataSource();
 
-    companyStore = new SyncStore<>();
-    companyAccountStore = new SyncStore<>();
-    holdingsAccountStore = new SyncStore<>();
-    holdingStore = new SyncStore<>();
-    memberStore = new SyncStore<>();
-    serviceStore = new SyncStore<>();
-    subscriptionStore = new SyncStore<>();
-    perkStore = new SyncStore<>();
-    transactionStore = new TransactionStore(dataSource, new TransactionDBI(dataSource));
+    companyStore = new SyncDatabaseStore<>();
+    companyAccountStore = new SyncDatabaseStore<>();
+    holdingsAccountStore = new SyncDatabaseStore<>();
+    holdingStore = new SyncDatabaseStore<>();
+    memberStore = new SyncDatabaseStore<>();
+    serviceStore = new SyncDatabaseStore<>();
+    subscriptionStore = new SyncDatabaseStore<>();
+    perkStore = new SyncDatabaseStore<>();
+    transactionStore = new TransactionStore(dataSource, new ModularDbi<>(dataSource, new TransactionMeta(), true));
     transactionStore.createTable();
 
 
-    companyStore.setDbi(new CompanyDBI(dataSource, memberStore, companyAccountStore, holdingsAccountStore, perkStore));
-    perkStore.setDbi(new PerkDBI(dataSource));
-    companyAccountStore.setDbi(new CompanyAccountDBI(dataSource, serviceStore));
-    holdingsAccountStore.setDbi(new HoldingsAccountDBI(dataSource, serviceStore, holdingStore));
-    holdingStore.setDbi(new HoldingDBI(dataSource));
-    memberStore.setDbi(new MemberDBI(dataSource));
-    serviceStore.setDbi(new ServiceDBI(dataSource, subscriptionStore));
-    subscriptionStore.setDbi(new SubscriptionDBI(dataSource));
+    companyStore.setDbi(new ModularDbi<>(
+        dataSource, new CompanyMeta(companyAccountStore, holdingsAccountStore, memberStore, perkStore), false));
+    perkStore.setDbi(new ModularDbi<>(
+        dataSource, new PerkMeta(), true));
+    companyAccountStore.setDbi(new ModularDbi<>(
+        dataSource, new CompanyAccountMeta(serviceStore), false));
+    holdingsAccountStore.setDbi(new ModularDbi<>(
+        dataSource, new HoldingsAccountMeta(serviceStore, holdingStore), false));
+    holdingStore.setDbi(new ModularDbi<>(
+        dataSource, new HoldingMeta(), true));
+    memberStore.setDbi(new ModularDbi<>(
+        dataSource, new MemberMeta(), true));
+    serviceStore.setDbi(new ModularDbi<>(
+        dataSource, new ServiceMeta(subscriptionStore), false));
+    subscriptionStore.setDbi(new ModularDbi<>(
+        dataSource, new SubscriptionMeta(), true));
 
     repopulateAll();
   }
@@ -323,7 +331,7 @@ public class Repo extends SpigotModule {
     //Create the new transaction
     Transaction t = new Transaction(0, account.pk, player, message, amount,
         new Timestamp(System.currentTimeMillis()));
-    transactionStore.create(t);
+    transactionStore.insert(t);
     Company company = companies().get(account.companyPk);
     // TODO find a solution for this
     // Don't create log events for null players, e.g. on a shop event
