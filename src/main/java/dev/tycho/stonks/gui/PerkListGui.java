@@ -64,11 +64,12 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
           return;
         }
 
-        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice(), "Purchased perk \"" + perk.getName() + "\"");
+        String msg = "Purchased perk \"" + perk.getName() + "\"";
+        Repo.getInstance().withdrawFromAccount(player.getUniqueId(), a, perk.getPrice(), msg);
         PerkManager.getInstance().awardPerk(company, perk, company.getMember(player));
         if (StonksAPI.getCompany("Admins") != null) {
           //noinspection OptionalGetWithoutIsPresent
-          Repo.getInstance().payAccount(player.getUniqueId(), "Perk Purchase for " + company.name, Objects.requireNonNull(StonksAPI.getCompany("Admins")).accounts.stream().filter(p -> p.name.equals("Main")).findFirst().get(), perk.getPrice());
+          Repo.getInstance().payAccount(player.getUniqueId(), msg, Objects.requireNonNull(StonksAPI.getCompany("Admins")).accounts.stream().filter(p -> p.name.equals("Main")).findFirst().get(), perk.getPrice());
         }
         sendMessage(player, "Perk purchased successfully!");
         Repo.getInstance().sendMessageToAllOnlineMembers(company, player.getName() + " has purchased the " + perk.getName() + " perk for the company: " + company.name);
