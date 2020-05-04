@@ -325,7 +325,7 @@ public class Repo extends SpigotModule {
         new Timestamp(System.currentTimeMillis()));
     transactionStore.create(t);
     Company company = companies().get(account.companyPk);
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Bukkit.getPluginManager().callEvent(new TransactionLogEvent(company, account, t)));
+    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> Bukkit.getPluginManager().callEvent(new TransactionLogEvent(company, account, t, Stonks.getUser(player).getBase())));
     //No refreshes are needed since no entities have a collection of transactions
   }
 
@@ -417,7 +417,7 @@ public class Repo extends SpigotModule {
   }
 
   public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount) {
-    return withdrawFromAccount(player, a, amount, "withdraw");
+    return withdrawFromAccount(player, a, amount, "Withdraw");
   }
 
   public Account withdrawFromAccount(UUID player, CompanyAccount a, double amount, String message) {
@@ -448,7 +448,7 @@ public class Repo extends SpigotModule {
   }
 
   public Holding withdrawFromHolding(UUID player, Holding h, double amount) {
-    return withdrawFromHolding(player, h, amount, "withdraw holding");
+    return withdrawFromHolding(player, h, amount, "Withdrew from holding");
   }
 
   public Holding withdrawFromHolding(UUID player, Holding h, double amount, String message) {
