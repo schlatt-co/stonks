@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 public class StonksAPI {
 
   /**
@@ -122,4 +124,19 @@ public class StonksAPI {
     CommandManager.getInstance().registerStonksCommand(alias, commandSub);
   }
 
+  /**
+   * Pays an account a set amount of money.
+   *
+   * @param account The account to be paid.
+   * @param payee The user initating the payment.
+   * @param amount The amount to pay the the target account.
+   * @param message Optional reason of the payment
+   * @throws StonksAPIException If arguments are provided as null.
+   */
+  public static void payAccount(Account account, UUID payee, double amount, String message) throws StonksAPIException {
+    if (account == null || payee == null) {
+      throw new StonksAPIException("Account and/or Payee parameters cannot be null!");
+    }
+    Repo.getInstance().payAccount(payee, message, account, amount);
+  }
 }
