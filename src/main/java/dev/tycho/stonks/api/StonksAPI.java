@@ -137,6 +137,6 @@ public class StonksAPI {
     if (account == null || payee == null) {
       throw new StonksAPIException("Account and/or Payee parameters cannot be null!");
     }
-    Repo.getInstance().payAccount(payee, message, account, amount);
+    Repo.getInstance().payAccount(payee, message, account.pk, amount);
   }
 }
