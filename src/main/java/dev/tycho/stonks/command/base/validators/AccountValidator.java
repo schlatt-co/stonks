@@ -15,7 +15,7 @@ public class AccountValidator extends ArgumentValidator<Account> {
     if (!StringUtils.isNumeric(str)) {
       return false;
     }
-    value = Repo.getInstance().accountWithId(Integer.parseInt(str));
+    value = Repo.getInstance().accountWithPk(Integer.parseInt(str));
     return value != null;
   }
 

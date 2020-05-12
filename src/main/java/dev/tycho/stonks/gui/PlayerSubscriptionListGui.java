@@ -26,7 +26,7 @@ public class PlayerSubscriptionListGui extends CollectionGui<Subscription> {
   @Override
   protected ClickableItem itemProvider(Player player, Subscription obj) {
     Service service = Repo.getInstance().services().get(obj.servicePk);
-    Company company = Repo.getInstance().companies().get(Repo.getInstance().accountWithId(service.accountPk).companyPk);
+    Company company = Repo.getInstance().companies().get(Repo.getInstance().accountWithPk(service.accountPk).companyPk);
     if (Subscription.isOverdue(service, obj)) {
       return ClickableItem.of(ItemInfoHelper.subscriptionDisplayItem(obj, service, company,
           ChatColor.GREEN + "Left click to pay subscription",

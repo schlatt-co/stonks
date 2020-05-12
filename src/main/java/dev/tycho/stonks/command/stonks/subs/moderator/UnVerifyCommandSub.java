@@ -36,7 +36,7 @@ public class UnVerifyCommandSub extends ModularCommandSub {
         .show(player);
   }
   private void unverify(Company company) {
-    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, false, company.hidden);
+    Repo.getInstance().modifyCompany(company.pk, company.name, company.logoMaterial, false, company.hidden);
 
     Repo.getInstance().sendMessageToAllOnlineManagers(
         company, ChatColor.GOLD + company.name + ChatColor.RED +" was just unverified!");

@@ -97,12 +97,12 @@ public class TransferCommandSub extends ModularCommandSub {
           return;
         }
 
-        Repo.getInstance().withdrawFromHolding(sender.getUniqueId(), h, amount, message);
+        Repo.getInstance().withdrawFromHolding(sender.getUniqueId(), h.pk, amount, message);
       }
     };
     transferFrom.accept(visitor);
 
-    Repo.getInstance().payAccount(sender.getUniqueId(), message, transferTo, amount);
+    Repo.getInstance().payAccount(sender.getUniqueId(), message, transferTo.pk, amount);
 
     //Tell the user we paid the account
     sendMessage(sender, "Paid " + ChatColor.YELLOW + companyTo.name + " (" + transferTo.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");

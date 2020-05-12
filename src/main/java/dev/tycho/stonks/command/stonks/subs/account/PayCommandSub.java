@@ -93,7 +93,7 @@ public class PayCommandSub extends ModularCommandSub {
       sendMessage(sender, "Insufficient funds!");
       return;
     }
-    Repo.getInstance().payAccount(sender.getUniqueId(), message, account, amount);
+    Repo.getInstance().payAccount(sender.getUniqueId(), message, account.pk, amount);
     Company company = Repo.getInstance().companies().get(account.companyPk);
     //Tell the user we paid the account
     sendMessage(sender, "Paid " + ChatColor.YELLOW + company.name + " (" + account.name + ")" + ChatColor.YELLOW + " $" + Util.commify(amount) + ChatColor.GREEN + "!");

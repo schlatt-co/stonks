@@ -89,10 +89,10 @@ public class SetRoleCommandSub extends ModularCommandSub {
     }
     //If we are promoting them to a ceo then demote us
     if (newRole == CEO) {
-      Repo.getInstance().modifyMember(changingMember, Manager, changingMember.acceptedInvite);
+      Repo.getInstance().modifyMember(changingMember.pk, Manager, changingMember.acceptedInvite);
       sendMessage(player, "You promoted " + ChatColor.YELLOW + playerName + ChatColor.GREEN + " to CEO, you have been demoted to a Manager since there can only be one CEO.");
     }
-    Repo.getInstance().modifyMember(memberToChange, newRole, memberToChange.acceptedInvite);
+    Repo.getInstance().modifyMember(memberToChange.pk, newRole, memberToChange.acceptedInvite);
     sendMessage(player, "Changed user role successfully!");
     sendMessage(playerToChange, "Your rank in the company " + ChatColor.YELLOW + company.name + ChatColor.GREEN + " has changed to " + ChatColor.YELLOW + newRole.toString());
   }

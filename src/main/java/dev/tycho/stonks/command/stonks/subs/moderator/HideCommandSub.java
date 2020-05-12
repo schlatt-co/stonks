@@ -38,6 +38,6 @@ public class HideCommandSub extends ModularCommandSub {
   }
 
   private void hide(Company company) {
-    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, true);
+    Repo.getInstance().modifyCompany(company.pk, company.name, company.logoMaterial, company.verified, true);
   }
 }

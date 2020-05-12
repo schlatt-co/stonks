@@ -88,7 +88,7 @@ public class WithdrawCommandSub extends ModularCommandSub {
           return;
         }
 
-        Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h, amount);
+        Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h.pk, amount);
         Stonks.economy.depositPlayer(player, amount);
         sendMessage(player, "Money withdrawn successfully!");
       }

@@ -39,7 +39,7 @@ public class DeleteCommandSub extends ModularCommandSub {
   }
 
   private void delete(Company company, Player player) {
-    Repo.getInstance().modifyCompany(company, "_", Material.BARRIER.name(), false, true);
+    Repo.getInstance().modifyCompany(company.pk, "_", Material.BARRIER.name(), false, true);
     sendMessage(player, "Company Deleted");
   }
 }

@@ -28,7 +28,7 @@ public class LogoCommandSub extends SimpleCommandSub {
       return;
     }
     String newLogoMaterial = itemInHand.getType().name();
-    Repo.getInstance().modifyCompany(company, company.name, newLogoMaterial, company.verified, company.hidden);
+    Repo.getInstance().modifyCompany(company.pk, company.name, newLogoMaterial, company.verified, company.hidden);
     sendMessage(player, "Company logo updated successfully!");
   }
 }

@@ -36,6 +36,6 @@ public class UnHideCommandSub extends ModularCommandSub {
   }
 
   private void unHide(Company company) {
-    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, company.verified, false);
+    Repo.getInstance().modifyCompany(company.pk, company.name, company.logoMaterial, company.verified, false);
   }
 }

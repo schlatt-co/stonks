@@ -69,7 +69,7 @@ public class PerkListGui extends CollectionGui<CompanyPerk> {
         PerkManager.getInstance().awardPerk(company, perk, company.getMember(player));
         if (StonksAPI.getCompany("Admins") != null) {
           //noinspection OptionalGetWithoutIsPresent
-          Repo.getInstance().payAccount(player.getUniqueId(), msg, Objects.requireNonNull(StonksAPI.getCompany("Admins")).accounts.stream().filter(p -> p.name.equals("Main")).findFirst().get(), perk.getPrice());
+          Repo.getInstance().payAccount(player.getUniqueId(), msg, Objects.requireNonNull(StonksAPI.getCompany("Admins")).accounts.stream().filter(p -> p.name.equals("Main")).findFirst().get().pk, perk.getPrice());
         }
         sendMessage(player, "Perk purchased successfully!");
         Repo.getInstance().sendMessageToAllOnlineMembers(company, player.getName() + " has purchased the " + perk.getName() + " perk for the company: " + company.name);

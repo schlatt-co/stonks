@@ -81,7 +81,7 @@ public class PayUserCommandSub extends ModularCommandSub {
           return;
         }
 
-        Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h, amount, message);
+        Repo.getInstance().withdrawFromHolding(player.getUniqueId(), h.pk, amount, message);
       }
     };
     account.accept(visitor);

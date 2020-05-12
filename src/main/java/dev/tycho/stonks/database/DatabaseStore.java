@@ -38,6 +38,8 @@ public abstract class DatabaseStore<T extends Entity> implements Store<T> {
       throw new IllegalArgumentException("Tried to save entity with PK not in entities");
     if (db_save(obj)) {
       entities.put(obj.pk, obj);
+    } else {
+      throw new IllegalArgumentException("Error saving entity");
     }
   }
 

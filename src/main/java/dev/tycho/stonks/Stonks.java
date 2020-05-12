@@ -6,6 +6,9 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.earth2me.essentials.Essentials;
 import dev.tycho.stonks.command.base.CommandBase;
 import dev.tycho.stonks.managers.*;
+import dev.tycho.stonks.model.core.Account;
+import dev.tycho.stonks.model.core.Company;
+import dev.tycho.stonks.model.logging.Transaction;
 import dev.tycho.stonks.model.service.Service;
 import dev.tycho.stonks.model.service.Subscription;
 import dev.tycho.stonks.util.BukkitUser;
@@ -20,10 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Stonks extends JavaPlugin {
 
@@ -105,8 +105,24 @@ public class Stonks extends JavaPlugin {
         cancelSubscriptionIfOverdue(subscription);
       }
     }, 0, 6000);
-
+    findDefecits();
     Bukkit.getLogger().info("Loaded!");
+  }
+
+  private void findDefecits() {
+    for (Company company : Repo.getInstance().companies().getAll()) {
+      for (Account account : company.accounts) {
+        double total = 0;
+        Collection<Transaction> transactions = Repo.getInstance().transactions().getTransactionsForAccount(account);
+        for (Transaction transaction : transactions) {
+          total += transaction.amount;
+        }
+        if (Math.abs(total - account.getTotalBalance()) > 2) {
+          System.out.println("Company " + company.name + ", account " + account.pk + " " + account.name + " defecit of $"
+              + (total - account.getTotalBalance()));
+        }
+      }
+    }
   }
 
   private void renewSubscription(Subscription subscription) {

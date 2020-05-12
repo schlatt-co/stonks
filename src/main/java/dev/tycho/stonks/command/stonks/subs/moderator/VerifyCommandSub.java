@@ -37,7 +37,7 @@ public class VerifyCommandSub extends ModularCommandSub {
   }
 
   private void verify(Company company) {
-    Repo.getInstance().modifyCompany(company, company.name, company.logoMaterial, true, company.hidden);
+    Repo.getInstance().modifyCompany(company.pk, company.name, company.logoMaterial, true, company.hidden);
 
     Repo.getInstance().sendMessageToAllOnlineManagers(
         company, ChatColor.GOLD + company.name + ChatColor.GREEN +" was just verified!");

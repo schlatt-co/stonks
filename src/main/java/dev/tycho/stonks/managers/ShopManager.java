@@ -86,7 +86,7 @@ public class ShopManager extends SpigotModule {
 
     //If an account exists for this account id
     dev.tycho.stonks.model.core.Account account;
-    if ((account = Repo.getInstance().accountWithId(accountId)) != null) {
+    if ((account = Repo.getInstance().accountWithPk(accountId)) != null) {
       Company company = Repo.getInstance().companies().get(account.companyPk);
       if (!company.ownsPerk(ChestShopPerk.class)) {
         sendMessage(event.getPlayer(), "Your company didn't buy the ChestShop Integration perk! You'll need to buy this perk before you can make ChestShops of companies!");
@@ -126,7 +126,7 @@ public class ShopManager extends SpigotModule {
 
     //If an account exists with this id
     dev.tycho.stonks.model.core.Account account;
-    if ((account = Repo.getInstance().accountWithId(accountId)) != null) {
+    if ((account = Repo.getInstance().accountWithPk(accountId)) != null) {
       UUID accountUuid = account.uuid;
       //Get the chest shop account associated with this uuid
       Account CSaccount = NameManager.getAccount(accountUuid);
@@ -157,7 +157,7 @@ public class ShopManager extends SpigotModule {
     }
 
     int accountId = Integer.parseInt(accountName.substring(1, dashIndex));
-    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(accountId);
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithPk(accountId);
     if (account != null) {
       event.setCancelled(true);
     }
@@ -175,7 +175,7 @@ public class ShopManager extends SpigotModule {
     }
     int accountId = Integer.parseInt(event.getName().substring(1, dashIndex));
     //Find the account for this id
-    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(accountId);
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithPk(accountId);
 
     if (account == null) {
       //Account id doesn't exist
@@ -222,7 +222,7 @@ public class ShopManager extends SpigotModule {
     dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithUUID(event.getTarget());
     if (account != null) {
       event.setCancelled(true);
-      Repo.getInstance().payAccount(null, "shop transaction", account, event.getAmountSent().doubleValue());
+      Repo.getInstance().payAccount(null, "shop transaction", account.pk, event.getAmountSent().doubleValue());
     }
   }
 
@@ -281,7 +281,7 @@ public class ShopManager extends SpigotModule {
       event.setCancelled(true);
       return;
     }
-    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithPk(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
     if (account == null) {
       event.setCancelled(true);
       return;
@@ -307,7 +307,7 @@ public class ShopManager extends SpigotModule {
       event.setCancelled(true);
       return;
     }
-    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithPk(Integer.parseInt(event.getTransactionEvent().getOwnerAccount().getName().split("-")[0].replaceFirst("#", "")));
     if (account == null) {
       event.setCancelled(true);
       return;
@@ -329,7 +329,7 @@ public class ShopManager extends SpigotModule {
       event.setCancelled(true);
       return;
     }
-    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithId(Integer.parseInt(event.getAccount().getName().split("-")[0].replaceFirst("#", "")));
+    dev.tycho.stonks.model.core.Account account = Repo.getInstance().accountWithPk(Integer.parseInt(event.getAccount().getName().split("-")[0].replaceFirst("#", "")));
     if (account == null) {
       event.setCancelled(true);
       return;

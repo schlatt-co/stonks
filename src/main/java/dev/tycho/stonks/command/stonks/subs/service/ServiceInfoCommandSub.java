@@ -20,6 +20,6 @@ public class ServiceInfoCommandSub extends ModularCommandSub {
       player.sendMessage("Service id not found");
       return;
     }
-    new ServiceInfoGui(service, Repo.getInstance().accountWithId(service.accountPk)).show(player);
+    new ServiceInfoGui(service, Repo.getInstance().accountWithPk(service.accountPk)).show(player);
   }
 }

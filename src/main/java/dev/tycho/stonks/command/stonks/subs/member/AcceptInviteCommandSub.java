@@ -32,7 +32,7 @@ public class AcceptInviteCommandSub extends ModularCommandSub {
     }
 
     //Ok accept the invite
-    member = Repo.getInstance().modifyMember(member, member.role, true);
+    member = Repo.getInstance().modifyMember(member.pk, member.role, true);
     if (member.acceptedInvite) {
       Bukkit.getPluginManager().callEvent(new CompanyJoinEvent(company, player));
       sendMessage(player, "You are now a member of " + ChatColor.YELLOW + company.name + "!");
