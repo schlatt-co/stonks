@@ -1,6 +1,7 @@
 package dev.tycho.stonks.gui;
 
 import dev.tycho.stonks.managers.Repo;
+import dev.tycho.stonks.model.core.Company;
 import dev.tycho.stonks.model.core.Holding;
 import dev.tycho.stonks.model.core.HoldingsAccount;
 import dev.tycho.stonks.util.Util;
@@ -27,13 +28,15 @@ public class AllPlayerHoldingsGui extends CollectionGui<HoldingsAccount> {
   }
 
   @Override
-  protected ClickableItem itemProvider(Player player, HoldingsAccount obj) {
-    Holding holding = obj.getPlayerHolding(player.getUniqueId());
+  protected ClickableItem itemProvider(Player player, HoldingsAccount account) {
+    Holding holding = account.getPlayerHolding(player.getUniqueId());
+    Company company = Repo.getInstance().companies().get(account.companyPk);
     if (holding == null) {
       return ClickableItem.empty(Util.item(Material.COBWEB, "Error :/"));
     }
 
     List<String> lore = new ArrayList<>();
+    lore.add(ChatColor.WHITE + "Account: " + ChatColor.GOLD + account.name);
     lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(holding.balance));
     lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + holding.share);
     lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
@@ -42,19 +45,19 @@ public class AllPlayerHoldingsGui extends CollectionGui<HoldingsAccount> {
 
     Material material;
     //If the player has no money in the holding display it as an iron bar
-    Holding playerHolding = obj.getPlayerHolding(player.getUniqueId());
+    Holding playerHolding = account.getPlayerHolding(player.getUniqueId());
     if (playerHolding != null && playerHolding.balance > 0.1) {
       material = Material.GOLD_INGOT;
     } else {
       material = Material.IRON_INGOT;
     }
 
-    return ClickableItem.of(Util.item(material, obj.name,
+    return ClickableItem.of(Util.item(material, company.name,
         lore), e -> {
       if (e.getClick().isLeftClick()) {
-        player.performCommand("stonks withdraw " + holding.balance + " " + obj.pk);
+        player.performCommand("stonks withdraw " + holding.balance + " " + account.pk);
       } else if (e.getClick().isRightClick()) {
-        player.performCommand("stonks info " + obj.companyPk);
+        player.performCommand("stonks info " + account.companyPk);
       }
     });
   }

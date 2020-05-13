@@ -29,12 +29,13 @@ public class HoldingListGui extends CollectionGui<Holding> {
   }
 
   @Override
-  protected ClickableItem itemProvider(Player player, Holding obj) {
-    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(obj.playerUUID);
+  protected ClickableItem itemProvider(Player player, Holding h) {
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(h.playerUUID);
+    double percentage = (h.share / holdingsAccount.getTotalShare()) * 100;
     List<String> lore = new ArrayList<>();
-    lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(obj.balance));
-    lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + obj.share);
-    if (player.getUniqueId().equals(obj.playerUUID))
+    lore.add(ChatColor.WHITE + "Balance: " + ChatColor.GREEN + "$" + Util.commify(h.balance));
+    lore.add(ChatColor.WHITE + "Share: " + ChatColor.YELLOW + h.share + ChatColor.ITALIC + " (" + String.format("%.2f", percentage) + "%)");
+    if (player.getUniqueId().equals(h.playerUUID))
       lore.add(ChatColor.GREEN + "Left click to withdraw your holding.");
     lore.add(ChatColor.RED + "Right click to delete holding.");
 
@@ -42,8 +43,8 @@ public class HoldingListGui extends CollectionGui<Holding> {
         lore), e -> {
       if (e.getClick().isRightClick()) {
         player.performCommand("stonks removeholdinguuid " + holdingsAccount.pk + " " + offlinePlayer.getUniqueId().toString());
-      } else if (e.getClick().isLeftClick() && player.getUniqueId().equals(obj.playerUUID)) {
-        player.performCommand("stonks withdraw " + obj.balance + " " + holdingsAccount.pk);
+      } else if (e.getClick().isLeftClick() && player.getUniqueId().equals(h.playerUUID)) {
+        player.performCommand("stonks withdraw " + h.balance + " " + holdingsAccount.pk);
       }
     });
   }
