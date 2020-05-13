@@ -55,7 +55,7 @@ public class CreateAccountCommandSub extends ModularCommandSub {
 
     for (Account account : company.accounts) {
       if (account.name.equals(newAccountName)) {
-        sendMessage(player, "Account name already exist in company!");
+        sendMessage(player, "Account name already exists in company!");
         return;
       }
     }

@@ -366,7 +366,8 @@ public class Repo extends SpigotModule {
     });
   }
 
-  public Account renameAccount(Account account, String newName) {
+  public Account renameAccount(int accountPk, String newName) {
+    Account account = accountWithPk(accountPk);
     ReturningAccountVisitor<Account> visitor = new ReturningAccountVisitor<>() {
       @Override
       public void visit(CompanyAccount a) {

@@ -41,6 +41,7 @@ public class StonksCommand extends CommandBase {
 
     // Account Commands
     addSubCommand("createaccount", new CreateAccountCommandSub());
+    addSubCommand("renameaccount", new RenameAccountCommandSub());
     addSubCommand("history", new HistoryCommandSub());
 
     // Holding Commands

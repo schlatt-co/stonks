@@ -24,7 +24,7 @@ public class RenameCommandSub extends ModularCommandSub {
         .title("Select company to rename")
         .companies(Repo.getInstance().companies().getAll())
         .companySelected(company -> new ConfirmationGui.Builder()
-            .title("Rename " + company.name + " to" + newName + "?")
+            .title("Rename " + company.name + " to " + newName + "?")
             .yes(() -> {
               Bukkit.getPluginManager().callEvent(new CompanyRenameEvent(company, newName));
               Repo.getInstance().modifyCompany(company.pk, newName, company.logoMaterial, company.verified, company.hidden);
