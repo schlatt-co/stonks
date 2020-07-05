@@ -50,7 +50,7 @@ dependencies {
     }
     compileOnly "com.github.schlatt-co:PluginLibrary:87bf88cde4"
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
-    compileOnly 'com.github.WesJD.AnvilGUI:anvilgui:f9249ae37f'
+    compileOnly 'com.github.WesJD.AnvilGUI:anvilgui:ef71db62ec'
 }
 
 compileJava.options.encoding = 'UTF-8'
